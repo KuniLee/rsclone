@@ -1,0 +1,37 @@
+
+name: My-GitHub_Basics
+env:
+  APPLICATION_NAME: "RS Clone"
+  DELPOY_PACKAGE_NAME: "flask_deploy_ver-${{ github.sha}}"
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main", "develop"]
+  pull_request:
+    branches: [ "main", "develop"]
+
+  workflow_dispatch:
+
+jobs:
+
+  Lint_and_tests:
+    runs-on: ubuntu-latest
+    env:
+      BACK4APP_APP_ID: ${{ secrets.BACK4APP_APP_ID }}
+      BACK4APP_JS_KEY: ${{ secrets.BACK4APP_JS_KEY }}
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Install
+        run: npm install
+
+      - name: Lint
+        run: |
+          npm install eslint
+          npm run lint
+
+        #- name: Tests
+        # run: npm run test

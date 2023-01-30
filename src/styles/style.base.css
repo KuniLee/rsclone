@@ -1,0 +1,9 @@
+@tailwind base;
+body {
+    @apply flex min-h-screen flex-col p-0;
+}
+
+h1 {
+    @apply text-2xl;
+    @apply mb-1;
+}
