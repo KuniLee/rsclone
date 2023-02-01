@@ -22,5 +22,10 @@ export class AuthController {
             this.router.replace(this.authModel.path.join(''))
         })
         router.init()
+        this.authView.on('LOGIN', (arg, data) => {
+            if (data.email && data.password) {
+                this.authModel.signInUser(data.email, data.password)
+            }
+        })
     }
 }

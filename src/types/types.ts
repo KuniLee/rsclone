@@ -1,4 +1,4 @@
-export type firebaseConfigType = {
+export type FirebaseConfigType = {
     storageBucket: string
     apiKey: string
     messagingSenderId: string
@@ -6,4 +6,9 @@ export type firebaseConfigType = {
     projectId: string
     databaseURL: string
     authDomain: string
+}
+
+export type AuthViewTypes = {
+    email: string
+    password: string
 }

@@ -1,5 +1,6 @@
 import EventEmitter from 'events'
 import { Flows, Paths } from 'types/enums'
+import { AuthLoaderInstance } from '@/utils/AuthLoader'
 
 type PageModelEventsName = 'CHANGE_PAGE' | '404'
 export type AuthModelInstance = InstanceType<typeof AuthModel>
@@ -7,9 +8,20 @@ export type AuthModelInstance = InstanceType<typeof AuthModel>
 export class AuthModel extends EventEmitter {
     public path: Array<string> = []
     public lang: 'ru' | 'en' = 'ru'
+    private loader: AuthLoaderInstance
 
-    constructor() {
+    constructor(loader: AuthLoaderInstance) {
         super()
+        this.loader = loader
+    }
+
+    async signInUser(email: string, password: string) {
+        const result = await this.loader.signIn(email, password)
+        if (result) {
+            alert('USER SIGN IN')
+        } else {
+            alert('WRONG DATA')
+        }
     }
 
     on<T>(event: PageModelEventsName, callback: (arg: T) => void) {

@@ -4,8 +4,9 @@ import { Flows, Paths } from 'types/enums'
 import dictionary from '@/utils/dictionary'
 import { AuthModelInstance } from '@/components/auth/model/AuthModel'
 import headerTemplate from '@/templates/header.hbs'
+import { AuthViewTypes } from 'types/types'
 
-type ItemViewEventsName = 'GOTO'
+type ItemViewEventsName = 'GOTO' | 'LOGIN'
 
 export type AuthViewInstance = InstanceType<typeof AuthView>
 
@@ -39,10 +40,23 @@ export class AuthView extends EventEmitter {
     private addListeners() {
         const registrationBtn = document.querySelector('.registration')
         const forgotPass = document.querySelector('.forgot-pass')
+        const submitButton = document.querySelector('.login-btn')
         registrationBtn?.addEventListener('click', (e) => {
             e.preventDefault()
             if (e.target instanceof HTMLAnchorElement) {
                 this.emit<string>('GOTO', new URL(e.target.href).pathname)
+            }
+        })
+        submitButton?.addEventListener('click', (e) => {
+            e.preventDefault()
+            const emailInput = document.querySelector('.email-login-input') as HTMLInputElement
+            const passwordInput = document.querySelector('.password-login-input') as HTMLInputElement
+            if (emailInput && passwordInput) {
+                const emailValue = emailInput.value
+                const passwordValue = passwordInput.value
+                if (emailValue && passwordValue) {
+                    this.emit('LOGIN', undefined, { email: emailValue, password: passwordValue })
+                }
             }
         })
     }
@@ -65,11 +79,11 @@ export class AuthView extends EventEmitter {
         console.log('test')
     }
 
-    emit<T>(event: ItemViewEventsName, arg?: T) {
-        return super.emit(event, arg)
+    emit<T>(event: ItemViewEventsName, arg?: T, data?: AuthViewTypes) {
+        return super.emit(event, arg, data)
     }
 
-    on<T>(event: ItemViewEventsName, callback: (arg: T) => void) {
+    on<T>(event: ItemViewEventsName, callback: (arg: T, data: AuthViewTypes) => void) {
         return super.on(event, callback)
     }
 }

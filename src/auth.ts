@@ -4,9 +4,11 @@ import { AuthModel } from '@/components/auth/model/AuthModel'
 import { AuthController } from '@/components/auth/controller/AuthController'
 import { Router } from '@/utils/Rooter'
 import { AuthView } from '@/components/auth/views/AuthView'
+import { AuthLoader } from '@/utils/AuthLoader'
 
-export const router = new Router()
+const router = new Router()
+const authLoader = new AuthLoader()
 
-const authModel = new AuthModel()
+const authModel = new AuthModel(authLoader)
 const authView = new AuthView(authModel)
 const authController = new AuthController(authView, authModel, router)

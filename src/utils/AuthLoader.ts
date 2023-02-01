@@ -1,10 +1,12 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
+import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth'
 import * as process from 'process'
-import { firebaseConfigType } from 'types/types'
+import { FirebaseConfigType } from 'types/types'
 
-class AuthLoader {
-    private firebaseConfig: firebaseConfigType
+export type AuthLoaderInstance = InstanceType<typeof AuthLoader>
+
+export class AuthLoader {
+    private firebaseConfig: FirebaseConfigType
     private app: unknown
     constructor() {
         this.firebaseConfig = {
@@ -31,16 +33,19 @@ class AuthLoader {
             })
     }
 
-    signIn(email: string, password: string) {
+    async signIn(email: string, password: string) {
         const auth = getAuth()
-        signInWithEmailAndPassword(auth, email, password)
+        const result = signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                const user = userCredential.user
+                console.log(userCredential)
+                return userCredential.user
             })
             .catch((error) => {
                 const errorCode = error.code
                 const errorMessage = error.message
+                return null
             })
+        return result
     }
 
     checkAuthState() {
