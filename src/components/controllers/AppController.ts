@@ -20,5 +20,6 @@ export class AppController {
         model.on('CHANGE_PAGE', () => {
             this.router.replace(this.model.path.join(''))
         })
+        router.init()
     }
 }

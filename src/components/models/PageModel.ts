@@ -40,6 +40,9 @@ export class PageModel extends EventEmitter {
             case Paths.Feed:
                 this.goToFeed()
                 break
+            case Paths.Auth:
+                this.goToAuth()
+                break
             default:
                 this.goTo404()
         }
@@ -77,5 +80,9 @@ export class PageModel extends EventEmitter {
         if (this.path.length === 1) this.emit('CHANGE_PAGE')
         else if (this.path.length === 2 && this.path[1] === '/settings') console.log('настройки')
         else this.goTo404()
+    }
+
+    private goToAuth() {
+        this.emit('CHANGE_PAGE')
     }
 }

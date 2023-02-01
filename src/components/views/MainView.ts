@@ -18,6 +18,7 @@ export class MainView extends EventEmitter {
         this.model = model
         this.headerEl = this.renderHeader()
         this.mainPageContainer = document.createElement('main')
+        this.mainPageContainer.className = 'main'
         this.addListeners()
         this.show()
         this.model.on('404', () => {
@@ -53,6 +54,7 @@ export class MainView extends EventEmitter {
             link: '/flows' + Flows[el as keyof typeof Flows],
         }))
         flows.unshift({ name: dictionary.buttons.Feed[this.model.lang], link: Paths.Feed })
+        flows.push({ name: dictionary.buttons.Auth[this.model.lang], link: Paths.Auth })
         header.innerHTML = headerTemplate({ flows })
         return header
     }
