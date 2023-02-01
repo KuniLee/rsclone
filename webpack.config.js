@@ -1,12 +1,13 @@
 /* eslint @typescript-eslint/no-var-requires: "off" */
 const path = require('path')
 const HTMLWebpackPlugin = require('html-webpack-plugin')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const ESLintPlugin = require('eslint-webpack-plugin')
 const Dotenv = require('dotenv-webpack')
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const devMode = process.env.NODE_ENV !== 'production'
 
@@ -29,7 +30,7 @@ const thePlugins = () => {
     return [
         new HTMLWebpackPlugin({
             inject: true,
-            // favicon: `./src/assets/images/favicon.ico`,
+            // TODO: favicon: `./src/assets/images/favicon.ico`,
             template: 'index.html',
             filename: `index.html`,
             minify: !devMode,
@@ -39,7 +40,12 @@ const thePlugins = () => {
         new MiniCssExtractPlugin({
             filename: '[name].[contenthash].css',
         }),
-        new ESLintPlugin({ extensions: ['ts', 'js'] }),
+        new ESLintPlugin({extensions: ['ts', 'js']}),
+        new ForkTsCheckerWebpackPlugin({
+            typescript:{
+                configFile: path.resolve(__dirname, 'tsconfig.json')
+            }
+        }),
         new Dotenv(),
     ]
 }
@@ -77,8 +83,12 @@ const config = {
     module: {
         rules: [
             {
-                test: /\.ts$/i,
-                loader: 'babel-loader',
+                test: /\.tsx?$/,
+                loader: 'esbuild-loader',
+                options: {
+                    loader: 'ts',
+                    target: 'es2015'
+                }
             },
             {
                 test: /\.css$/,
