@@ -1,6 +1,6 @@
 import { RouterInstance } from '@/utils/Rooter'
-import { PageModelInstance } from '@/components/models/PageModel'
-import { MainViewInstance } from '@/components/views/MainView'
+import { PageModelInstance } from '@/components/mainPage/model/PageModel'
+import { MainViewInstance } from '@/components/mainPage/views/MainView'
 
 export class AppController {
     private router: RouterInstance

@@ -1,5 +1,5 @@
 import EventEmitter from 'events'
-import type { PageModel } from '../models/PageModel'
+import type { PageModel } from '../model/PageModel'
 import headerTemplate from '@/templates/header.hbs'
 import { Flows, Paths } from 'types/enums'
 import dictionary from '@/utils/dictionary'
@@ -18,7 +18,7 @@ export class MainView extends EventEmitter {
         this.model = model
         this.headerEl = this.renderHeader()
         this.mainPageContainer = document.createElement('main')
-        this.mainPageContainer.className = 'main bg-[#f0f0f0] flex-grow'
+        this.mainPageContainer.className = 'bg-[#f0f0f0] flex-grow'
         this.addListeners()
         this.show()
         this.model.on('404', () => {
@@ -36,9 +36,11 @@ export class MainView extends EventEmitter {
 
     private addListeners() {
         this.headerEl.addEventListener('click', (ev) => {
-            ev.preventDefault()
             if (ev.target instanceof HTMLAnchorElement) {
-                this.emit<string>('GOTO', new URL(ev.target.href).pathname)
+                if (!ev.target.href.includes('.html')) {
+                    ev.preventDefault()
+                    this.emit<string>('GOTO', new URL(ev.target.href).pathname)
+                }
             }
         })
     }

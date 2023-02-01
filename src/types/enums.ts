@@ -8,7 +8,8 @@ export enum Paths {
     Sandbox = '/sandbox',
     All = '/all',
     Flows = '/flows',
-    Auth = '/auth',
+    Auth = '/auth.html',
+    Registration = '/register',
 }
 
 export enum Flows {

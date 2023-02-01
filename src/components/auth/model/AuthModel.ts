@@ -22,13 +22,32 @@ export class AuthModel extends EventEmitter {
 
     changePage(arg: Array<string>) {
         this.path = arg
+        console.log('test')
         if (!Object.values(Paths).includes(arg.at(0) as Paths)) return this.goTo404()
         switch (this.path[0]) {
-            case Paths.Root:
+            case Paths.All:
                 this.path = [Paths.All]
                 break
+            case Paths.Auth:
+                this.goToAuth()
+                break
+            case Paths.Registration: {
+                this.goToRegistration()
+                break
+            }
             default:
                 this.goTo404()
+        }
+    }
+
+    private goToAuth() {
+        if (this.path[0] === Paths.Auth) {
+            this.emit('CHANGE_PAGE')
+        }
+    }
+    private goToRegistration() {
+        if (this.path[0] === Paths.Registration) {
+            this.emit('CHANGE_PAGE')
         }
     }
 
