@@ -18,7 +18,7 @@ export class MainView extends EventEmitter {
         this.model = model
         this.headerEl = this.renderHeader()
         this.mainPageContainer = document.createElement('main')
-        this.mainPageContainer.className = 'main'
+        this.mainPageContainer.className = 'main bg-[#f0f0f0] flex-grow'
         this.addListeners()
         this.show()
         this.model.on('404', () => {
