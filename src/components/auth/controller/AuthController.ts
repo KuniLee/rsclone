@@ -1,6 +1,7 @@
 import { RouterInstance } from '@/utils/Rooter'
 import { AuthModelInstance } from '@/components/auth/model/AuthModel'
 import { AuthViewInstance } from '@/components/auth/views/AuthView'
+import { URLParams } from 'types/interfaces'
 
 export class AuthController {
     private router: RouterInstance
@@ -11,22 +12,20 @@ export class AuthController {
         this.authModel = model
         this.authView = view
         this.router = router
-        router.on('ROUTE', (arg) => {
+        router.on<URLParams>('ROUTE', (arg) => {
             model.changePage(arg)
         })
-        view.on<string>('GOTO', (arg, data) => {
-            if (!arg && data) {
-                if (data.path && data.query) {
-                    console.log(data.path)
-                    this.router.replace(data.path + '.html' + data.query)
-                    model.changePage([data.path, data.query])
-                }
-            } else {
-                model.changePage(this.router.getPathArray(arg + '.html'))
-            }
+        view.on<string>('GOTO', (arg) => {
+            console.log(arg)
+            model.changePage({
+                path: this.router.getPathArray(arg),
+                search: this.router.getParsedSearch(arg),
+            })
         })
         model.on('CHANGE_PAGE', () => {
-            this.router.replace(this.authModel.path.join(''))
+            this.router.replace(
+                this.router.createPathQuery({ path: this.authModel.path, search: this.authModel.search })
+            )
         })
         router.init()
         this.authView.on('LOGIN', (arg, data) => {

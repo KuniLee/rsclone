@@ -35,9 +35,11 @@ export class MainView extends EventEmitter {
 
     private addListeners() {
         this.headerEl.addEventListener('click', (ev) => {
-            ev.preventDefault()
             if (ev.target instanceof HTMLAnchorElement) {
-                this.emit<string>('GOTO', ev.target.href)
+                if (!ev.target.href.includes('.html')) {
+                    ev.preventDefault()
+                    this.emit<string>('GOTO', ev.target.href)
+                }
             }
         })
     }

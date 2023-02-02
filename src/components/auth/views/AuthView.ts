@@ -24,14 +24,18 @@ export class AuthView extends EventEmitter {
         this.mainPageContainer.className = 'bg-[#f0f0f0] flex-grow'
         this.show()
         this.buildPage()
-        this.model.on('CHANGE_PAGE', () => {
-            const url = new URL(String(window.location)).searchParams
-            const query = url.get('register')
+        this.model.on('CHANGE_PAGE', (arg) => {
             if (this.model.path[0] === Paths.Auth) {
-                if (!query) {
-                    this.buildPage()
+                if (typeof arg === 'object' && arg) {
+                    const searchParams = new URLSearchParams(Object.entries(arg))
+                    const query = searchParams.get('register')
+                    if (query) {
+                        this.buildPage(true)
+                    } else {
+                        this.buildPage()
+                    }
                 } else {
-                    this.buildPage(true)
+                    this.buildPage()
                 }
             }
         })
@@ -56,8 +60,14 @@ export class AuthView extends EventEmitter {
         registrationBtn?.addEventListener('click', (e) => {
             e.preventDefault()
             if (e.target instanceof HTMLAnchorElement) {
-                const url = new URL(e.target.href)
-                this.emit<string>('GOTO', undefined, { path: url.pathname, query: url.search })
+                this.emit<string>('GOTO', e.target.href)
+            }
+        })
+        const signIn = document.querySelector('.signIn')
+        signIn?.addEventListener('click', (e) => {
+            e.preventDefault()
+            if (e.target instanceof HTMLAnchorElement) {
+                this.emit<string>('GOTO', e.target.href)
             }
         })
         submitButton?.addEventListener('click', (e) => {
