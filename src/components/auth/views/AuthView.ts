@@ -61,7 +61,7 @@ export class AuthView extends EventEmitter {
                 if (captcha && grecaptcha) {
                     setTimeout(() => {
                         grecaptcha.render('captcha1', {
-                            sitekey: '6LcNQUckAAAAAP1R8Ewdw2p6lUQDn4IYE5GSpC63',
+                            sitekey: process.env.KAPTCHA_KEY,
                         })
                     }, 1000)
                 }
