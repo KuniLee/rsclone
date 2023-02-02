@@ -1,6 +1,7 @@
 import { RouterInstance } from '@/utils/Rooter'
 import { PageModelInstance } from '@/components/models/PageModel'
 import { MainViewInstance } from '@/components/views/MainView'
+import { URLParams } from 'types/interfaces'
 
 export class AppController {
     private router: RouterInstance
@@ -11,14 +12,18 @@ export class AppController {
         this.model = model
         this.view = view
         this.router = router
-        router.on('ROUTE', (arg) => {
+        router.on<URLParams>('ROUTE', (arg) => {
             model.changePage(arg)
         })
         view.on<string>('GOTO', (arg) => {
-            model.changePage(this.router.getPathArray(arg))
+            model.changePage({
+                path: this.router.getPathArray(arg),
+                search: this.router.getParsedSearch(arg),
+            })
         })
         model.on('CHANGE_PAGE', () => {
-            this.router.replace(this.model.path.join(''))
+            this.router.replace(this.router.createPathQuery({ path: this.model.path, search: this.model.search }))
         })
+        router.init()
     }
 }
