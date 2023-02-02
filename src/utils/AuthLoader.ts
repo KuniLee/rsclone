@@ -1,6 +1,5 @@
 import { initializeApp } from 'firebase/app'
 import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth'
-import * as process from 'process'
 import { FirebaseConfigType } from 'types/types'
 
 export type AuthLoaderInstance = InstanceType<typeof AuthLoader>

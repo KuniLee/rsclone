@@ -48,6 +48,14 @@ export class AuthView extends EventEmitter {
                 mainContainer.innerHTML = authTemplate({})
             } else {
                 mainContainer.innerHTML = registerTemplate({})
+                const captcha = document.getElementById('captcha1') as HTMLElement
+                if (captcha && grecaptcha) {
+                    setTimeout(() => {
+                        grecaptcha.render('captcha1', {
+                            sitekey: '6LcNQUckAAAAAP1R8Ewdw2p6lUQDn4IYE5GSpC63',
+                        })
+                    }, 1000)
+                }
             }
             this.addListeners()
         }
@@ -63,6 +71,12 @@ export class AuthView extends EventEmitter {
                 this.emit<string>('GOTO', e.target.href)
             }
         })
+        const registrationSubmitBtn = document.querySelector('.registrationCompleteBtn') as HTMLButtonElement
+        registrationSubmitBtn?.addEventListener('click', () => {
+            if (grecaptcha) {
+                console.log(grecaptcha.getResponse())
+            }
+        })
         const signIn = document.querySelector('.signIn')
         signIn?.addEventListener('click', (e) => {
             e.preventDefault()
@@ -72,8 +86,8 @@ export class AuthView extends EventEmitter {
         })
         submitButton?.addEventListener('click', (e) => {
             e.preventDefault()
-            const emailInput = document.querySelector('.email-login-input') as HTMLInputElement
-            const passwordInput = document.querySelector('.password-login-input') as HTMLInputElement
+            const emailInput = document.querySelector('.email-input') as HTMLInputElement
+            const passwordInput = document.querySelector('.password-input') as HTMLInputElement
             if (emailInput && passwordInput) {
                 const emailValue = emailInput.value
                 const passwordValue = passwordInput.value
@@ -87,11 +101,11 @@ export class AuthView extends EventEmitter {
             const reg = new RegExp('[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')
             this.validateInputs(emailInput, reg)
         })
-        const passwordInput = document.querySelector('.password-input') as HTMLInputElement
-        passwordInput?.addEventListener('change', () => {
-            const reg = new RegExp('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,16}')
-            this.validateInputs(passwordInput, reg)
-        })
+        // const passwordInput = document.querySelector('.password-input') as HTMLInputElement
+        // passwordInput?.addEventListener('change', () => {
+        //     const reg = new RegExp('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,16}')
+        //     this.validateInputs(passwordInput, reg)
+        // })
     }
 
     private validateInputs(element: HTMLInputElement, reg: RegExp) {
