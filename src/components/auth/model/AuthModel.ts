@@ -5,7 +5,7 @@ import { URLParams } from 'types/interfaces'
 import { ParsedQuery } from 'query-string'
 import { AuthViewTypes } from 'types/types'
 
-type PageModelEventsName = 'CHANGE_PAGE' | '404' | 'USER_SIGNED_UP'
+type PageModelEventsName = 'CHANGE_PAGE' | '404' | 'USER_SIGNED_UP' | 'EMAIL_EXIST'
 export type AuthModelInstance = InstanceType<typeof AuthModel>
 
 export class AuthModel extends EventEmitter {
@@ -34,6 +34,8 @@ export class AuthModel extends EventEmitter {
             if (checkExistEmail.length === 0) {
                 const result = this.loader.signUp(data.email, data.password)
                 this.emit('USER_SIGNED_UP')
+            } else {
+                this.emit('EMAIL_EXIST')
             }
         }
     }

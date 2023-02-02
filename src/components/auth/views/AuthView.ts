@@ -45,6 +45,14 @@ export class AuthView extends EventEmitter {
                 logo.click()
             }
         })
+        this.model.on('EMAIL_EXIST', () => {
+            const errorExist = document.querySelector('.email-error__exist') as HTMLElement
+            const emailErrorList = document.querySelector('.email-error') as HTMLElement
+            if (errorExist && emailErrorList) {
+                emailErrorList.hidden = false
+                errorExist.hidden = false
+            }
+        })
     }
 
     private buildPage(isRegister?: boolean) {
@@ -83,8 +91,16 @@ export class AuthView extends EventEmitter {
             const checkResult: AuthViewTypes | boolean = this.checkAllRegistrationForms()
             if (checkResult) {
                 if (grecaptcha) {
+                    const captchaError = document.querySelector('.captcha-error') as HTMLElement
                     if (grecaptcha.getResponse().length) {
+                        if (captchaError) {
+                            captchaError.hidden = true
+                        }
                         this.emit('SIGN_UP', undefined, checkResult)
+                    } else {
+                        if (captchaError) {
+                            captchaError.hidden = false
+                        }
                     }
                 }
             }
@@ -111,18 +127,73 @@ export class AuthView extends EventEmitter {
         const emailInput = document.querySelector('.email-input') as HTMLInputElement
         emailInput?.addEventListener('input', (e) => {
             const reg = new RegExp('[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')
-            this.validateInputs(emailInput, reg)
+            const result = this.validateInputs(emailInput, reg)
+            const emailError = document.querySelector('.email-error') as HTMLElement
+            const emailExistError = document.querySelector('.email-error__exist') as HTMLElement
+            if (emailExistError) {
+                emailExistError.hidden = true
+            }
+            if (emailError) {
+                emailError.hidden = !(!result && result !== null)
+            }
         })
         const nickname = document.querySelector('.nickname-input') as HTMLInputElement
         nickname?.addEventListener('input', () => {
             const reg = new RegExp('[A-z0-9]{4,}')
-            this.validateInputs(nickname, reg)
+            const result = this.validateInputs(nickname, reg)
+            const nickError = document.querySelector('.nick-error') as HTMLElement
+            if (nickError) {
+                nickError.hidden = !(!result && result !== null)
+            }
         })
         const passwordInput = document.querySelector('.password-input') as HTMLInputElement
         passwordInput?.addEventListener('input', () => {
             const reg = new RegExp('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,16}')
             this.checkPasswords()
-            this.validateInputs(passwordInput, reg)
+            const result = this.validateInputs(passwordInput, reg)
+            const passError = document.querySelector('.password-error') as HTMLElement
+            const passValue = passwordInput.value
+            if (passError && !result && result !== null) {
+                passError.hidden = false
+                const passLowerError = document.querySelector('.password-error__lower') as HTMLElement
+                if (passLowerError) {
+                    if (!passValue.match(/.*[a-z]/)) {
+                        passLowerError.hidden = false
+                    } else {
+                        passLowerError.hidden = true
+                    }
+                }
+                const passUpperError = document.querySelector('.password-error__upper') as HTMLElement
+                if (passUpperError) {
+                    if (!passValue.match(/.*[A-Z]/)) {
+                        passUpperError.hidden = false
+                    } else {
+                        passUpperError.hidden = true
+                    }
+                }
+                const passDigitError = document.querySelector('.password-error__digit') as HTMLElement
+                if (passDigitError) {
+                    if (!passValue.match(/.*[0-9]/)) {
+                        passDigitError.hidden = false
+                    } else {
+                        passDigitError.hidden = true
+                    }
+                }
+                const passSpecError = document.querySelector('.password-error__spec') as HTMLElement
+                if (passSpecError) {
+                    if (!passValue.match(/.*[!@#$%^&*_=+-]/)) {
+                        passSpecError.hidden = false
+                    } else {
+                        passSpecError.hidden = true
+                    }
+                }
+                const passLengthError = document.querySelector('.password-error__length') as HTMLElement
+                if (passLengthError) {
+                    passLengthError.hidden = !(passValue.length < 8 && passValue.length > 16)
+                }
+            } else {
+                passError.hidden = true
+            }
         })
         const passwordRepeatInput = document.querySelector('.password-repeat-input') as HTMLInputElement
         passwordRepeatInput?.addEventListener('input', () => {
@@ -175,6 +246,9 @@ export class AuthView extends EventEmitter {
         if (patternMatch || value.length === 0) {
             if (element.classList.contains('border-[#ff6e6e]')) {
                 element.classList.remove('border-[#ff6e6e]')
+            }
+            if (value.length === 0) {
+                return null
             }
             if (patternMatch) {
                 return true
