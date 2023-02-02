@@ -3,7 +3,8 @@ import queryString from 'query-string'
 
 import EventEmitter from 'events'
 import { URLParams } from 'types/interfaces'
-import { PageModel } from '@/components/models/PageModel'
+import { PageModel } from '@/components/mainPage/model/PageModel'
+import { AuthModel } from '@/components/auth/model/AuthModel'
 
 type RouterEventsName = 'ROUTE'
 
@@ -14,7 +15,7 @@ export type RouterInstance = InstanceType<typeof Router>
 export class Router extends EventEmitter {
     private loaded = false
 
-    constructor(private model: PageModel) {
+    constructor(private model: PageModel | AuthModel) {
         super()
         history.listen(({ action }) => {
             if (action === 'POP') {

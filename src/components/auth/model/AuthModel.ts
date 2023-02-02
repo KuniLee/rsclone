@@ -53,9 +53,6 @@ export class AuthModel extends EventEmitter {
         this.search = search
         if (!Object.values(Paths).includes(path.at(0) as Paths)) return this.goTo404()
         switch (this.path[0]) {
-            case Paths.All:
-                this.path = [Paths.All]
-                break
             case Paths.Auth:
                 this.goToAuth()
                 break

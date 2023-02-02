@@ -27,7 +27,6 @@ export class AuthController {
                 this.router.createPathQuery({ path: this.authModel.path, search: this.authModel.search })
             )
         })
-        router.init()
         this.authView.on('LOGIN', (arg, data) => {
             if (data.email && data.password) {
                 this.authModel.signInUser(data.email, data.password)

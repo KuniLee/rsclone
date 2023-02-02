@@ -21,6 +21,5 @@ export class AppController {
         router.on('ROUTE', () => {
             model.changePage(this.router.getParams())
         })
-        router.init()
     }
 }
