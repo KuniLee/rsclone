@@ -1,8 +1,7 @@
 import EventEmitter from 'events'
 import authTemplate from '@/templates/authPage.hbs'
 import registerTemplate from '@/templates/registerPage.hbs'
-import { Flows, Paths } from 'types/enums'
-import dictionary from '@/utils/dictionary'
+import { Paths } from 'types/enums'
 import { AuthModelInstance } from '@/components/auth/model/AuthModel'
 import headerTemplate from '@/templates/header.hbs'
 import { AuthViewTypes } from 'types/types'
@@ -24,21 +23,11 @@ export class AuthView extends EventEmitter {
         this.mainPageContainer.className = 'bg-[#f0f0f0] flex-grow'
         this.show()
         this.buildPage()
-        this.model.on('CHANGE_PAGE', (arg) => {
-            if (this.model.path[0] === Paths.Auth) {
-                if (typeof arg === 'object' && arg) {
-                    const searchParams = new URLSearchParams(Object.entries(arg))
-                    const query = searchParams.get('register')
-                    if (query) {
-                        this.buildPage(true)
-                    } else {
-                        this.buildPage()
-                    }
-                } else {
-                    this.buildPage()
-                }
-            }
+        this.model.on('CHANGE_PAGE', () => {
+            if (this.model.path[0] === Paths.Auth) this.buildPage()
+            if (this.model.path[0] === Paths.Registration) this.buildPage(true)
         })
+
         this.model.on('USER_SIGNED_UP', () => {
             const logo = document.querySelector('.header__logo') as HTMLElement
             if (logo) {
@@ -137,7 +126,7 @@ export class AuthView extends EventEmitter {
             }
         })
         const emailInput = document.querySelector('.email-input') as HTMLInputElement
-        emailInput?.addEventListener('input', (e) => {
+        emailInput?.addEventListener('input', () => {
             const reg = new RegExp('[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')
             const result = this.validateInputs(emailInput, reg)
             const emailError = document.querySelector('.email-error') as HTMLElement
@@ -260,6 +249,7 @@ export class AuthView extends EventEmitter {
             }
         }
     }
+
     private validateInputs(element: HTMLInputElement, reg: RegExp) {
         const value = element.value
         const patternMatch = value.match(reg)

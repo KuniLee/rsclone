@@ -1,5 +1,5 @@
 import EventEmitter from 'events'
-import { Flows, Paths } from 'types/enums'
+import { Paths } from 'types/enums'
 import { AuthLoaderInstance } from '@/utils/AuthLoader'
 import { URLParams } from 'types/interfaces'
 import { ParsedQuery } from 'query-string'
@@ -49,9 +49,6 @@ export class AuthModel extends EventEmitter {
 
     changePage({ path, search }: URLParams) {
         this.path = path
-        if (this.path[0] === '/auth') {
-            this.path[0] += '.html'
-        }
         this.search = search
         if (!Object.values(Paths).includes(path.at(0) as Paths)) return this.goTo404()
         switch (this.path[0]) {

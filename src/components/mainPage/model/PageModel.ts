@@ -26,9 +26,6 @@ export class PageModel extends EventEmitter {
     changePage({ path, search }: URLParams) {
         this.path = path
         this.search = search
-        if (this.path[0] === '/auth') {
-            this.path[0] += '.html'
-        }
         if (!Object.values(Paths).includes(path.at(0) as Paths)) return this.goTo404()
         switch (this.path[0]) {
             case Paths.Root:
@@ -90,7 +87,7 @@ export class PageModel extends EventEmitter {
     }
 
     private goToAuth() {
-        console.log('1')
-        this.emit('CHANGE_PAGE')
+        if (this.path.length === 1 && this.path[0] === Paths.Auth) this.emit('CHANGE_PAGE')
+        else this.goTo404()
     }
 }

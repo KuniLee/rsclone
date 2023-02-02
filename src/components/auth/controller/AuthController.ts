@@ -16,16 +16,10 @@ export class AuthController {
             model.changePage(arg)
         })
         view.on<string>('GOTO', (arg) => {
-            console.log(arg)
             model.changePage({
                 path: this.router.getPathArray(arg),
                 search: this.router.getParsedSearch(arg),
             })
-        })
-        model.on('CHANGE_PAGE', () => {
-            this.router.replace(
-                this.router.createPathQuery({ path: this.authModel.path, search: this.authModel.search })
-            )
         })
         this.authView.on('LOGIN', (arg, data) => {
             if (data.email && data.password) {
@@ -33,7 +27,6 @@ export class AuthController {
             }
         })
         this.authView.on('SIGN_UP', (arg, data) => {
-            console.log(data)
             this.authModel.signUpUser(data)
         })
     }

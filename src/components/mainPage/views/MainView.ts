@@ -36,7 +36,8 @@ export class MainView extends EventEmitter {
     private addListeners() {
         this.headerEl.addEventListener('click', (ev) => {
             if (ev.target instanceof HTMLAnchorElement) {
-                if (!ev.target.href.includes('.html')) {
+                const pathname = ev.target.href
+                if (!pathname.includes(Paths.Auth) && !pathname.includes(Paths.Registration)) {
                     ev.preventDefault()
                     this.emit<string>('GOTO', ev.target.href)
                 }
@@ -56,6 +57,7 @@ export class MainView extends EventEmitter {
         }))
         flows.unshift({ name: dictionary.buttons.Feed[this.model.lang], link: Paths.Feed })
         flows.push({ name: dictionary.buttons.Auth[this.model.lang], link: Paths.Auth })
+        flows.push({ name: dictionary.buttons.Registration[this.model.lang], link: Paths.Registration })
         header.innerHTML = headerTemplate({ flows })
         return header
     }

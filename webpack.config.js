@@ -132,7 +132,13 @@ const config = {
         port: 4200,
         compress: true,
         open: true,
-        historyApiFallback: true,
+        historyApiFallback: {
+            rewrites: [
+                { from: /^\/$/, to: '/index.html' },
+                { from: /^\/login\/?.*$/, to: '/auth.html' },
+                { from: /^\/register\/?.*$/, to: '/auth.html' },
+            ],
+        },
     },
 }
 

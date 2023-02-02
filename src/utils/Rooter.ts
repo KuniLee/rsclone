@@ -30,10 +30,8 @@ export class Router extends EventEmitter {
             if (!this.loaded) {
                 this.replace(newParams)
                 this.loaded = true
-            } else if (oldParams === newParams) {
-                console.log('равны')
-                this.replace(newParams)
-            } else this.push(newParams)
+            } else if (oldParams === newParams) this.replace(newParams)
+            else this.push(newParams)
         })
         window.addEventListener('load', () => {
             this.emit<URLParams>('ROUTE', this.getParams())

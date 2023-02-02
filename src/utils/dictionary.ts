@@ -11,6 +11,7 @@ const flowsNames: Record<keyof typeof Flows, language> = {
 const buttons: Record<string, language> = {
     Feed: { ru: 'Моя лента', en: 'My feed' },
     Auth: { ru: 'Вход', en: 'Sign in' },
+    Registration: { ru: 'Регистрация', en: 'Registration' },
 }
 
 export default { flowsNames, buttons }
