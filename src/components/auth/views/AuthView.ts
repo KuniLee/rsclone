@@ -53,6 +53,12 @@ export class AuthView extends EventEmitter {
                 errorExist.hidden = false
             }
         })
+        this.model.on('WRONG_DATA', () => {
+            const errorWrongData = document.querySelector('.auth-error') as HTMLElement
+            if (errorWrongData) {
+                errorWrongData.hidden = false
+            }
+        })
     }
 
     private buildPage(isRegister?: boolean) {
@@ -117,10 +123,16 @@ export class AuthView extends EventEmitter {
             const emailInput = document.querySelector('.email-input') as HTMLInputElement
             const passwordInput = document.querySelector('.password-input') as HTMLInputElement
             if (emailInput && passwordInput) {
-                const emailValue = emailInput.value
-                const passwordValue = passwordInput.value
-                if (emailValue && passwordValue) {
-                    this.emit('LOGIN', undefined, { email: emailValue, password: passwordValue })
+                const emailValidate = this.validateInputs(
+                    emailInput,
+                    new RegExp('[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')
+                )
+                const passwordValidate = this.validateInputs(
+                    passwordInput,
+                    new RegExp('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,16}')
+                )
+                if (emailValidate && passwordValidate) {
+                    this.emit('LOGIN', undefined, { email: emailInput.value, password: passwordInput.value })
                 }
             }
         })
@@ -130,6 +142,10 @@ export class AuthView extends EventEmitter {
             const result = this.validateInputs(emailInput, reg)
             const emailError = document.querySelector('.email-error') as HTMLElement
             const emailExistError = document.querySelector('.email-error__exist') as HTMLElement
+            const errorWrongData = document.querySelector('.auth-error') as HTMLElement
+            if (errorWrongData) {
+                errorWrongData.hidden = true
+            }
             if (emailExistError) {
                 emailExistError.hidden = true
             }
@@ -153,6 +169,10 @@ export class AuthView extends EventEmitter {
             const result = this.validateInputs(passwordInput, reg)
             const passError = document.querySelector('.password-error') as HTMLElement
             const passValue = passwordInput.value
+            const errorWrongData = document.querySelector('.auth-error') as HTMLElement
+            if (errorWrongData) {
+                errorWrongData.hidden = true
+            }
             if (passError && !result && result !== null) {
                 passError.hidden = false
                 const passLowerError = document.querySelector('.password-error__lower') as HTMLElement

@@ -12,6 +12,9 @@
             <label class="w-full text-[#333] text-[14px] leading-7 font-bold mb-[12px]" for="password">Пароль</label>
             <input class="password-input w-full h-[40px] bg-white border border-[#dbdbdb] text-[14px] py-0 px-[14px] box-border outline-0" type="password" id="password" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,16}" required>
           </div>
+          <ul class="auth-error mt-[10px]" hidden>
+            <li class="text-red-600 text-center">Неверный логин или пароль</li>
+          </ul>
           <div class="mt-[21px]">
             <button type="submit" class="login-btn bg-[#558cb7] w-full text-white h-[48px] hover:bg-[#376f9a]">Войти</button>
             <a class="forgot-pass inline-block mt-[15px] text-[14px] text-[#558cb7]" href="#">Забыли пароль?</a>
