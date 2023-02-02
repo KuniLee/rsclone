@@ -18,8 +18,8 @@ export class MainView extends EventEmitter {
         this.model = model
         this.headerEl = this.renderHeader()
         this.mainPageContainer = document.createElement('main')
-        this.addListeners()
         this.show()
+        this.addListeners()
         this.model.on('404', () => {
             this.show404page()
         })
@@ -34,13 +34,16 @@ export class MainView extends EventEmitter {
     }
 
     private addListeners() {
+        const links: HTMLElement[] = []
         this.headerEl.addEventListener('click', (ev) => {
             if (ev.target instanceof HTMLAnchorElement) {
                 const pathname = ev.target.href
                 if (!pathname.includes(Paths.Auth) && !pathname.includes(Paths.Registration)) {
                     ev.preventDefault()
                     this.emit<string>('GOTO', ev.target.href)
+                    this.setActiveLink(links, ev.target)
                 }
+                this.setActiveLink(links, ev.target)
             }
         })
     }
@@ -49,8 +52,20 @@ export class MainView extends EventEmitter {
         this.mainPageContainer.innerText = '404'
     }
 
+    private setActiveLink(links: HTMLElement[], currentLink: HTMLAnchorElement) {
+        if (!links.includes(currentLink)) {
+            links.push(currentLink)
+            links[links.length - 1].classList.replace('text-[#909090]', 'text-[#000000]')
+            links.slice(0, links.length - 1).forEach((link) => {
+                link.classList.replace('text-[#000000]', 'text-[#909090]')
+                links.splice(0, 1)
+            })
+        }
+    }
+
     private renderHeader() {
         const header = document.createElement('header')
+        header.className = 'border-solid border-b-[1px] border-[#dedede] sticky top-0'
         const flows = Object.keys(Flows).map((el) => ({
             name: dictionary.flowsNames[el as keyof typeof Flows][this.model.lang],
             link: '/flows' + Flows[el as keyof typeof Flows],

@@ -1,0 +1,30 @@
+.ico_user {
+  background: url(../assets/icons/ico-user.svg) center no-repeat;
+  background-size: contain;
+  width: 24px;
+  height: 24px;
+}
+
+.ico_search {
+  background: url(../assets/icons/ico-search.svg) center no-repeat;
+  background-size: contain;
+  width: 24px;
+  height: 24px;
+}
+
+.ico_settings {
+  background: url(../assets/icons/ico-settings.svg) center no-repeat;
+  background-size: contain;
+  width: 20px;
+  height: 20px;
+}
+
+.drop-down-menu {
+  position: absolute;
+  right: calc(100% - 90%);
+  color: #303b44;
+  min-width: 300px;
+  background-color: #ffffff;
+  box-shadow: 0 0 12px rgb(0 0 0 / 16%);
+  border-radius: 4px;
+}
