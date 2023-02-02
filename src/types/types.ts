@@ -9,6 +9,8 @@ export type FirebaseConfigType = {
 }
 
 export type AuthViewTypes = {
-    email: string
-    password: string
+    email?: string
+    password?: string
+    path?: string
+    query?: string
 }

@@ -1,0 +1,33 @@
+<div class="max-w-[1200px] mx-auto">
+  <div class="mt-[80px] max-w-[420px] mx-auto">
+    <div class="w-full bg-white shadow-lg shadow-black/10 p-[40px]">
+      <h2 class="text-[#333] text-[22px] leading-7 font-bold">Регистрация</h2>
+      <form>
+        <fieldset>
+          <div class="flex flex-col pt-[57px]">
+            <label class="w-full text-[#333] text-[14px] leading-7 font-bold mb-[12px]" for="email">E-mail</label>
+            <input class="email-signin-input w-full h-[40px] bg-white border border-[#dbdbdb] text-[14px] py-0 px-[14px] box-border outline-0" type="email" id="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required>
+          </div>
+          <div class="flex flex-col mt-[31px]">
+            <label class="w-full text-[#333] text-[14px] leading-7 font-bold mb-[12px]" for="text">Никнейм</label>
+            <input class="password-login-input w-full h-[40px] bg-white border border-[#dbdbdb] text-[14px] py-0 px-[14px] box-border outline-0" type="text" required>
+          </div>
+          <div class="flex flex-col mt-[31px]">
+            <label class="w-full text-[#333] text-[14px] leading-7 font-bold mb-[12px]" for="password">Пароль</label>
+            <input class="password-login-input w-full h-[40px] bg-white border border-[#dbdbdb] text-[14px] py-0 px-[14px] box-border outline-0" type="password" id="password">
+          </div>
+          <div class="flex flex-col mt-[31px]">
+            <label class="w-full text-[#333] text-[14px] leading-7 font-bold mb-[12px]" for="password">Пароль еще раз</label>
+            <input class="password-login-input w-full h-[40px] bg-white border border-[#dbdbdb] text-[14px] py-0 px-[14px] box-border outline-0" type="password" id="password">
+          </div>
+          <div class="mt-[21px]">
+            <button type="submit" class="login-btn bg-[#558cb7] w-full text-white h-[48px] hover:bg-[#376f9a]">Зарегистрироваться</button>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+    <div class="w-full bg-white shadow-lg shadow-black/10 py-[15px] mt-[16px] text-center">
+      <span>Уже зарегистрированы? <a href="/auth.html" class="signIn text-[#558cb7]">Войдите</a></span>
+    </div>
+  </div>
+</div>

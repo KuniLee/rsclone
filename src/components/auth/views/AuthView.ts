@@ -1,5 +1,6 @@
 import EventEmitter from 'events'
 import authTemplate from '@/templates/authPage.hbs'
+import registerTemplate from '@/templates/registerPage.hbs'
 import { Flows, Paths } from 'types/enums'
 import dictionary from '@/utils/dictionary'
 import { AuthModelInstance } from '@/components/auth/model/AuthModel'
@@ -25,15 +26,27 @@ export class AuthView extends EventEmitter {
         this.show()
         this.buildPage()
         this.model.on('CHANGE_PAGE', () => {
-            if (this.model.path[0] === Paths.Auth) this.buildPage()
+            const url = new URL(String(window.location)).searchParams
+            const query = url.get('register')
+            if (this.model.path[0] === Paths.Auth) {
+                if (!query) {
+                    this.buildPage()
+                } else {
+                    this.buildPage(true)
+                }
+            }
         })
     }
 
-    private buildPage() {
+    private buildPage(isRegister?: boolean) {
         const mainContainer = document.querySelector('main')
         if (mainContainer) {
-            mainContainer.innerHTML = authTemplate({})
-            this.addListeners()
+            if (!isRegister) {
+                mainContainer.innerHTML = authTemplate({})
+                this.addListeners()
+            } else {
+                mainContainer.innerHTML = registerTemplate({})
+            }
         }
     }
 
@@ -44,7 +57,8 @@ export class AuthView extends EventEmitter {
         registrationBtn?.addEventListener('click', (e) => {
             e.preventDefault()
             if (e.target instanceof HTMLAnchorElement) {
-                this.emit<string>('GOTO', new URL(e.target.href).pathname)
+                const url = new URL(e.target.href)
+                this.emit<string>('GOTO', undefined, { path: url.pathname, query: url.search })
             }
         })
         submitButton?.addEventListener('click', (e) => {

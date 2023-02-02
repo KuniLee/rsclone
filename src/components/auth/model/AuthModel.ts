@@ -34,7 +34,10 @@ export class AuthModel extends EventEmitter {
 
     changePage(arg: Array<string>) {
         this.path = arg
-        console.log('test')
+        if (arg[0] === '/auth') {
+            this.path[0] += '.html'
+        }
+        console.log(arg)
         if (!Object.values(Paths).includes(arg.at(0) as Paths)) return this.goTo404()
         switch (this.path[0]) {
             case Paths.All:
