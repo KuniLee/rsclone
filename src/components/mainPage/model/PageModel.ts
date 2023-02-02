@@ -1,5 +1,7 @@
 import EventEmitter from 'events'
 import { Flows, Paths } from 'types/enums'
+import { URLParams } from 'types/interfaces'
+import { ParsedQuery } from 'query-string'
 
 type PageModelEventsName = 'CHANGE_PAGE' | '404'
 export type PageModelInstance = InstanceType<typeof PageModel>
@@ -7,6 +9,7 @@ export type PageModelInstance = InstanceType<typeof PageModel>
 export class PageModel extends EventEmitter {
     public path: Array<string> = []
     public lang: 'ru' | 'en' = 'ru'
+    public search: ParsedQuery<string> = {}
 
     constructor() {
         super()
@@ -20,9 +23,10 @@ export class PageModel extends EventEmitter {
         return super.emit(event)
     }
 
-    changePage(arg: Array<string>) {
-        this.path = arg
-        if (!Object.values(Paths).includes(arg.at(0) as Paths)) return this.goTo404()
+    changePage({ path, search }: URLParams) {
+        this.path = path
+        this.search = search
+        if (!Object.values(Paths).includes(path.at(0) as Paths)) return this.goTo404()
         switch (this.path[0]) {
             case Paths.Root:
                 this.path = [Paths.All]

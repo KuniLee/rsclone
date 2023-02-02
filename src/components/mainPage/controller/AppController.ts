@@ -1,6 +1,7 @@
 import { RouterInstance } from '@/utils/Rooter'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { MainViewInstance } from '@/components/mainPage/views/MainView'
+import { URLParams } from 'types/interfaces'
 
 export class AppController {
     private router: RouterInstance
@@ -20,6 +21,5 @@ export class AppController {
         model.on('CHANGE_PAGE', () => {
             this.router.replace(this.model.path.join(''))
         })
-        router.init()
     }
 }
