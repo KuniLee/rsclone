@@ -1,5 +1,11 @@
 import { initializeApp } from 'firebase/app'
-import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth'
+import {
+    createUserWithEmailAndPassword,
+    getAuth,
+    onAuthStateChanged,
+    signInWithEmailAndPassword,
+    fetchSignInMethodsForEmail,
+} from 'firebase/auth'
 import { FirebaseConfigType } from 'types/types'
 
 export type AuthLoaderInstance = InstanceType<typeof AuthLoader>
@@ -20,16 +26,20 @@ export class AuthLoader {
         this.app = initializeApp(this.firebaseConfig)
     }
 
-    signUp(email: string, password: string) {
+    async signUp(email: string, password: string) {
         const auth = getAuth()
-        createUserWithEmailAndPassword(auth, email, password)
+        const result = await createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user
+                return user
             })
             .catch((error) => {
                 const errorCode = error.code
                 const errorMessage = error.message
+                console.log(errorCode, errorMessage)
+                return false
             })
+        return result
     }
 
     async signIn(email: string, password: string) {
@@ -47,7 +57,7 @@ export class AuthLoader {
         return result
     }
 
-    checkAuthState() {
+    async checkAuthState() {
         const auth = getAuth()
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -56,5 +66,17 @@ export class AuthLoader {
                 console.log('Unknown user')
             }
         })
+    }
+
+    async checkEmailInDatabase(email: string) {
+        const auth = getAuth()
+        const result = await fetchSignInMethodsForEmail(auth, email)
+            .then((result) => {
+                return result
+            })
+            .catch((err) => {
+                return err
+            })
+        return result
     }
 }

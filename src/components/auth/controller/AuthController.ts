@@ -33,5 +33,9 @@ export class AuthController {
                 this.authModel.signInUser(data.email, data.password)
             }
         })
+        this.authView.on('SIGN_UP', (arg, data) => {
+            console.log(data)
+            this.authModel.signUpUser(data)
+        })
     }
 }

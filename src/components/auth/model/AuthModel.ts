@@ -3,8 +3,9 @@ import { Flows, Paths } from 'types/enums'
 import { AuthLoaderInstance } from '@/utils/AuthLoader'
 import { URLParams } from 'types/interfaces'
 import { ParsedQuery } from 'query-string'
+import { AuthViewTypes } from 'types/types'
 
-type PageModelEventsName = 'CHANGE_PAGE' | '404'
+type PageModelEventsName = 'CHANGE_PAGE' | '404' | 'USER_SIGNED_UP'
 export type AuthModelInstance = InstanceType<typeof AuthModel>
 
 export class AuthModel extends EventEmitter {
@@ -27,6 +28,15 @@ export class AuthModel extends EventEmitter {
         }
     }
 
+    async signUpUser(data: AuthViewTypes) {
+        if (data.email && data.password && data.nick) {
+            const checkExistEmail = await this.loader.checkEmailInDatabase(data.email)
+            if (checkExistEmail.length === 0) {
+                const result = this.loader.signUp(data.email, data.password)
+                this.emit('USER_SIGNED_UP')
+            }
+        }
+    }
     on<T>(event: PageModelEventsName, callback: (arg: T) => void) {
         return super.on(event, callback)
     }

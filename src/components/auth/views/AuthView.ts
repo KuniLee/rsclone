@@ -7,7 +7,7 @@ import { AuthModelInstance } from '@/components/auth/model/AuthModel'
 import headerTemplate from '@/templates/header.hbs'
 import { AuthViewTypes } from 'types/types'
 
-type ItemViewEventsName = 'GOTO' | 'LOGIN'
+type ItemViewEventsName = 'GOTO' | 'LOGIN' | 'CHECK_EMAIL' | 'SIGN_UP'
 
 export type AuthViewInstance = InstanceType<typeof AuthView>
 
@@ -37,6 +37,12 @@ export class AuthView extends EventEmitter {
                 } else {
                     this.buildPage()
                 }
+            }
+        })
+        this.model.on('USER_SIGNED_UP', () => {
+            const logo = document.querySelector('.header__logo') as HTMLElement
+            if (logo) {
+                logo.click()
             }
         })
     }
@@ -72,9 +78,15 @@ export class AuthView extends EventEmitter {
             }
         })
         const registrationSubmitBtn = document.querySelector('.registrationCompleteBtn') as HTMLButtonElement
-        registrationSubmitBtn?.addEventListener('click', () => {
-            if (grecaptcha) {
-                console.log(grecaptcha.getResponse())
+        registrationSubmitBtn?.addEventListener('click', (e) => {
+            e.preventDefault()
+            const checkResult: AuthViewTypes | boolean = this.checkAllRegistrationForms()
+            if (checkResult) {
+                if (grecaptcha) {
+                    if (grecaptcha.getResponse().length) {
+                        this.emit('SIGN_UP', undefined, checkResult)
+                    }
+                }
             }
         })
         const signIn = document.querySelector('.signIn')
@@ -97,23 +109,75 @@ export class AuthView extends EventEmitter {
             }
         })
         const emailInput = document.querySelector('.email-input') as HTMLInputElement
-        emailInput?.addEventListener('change', (e) => {
+        emailInput?.addEventListener('input', (e) => {
             const reg = new RegExp('[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')
             this.validateInputs(emailInput, reg)
         })
-        // const passwordInput = document.querySelector('.password-input') as HTMLInputElement
-        // passwordInput?.addEventListener('change', () => {
-        //     const reg = new RegExp('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,16}')
-        //     this.validateInputs(passwordInput, reg)
-        // })
+        const nickname = document.querySelector('.nickname-input') as HTMLInputElement
+        nickname?.addEventListener('input', () => {
+            const reg = new RegExp('[A-z0-9]{4,}')
+            this.validateInputs(nickname, reg)
+        })
+        const passwordInput = document.querySelector('.password-input') as HTMLInputElement
+        passwordInput?.addEventListener('input', () => {
+            const reg = new RegExp('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,16}')
+            this.checkPasswords()
+            this.validateInputs(passwordInput, reg)
+        })
+        const passwordRepeatInput = document.querySelector('.password-repeat-input') as HTMLInputElement
+        passwordRepeatInput?.addEventListener('input', () => {
+            this.checkPasswords()
+        })
     }
 
+    private checkAllRegistrationForms() {
+        const email = document.querySelector('.email-input') as HTMLInputElement
+        const nick = document.querySelector('.nickname-input') as HTMLInputElement
+        const pass = document.querySelector('.password-input') as HTMLInputElement
+        const passRepeat = document.querySelector('.password-repeat-input') as HTMLInputElement
+        const emailReg = new RegExp('[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')
+        const nickReg = new RegExp('[A-z0-9]{4,}')
+        const passReg = new RegExp('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,16}')
+        const emailCheckResult = this.validateInputs(email, emailReg)
+        const nickCheckResult = this.validateInputs(nick, nickReg)
+        const passCheckResult = this.validateInputs(pass, passReg)
+        const samePassCheckResult = this.checkPasswords()
+        if (emailCheckResult && nickCheckResult && passCheckResult && samePassCheckResult) {
+            return {
+                email: email.value,
+                password: pass.value,
+                nick: nick.value,
+            }
+        } else {
+            return false
+        }
+    }
+
+    private checkPasswords() {
+        const passwordRepeatInput = document.querySelector('.password-repeat-input') as HTMLInputElement
+        const passwordInput = document.querySelector('.password-input') as HTMLInputElement
+        if (passwordRepeatInput && passwordInput) {
+            if (passwordRepeatInput.value.length !== 0) {
+                if (passwordInput.value !== passwordRepeatInput.value) {
+                    passwordInput.classList.add('border-[#ff6e6e]')
+                    passwordRepeatInput.classList.add('border-[#ff6e6e]')
+                } else {
+                    passwordInput.classList.remove('border-[#ff6e6e]')
+                    passwordRepeatInput.classList.remove('border-[#ff6e6e]')
+                    return true
+                }
+            }
+        }
+    }
     private validateInputs(element: HTMLInputElement, reg: RegExp) {
         const value = element.value
         const patternMatch = value.match(reg)
         if (patternMatch || value.length === 0) {
             if (element.classList.contains('border-[#ff6e6e]')) {
                 element.classList.remove('border-[#ff6e6e]')
+            }
+            if (patternMatch) {
+                return true
             }
         } else {
             element.classList.add('border-[#ff6e6e]')
