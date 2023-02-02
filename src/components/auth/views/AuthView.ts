@@ -22,7 +22,6 @@ export class AuthView extends EventEmitter {
         this.headerEl = this.renderHeader()
         this.mainPageContainer = document.createElement('main')
         this.mainPageContainer.className = 'bg-[#f0f0f0] flex-grow'
-        this.addListeners()
         this.show()
         this.buildPage()
         this.model.on('CHANGE_PAGE', () => {
@@ -43,10 +42,10 @@ export class AuthView extends EventEmitter {
         if (mainContainer) {
             if (!isRegister) {
                 mainContainer.innerHTML = authTemplate({})
-                this.addListeners()
             } else {
                 mainContainer.innerHTML = registerTemplate({})
             }
+            this.addListeners()
         }
     }
 
@@ -73,6 +72,28 @@ export class AuthView extends EventEmitter {
                 }
             }
         })
+        const emailInput = document.querySelector('.email-input') as HTMLInputElement
+        emailInput?.addEventListener('change', (e) => {
+            const reg = new RegExp('[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')
+            this.validateInputs(emailInput, reg)
+        })
+        const passwordInput = document.querySelector('.password-input') as HTMLInputElement
+        passwordInput?.addEventListener('change', () => {
+            const reg = new RegExp('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,16}')
+            this.validateInputs(passwordInput, reg)
+        })
+    }
+
+    private validateInputs(element: HTMLInputElement, reg: RegExp) {
+        const value = element.value
+        const patternMatch = value.match(reg)
+        if (patternMatch || value.length === 0) {
+            if (element.classList.contains('border-[#ff6e6e]')) {
+                element.classList.remove('border-[#ff6e6e]')
+            }
+        } else {
+            element.classList.add('border-[#ff6e6e]')
+        }
     }
 
     show404page() {
