@@ -7,10 +7,9 @@ import { MainView } from '@/components/views/MainView'
 import { FeedView } from '@/components/views/FeedView'
 import { FlowView } from '@/components/views/FlowView'
 
-const router = new Router()
-
 const pageModel = new PageModel()
 
+const router = new Router(pageModel)
 const mainView = new MainView(pageModel)
 const feedView = new FeedView(pageModel)
 const flowView = new FlowView(pageModel)
