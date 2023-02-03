@@ -1,5 +1,5 @@
 import EventEmitter from 'events'
-import { Flows, Paths } from 'types/enums'
+import { Flows, Paths, Sandbox } from 'types/enums'
 import { URLParams } from 'types/interfaces'
 import { ParsedQuery } from 'query-string'
 
@@ -41,6 +41,9 @@ export class PageModel extends EventEmitter {
             case Paths.Flows:
                 this.goToFlows()
                 break
+            case Paths.Sandbox:
+                this.goToSandbox()
+                break
             case Paths.Feed:
                 this.goToFeed()
                 break
@@ -69,6 +72,13 @@ export class PageModel extends EventEmitter {
                 return
             }
             console.log(`страница flows${this.path[1]}`)
+            this.emit('CHANGE_PAGE')
+        } else this.goTo404()
+    }
+
+    private goToSandbox() {
+        if (Object.values(Sandbox).includes(this.path[1] as Sandbox)) {
+            console.log(`страница sandbox${this.path[1]}`)
             this.emit('CHANGE_PAGE')
         } else this.goTo404()
     }

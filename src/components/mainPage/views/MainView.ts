@@ -2,7 +2,7 @@ import { PopupSettings } from '@/utils/popupSettings'
 import EventEmitter from 'events'
 import type { PageModel } from '../model/PageModel'
 import headerTemplate from '@/templates/header.hbs'
-import { Flows, Paths } from 'types/enums'
+import { Flows, Paths, Sandbox } from 'types/enums'
 import dictionary from '@/utils/dictionary'
 import { DropdownMenu } from '@/utils/dropdownMenu'
 import footerTemplate from '@/templates/footer.hbs'
@@ -174,6 +174,9 @@ export class MainView extends EventEmitter {
             link: Paths.Flows + Flows[el as keyof typeof Flows],
         }))
         flows.unshift({ name: dictionary.buttons.Feed[this.model.lang], link: Paths.Feed })
+        flows.push({ name: dictionary.buttons.Sandbox[this.model.lang], link: Paths.Sandbox + '/new' })
+        flows.push({ name: dictionary.buttons.Auth[this.model.lang], link: Paths.Auth })
+        flows.push({ name: dictionary.buttons.Registration[this.model.lang], link: Paths.Registration })
         const logo = dictionary.logo.Logo[this.model.lang]
         header.innerHTML = headerTemplate({ flows, logo })
         return header
