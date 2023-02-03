@@ -47,6 +47,9 @@ export class PageModel extends EventEmitter {
             case Paths.Auth:
                 this.goToAuth()
                 break
+            case Paths.Search:
+                this.goToSearch()
+                break
             default:
                 this.goTo404()
         }
@@ -89,5 +92,10 @@ export class PageModel extends EventEmitter {
     private goToAuth() {
         if (this.path.length === 1 && this.path[0] === Paths.Auth) this.emit('CHANGE_PAGE')
         else this.goTo404()
+    }
+
+    private goToSearch() {
+        console.log('страница search')
+        this.emit('CHANGE_PAGE')
     }
 }

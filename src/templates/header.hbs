@@ -1,20 +1,22 @@
 <div class="py-[20px] max-w-[1200px] mx-auto">
-  <a href="/">
-    <h1 class="mb-[10px] font-bold text-[#303b44]">Habr</h1>
+  <a href="/" class="w-fit inline-block">
+    <h1 class="mb-[10px] font-bold text-[#303b44] w-max">Habr</h1>
   </a>
+  {{#if flows}}
   <div class="flex place-content-between">
     <nav class="flex gap-5 nav">
       {{#each flows}}
-      {{!-- {{#if (eq this.link '/flows/all')}}
+      {{#if (eq this.link '/flows/all')}}
       <a href="{{this.link}}" class="hover:text-[#5096b1] transition text-[#000000]">{{this.name}}</a>
-      {{else}} --}}
+      {{else}}
       <a href="{{this.link}}" class="hover:text-[#5096b1] transition text-[#909090]">{{this.name}}</a>
-      {{!-- {{/if}} --}}
+      {{/if}}
       {{/each}}
     </nav>
     <div class="flex gap-5">
       <a href="/search"><span class="ico ico_search"></span></a>
       <span class="ico ico_user"></span>
     </div>
+    {{/if}}
   </div>
 </div>

@@ -3,6 +3,7 @@ import type { PageModel } from '../model/PageModel'
 import headerTemplate from '@/templates/header.hbs'
 import { Flows, Paths } from 'types/enums'
 import dictionary from '@/utils/dictionary'
+import { DropdownMenu } from '@/utils/dropdownMenu'
 
 type ItemViewEventsName = 'GOTO'
 
@@ -12,10 +13,12 @@ export class MainView extends EventEmitter {
     private model: PageModel
     private headerEl: HTMLElement
     private mainPageContainer: HTMLElement
+    private dropDownMenu: DropdownMenu
 
     constructor(model: PageModel) {
         super()
         this.model = model
+        this.dropDownMenu = new DropdownMenu(this.model)
         this.headerEl = this.renderHeader()
         this.mainPageContainer = document.createElement('main')
         this.show()
@@ -34,16 +37,36 @@ export class MainView extends EventEmitter {
     }
 
     private addListeners() {
-        const links: HTMLElement[] = []
-        this.headerEl.addEventListener('click', (ev) => {
-            if (ev.target instanceof HTMLAnchorElement) {
-                const pathname = ev.target.href
-                if (!pathname.includes(Paths.Auth) && !pathname.includes(Paths.Registration)) {
-                    ev.preventDefault()
-                    this.emit<string>('GOTO', ev.target.href)
-                    this.setActiveLink(links, ev.target)
+        const nav = document.querySelector('.nav')
+        const user = document.querySelector('.ico_user')
+        if (nav) {
+            nav.addEventListener('click', (ev) => {
+                if (ev.target instanceof HTMLAnchorElement) {
+                    const pathname = ev.target.href
+                    if (!pathname.includes(Paths.Auth) && !pathname.includes(Paths.Registration)) {
+                        ev.preventDefault()
+                        this.setActiveLink(nav.children, ev.target)
+                        this.emit<string>('GOTO', ev.target.href)
+                    }
                 }
-                this.setActiveLink(links, ev.target)
+            })
+        }
+        document.body.addEventListener('click', (ev) => {
+            if (ev.target instanceof HTMLElement) {
+                if (ev.target === user) {
+                    ev.target.classList.toggle('active')
+                    if (ev.target.classList.contains('active')) {
+                        this.headerEl.appendChild(this.dropDownMenu.renderNotAuth())
+                    } else {
+                        this.headerEl.removeChild(this.dropDownMenu.renderNotAuth())
+                    }
+                }
+                if (!ev.target.closest('.drop-down-menu') && ev.target !== user) {
+                    if (user && user.classList.contains('active')) {
+                        user.classList.remove('active')
+                        this.headerEl.removeChild(this.dropDownMenu.renderNotAuth())
+                    }
+                }
             }
         })
     }
@@ -52,27 +75,21 @@ export class MainView extends EventEmitter {
         this.mainPageContainer.innerText = '404'
     }
 
-    private setActiveLink(links: HTMLElement[], currentLink: HTMLAnchorElement) {
-        if (!links.includes(currentLink)) {
-            links.push(currentLink)
-            links[links.length - 1].classList.replace('text-[#909090]', 'text-[#000000]')
-            links.slice(0, links.length - 1).forEach((link) => {
-                link.classList.replace('text-[#000000]', 'text-[#909090]')
-                links.splice(0, 1)
-            })
-        }
+    private setActiveLink(links: HTMLCollection, currentLink: HTMLElement) {
+        Array.from(links).forEach((link) => {
+            if (link !== currentLink) link.classList.replace('text-[#000000]', 'text-[#909090]')
+            currentLink.classList.replace('text-[#909090]', 'text-[#000000]')
+        })
     }
 
     private renderHeader() {
         const header = document.createElement('header')
-        header.className = 'border-solid border-b-[1px] border-[#dedede] sticky top-0'
+        header.className = 'border-solid border-b-[1px] border-[#dedede] sticky top-0 bg-white'
         const flows = Object.keys(Flows).map((el) => ({
             name: dictionary.flowsNames[el as keyof typeof Flows][this.model.lang],
             link: '/flows' + Flows[el as keyof typeof Flows],
         }))
         flows.unshift({ name: dictionary.buttons.Feed[this.model.lang], link: Paths.Feed })
-        flows.push({ name: dictionary.buttons.Auth[this.model.lang], link: Paths.Auth })
-        flows.push({ name: dictionary.buttons.Registration[this.model.lang], link: Paths.Registration })
         header.innerHTML = headerTemplate({ flows })
         return header
     }

@@ -12,6 +12,7 @@ const buttons: Record<string, language> = {
     Feed: { ru: 'Моя лента', en: 'My feed' },
     Auth: { ru: 'Вход', en: 'Sign in' },
     Registration: { ru: 'Регистрация', en: 'Registration' },
+    Settings: { ru: 'Настройки', en: 'Settings' },
 }
 
 export default { flowsNames, buttons }

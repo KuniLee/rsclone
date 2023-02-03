@@ -10,6 +10,7 @@ export enum Paths {
     Flows = '/flows',
     Auth = '/login',
     Registration = '/register',
+    Search = '/search',
 }
 
 export enum Flows {
