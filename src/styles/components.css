@@ -26,6 +26,13 @@
   height: 25px;
 }
 
+.ico_rs {
+  background: url(../assets/icons/ico-rs.svg) center no-repeat;
+  background-size: contain;
+  width: 60px;
+  height: 30px;
+}
+
 .drop-down-menu {
   position: absolute;
   right: calc(100% - 90%);

@@ -5,7 +5,7 @@ import headerTemplate from '@/templates/header.hbs'
 import { Flows, Paths } from 'types/enums'
 import dictionary from '@/utils/dictionary'
 import { DropdownMenu } from '@/utils/dropdownMenu'
-import { findSourceMap } from 'module'
+import footerTemplate from '@/templates/footer.hbs'
 
 type ItemViewEventsName = 'GOTO'
 
@@ -14,6 +14,7 @@ export type MainViewInstance = InstanceType<typeof MainView>
 export class MainView extends EventEmitter {
     private model: PageModel
     private headerEl: HTMLElement
+    private footerEl: HTMLElement
     private mainPageContainer: HTMLElement
     private dropdownMenu: DropdownMenu
     private popupSettings: PopupSettings
@@ -24,7 +25,9 @@ export class MainView extends EventEmitter {
         this.dropdownMenu = new DropdownMenu(this.model)
         this.popupSettings = new PopupSettings(this.model)
         this.headerEl = this.renderHeader()
+        this.footerEl = this.renderFooter()
         this.mainPageContainer = document.createElement('main')
+        this.mainPageContainer.classList.add('main')
         this.show()
         this.addListeners()
         this.model.on('404', () => {
@@ -121,7 +124,14 @@ export class MainView extends EventEmitter {
         return header
     }
 
+    private renderFooter() {
+        const footer = document.createElement('footer')
+        footer.classList.add('footer')
+        footer.innerHTML = footerTemplate({})
+        return footer
+    }
+
     private show() {
-        document.body.append(this.headerEl, this.mainPageContainer)
+        document.body.append(this.headerEl, this.mainPageContainer, this.footerEl)
     }
 }

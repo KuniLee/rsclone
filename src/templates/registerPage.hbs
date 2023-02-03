@@ -1,13 +1,14 @@
 <div class="max-w-[1200px] mx-auto">
-  <div class="mt-[80px] max-w-[420px] mx-auto">
+  <div class="mt-[60px] mb-[80px] max-w-[420px] mx-auto">
     <div class="w-full bg-white shadow-lg shadow-black/10 p-[40px]">
       <h2 class="text-[#333] text-[22px] leading-7 font-bold">Регистрация</h2>
       <form>
         <fieldset>
           <div class="flex flex-col pt-[57px]">
             <label class="w-full text-[#333] text-[14px] leading-7 font-bold mb-[12px]" for="email">E-mail</label>
-            <input class="email-input w-full h-[40px] bg-white border border-[#dbdbdb] text-[14px] py-0 px-[14px] box-border outline-0"
-                   type="email" id="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required>
+            <input
+              class="email-input w-full h-[40px] bg-white border border-[#dbdbdb] text-[14px] py-0 px-[14px] box-border outline-0"
+              type="email" id="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required>
             <ul class="email-error mt-[10px]" hidden>
               <li class="text-red-600 text-center">Некорректный email</li>
               <li class="email-error__exist text-red-600 text-center" hidden>Email уже существует</li>
@@ -15,14 +16,18 @@
           </div>
           <div class="flex flex-col mt-[15px]">
             <label class="w-full text-[#333] text-[14px] leading-7 font-bold mb-[12px]" for="text">Никнейм</label>
-            <input class="nickname-input w-full h-[40px] bg-white border border-[#dbdbdb] text-[14px] py-0 px-[14px] box-border outline-0" type="text" required>
+            <input
+              class="nickname-input w-full h-[40px] bg-white border border-[#dbdbdb] text-[14px] py-0 px-[14px] box-border outline-0"
+              type="text" required>
             <ul class="nick-error mt-[10px]" hidden>
               <li class="text-red-600 text-center">Длина должна быть >4</li>
             </ul>
           </div>
           <div class="flex flex-col mt-[31px]">
             <label class="w-full text-[#333] text-[14px] leading-7 font-bold mb-[12px]" for="password">Пароль</label>
-            <input class="password-input w-full h-[40px] bg-white border border-[#dbdbdb] text-[14px] py-0 px-[14px] box-border outline-0" type="password" id="password">
+            <input
+              class="password-input w-full h-[40px] bg-white border border-[#dbdbdb] text-[14px] py-0 px-[14px] box-border outline-0"
+              type="password" id="password">
             <ul class="password-error mt-[10px]" hidden>
               <li class="password-error__lower text-red-600 text-center">Как минимум 1 строчная буква</li>
               <li class="password-error__upper text-red-600 text-center">Как минимум 1 заглавная буква</li>
@@ -32,15 +37,19 @@
             </ul>
           </div>
           <div class="flex flex-col mt-[31px]">
-            <label class="w-full text-[#333] text-[14px] leading-7 font-bold mb-[12px]" for="password">Пароль еще раз</label>
-            <input class="password-repeat-input w-full h-[40px] bg-white border border-[#dbdbdb] text-[14px] py-0 px-[14px] box-border outline-0" type="password" id="password-repeat">
+            <label class="w-full text-[#333] text-[14px] leading-7 font-bold mb-[12px]" for="password">Пароль еще
+              раз</label>
+            <input
+              class="password-repeat-input w-full h-[40px] bg-white border border-[#dbdbdb] text-[14px] py-0 px-[14px] box-border outline-0"
+              type="password" id="password-repeat">
           </div>
           <div class="g-recaptcha mt-[31px]" id="captcha1"></div>
           <ul class="captcha-error mt-[10px]" hidden>
             <li class="text-red-600 text-center">Пройдите проверку</li>
           </ul>
           <div class="mt-[21px]">
-            <button type="submit" class="registrationCompleteBtn bg-[#558cb7] w-full text-white h-[48px] hover:bg-[#376f9a]">Зарегистрироваться</button>
+            <button type="submit"
+              class="registrationCompleteBtn bg-[#558cb7] w-full text-white h-[48px] hover:bg-[#376f9a]">Зарегистрироваться</button>
           </div>
         </fieldset>
       </form>
