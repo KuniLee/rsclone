@@ -1,5 +1,5 @@
 import EventEmitter from 'events'
-import type { PageModel } from '../models/PageModel'
+import type { PageModel } from '../model/PageModel'
 import headerTemplate from '@/templates/header.hbs'
 import { Flows, Paths } from 'types/enums'
 import dictionary from '@/utils/dictionary'
@@ -35,9 +35,12 @@ export class MainView extends EventEmitter {
 
     private addListeners() {
         this.headerEl.addEventListener('click', (ev) => {
-            ev.preventDefault()
             if (ev.target instanceof HTMLAnchorElement) {
-                this.emit<string>('GOTO', ev.target.href)
+                const pathname = ev.target.href
+                if (!pathname.includes(Paths.Auth) && !pathname.includes(Paths.Registration)) {
+                    ev.preventDefault()
+                    this.emit<string>('GOTO', ev.target.href)
+                }
             }
         })
     }
@@ -53,6 +56,8 @@ export class MainView extends EventEmitter {
             link: '/flows' + Flows[el as keyof typeof Flows],
         }))
         flows.unshift({ name: dictionary.buttons.Feed[this.model.lang], link: Paths.Feed })
+        flows.push({ name: dictionary.buttons.Auth[this.model.lang], link: Paths.Auth })
+        flows.push({ name: dictionary.buttons.Registration[this.model.lang], link: Paths.Registration })
         header.innerHTML = headerTemplate({ flows })
         return header
     }

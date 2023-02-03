@@ -35,6 +35,14 @@ const thePlugins = () => {
             minify: !devMode,
             chunks: ['main'],
         }),
+        new HTMLWebpackPlugin({
+            inject: true,
+            // TODO: favicon: `./src/assets/images/favicon.ico`,
+            template: 'auth.html',
+            filename: `auth.html`,
+            minify: !devMode,
+            chunks: ['auth'],
+        }),
         new MiniCssExtractPlugin({
             filename: '[name].[contenthash].css',
         }),
@@ -61,12 +69,12 @@ const config = {
     mode: 'development',
     entry: {
         main: './index.ts',
+        auth: './auth.ts',
     },
     output: {
         filename: '[name].[contenthash].js',
         path: path.resolve(__dirname, 'dist'),
         publicPath: '/',
-        clean: true,
         assetModuleFilename: 'assets/[hash][ext][query]',
     },
     resolve: {
@@ -124,7 +132,13 @@ const config = {
         port: 4200,
         compress: true,
         open: true,
-        historyApiFallback: true,
+        historyApiFallback: {
+            rewrites: [
+                { from: /^\/$/, to: '/index.html' },
+                { from: /^\/login\/?.*$/, to: '/auth.html' },
+                { from: /^\/register\/?.*$/, to: '/auth.html' },
+            ],
+        },
     },
 }
 

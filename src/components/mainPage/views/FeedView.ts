@@ -1,5 +1,5 @@
 import EventEmitter from 'events'
-import type { PageModel } from '../models/PageModel'
+import type { PageModel } from '../model/PageModel'
 import { Paths } from 'types/enums'
 
 type FeedViewEventsName = 'GOTO'
