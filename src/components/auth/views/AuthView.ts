@@ -31,10 +31,7 @@ export class AuthView extends EventEmitter {
             this.emit('GOTO', window.location.origin + '/login')
         })
         this.model.on('USER_SIGNED_IN', () => {
-            const logo = document.querySelector('.header__logo') as HTMLElement
-            if (logo) {
-                logo.click()
-            }
+            location.href = window.location.origin
         })
         this.model.on('EMAIL_EXIST', () => {
             const errorExist = document.querySelector('.email-error__exist') as HTMLElement
