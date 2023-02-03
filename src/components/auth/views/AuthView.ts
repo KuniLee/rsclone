@@ -39,6 +39,10 @@ export class AuthView extends EventEmitter {
         this.model.on('EMAIL_EXIST', () => {
             const errorExist = document.querySelector('.email-error__exist') as HTMLElement
             const emailErrorList = document.querySelector('.email-error') as HTMLElement
+            const registrationSubmitBtn = document.querySelector('.registrationCompleteBtn') as HTMLButtonElement
+            if (registrationSubmitBtn) {
+                registrationSubmitBtn.disabled = false
+            }
             if (errorExist && emailErrorList) {
                 emailErrorList.hidden = false
                 errorExist.hidden = false
@@ -46,6 +50,10 @@ export class AuthView extends EventEmitter {
         })
         this.model.on('WRONG_DATA', () => {
             const errorWrongData = document.querySelector('.auth-error') as HTMLElement
+            const submitButton = document.querySelector('.login-btn') as HTMLButtonElement
+            if (submitButton) {
+                submitButton.disabled = false
+            }
             if (errorWrongData) {
                 errorWrongData.hidden = false
             }
@@ -75,7 +83,7 @@ export class AuthView extends EventEmitter {
     private addListeners() {
         const registrationBtn = document.querySelector('.registration')
         const forgotPass = document.querySelector('.forgot-pass')
-        const submitButton = document.querySelector('.login-btn')
+        const submitButton = document.querySelector('.login-btn') as HTMLButtonElement
         registrationBtn?.addEventListener('click', (e) => {
             e.preventDefault()
             if (e.target instanceof HTMLAnchorElement) {
@@ -86,6 +94,7 @@ export class AuthView extends EventEmitter {
         registrationSubmitBtn?.addEventListener('click', (e) => {
             e.preventDefault()
             const checkResult: AuthViewTypes | boolean = this.checkAllRegistrationForms()
+            registrationSubmitBtn.disabled = true
             if (checkResult) {
                 if (grecaptcha) {
                     const captchaError = document.querySelector('.captcha-error') as HTMLElement
@@ -95,11 +104,16 @@ export class AuthView extends EventEmitter {
                         }
                         this.emit('SIGN_UP', undefined, checkResult)
                     } else {
+                        registrationSubmitBtn.disabled = false
                         if (captchaError) {
                             captchaError.hidden = false
                         }
                     }
+                } else {
+                    registrationSubmitBtn.disabled = false
                 }
+            } else {
+                registrationSubmitBtn.disabled = false
             }
         })
         const signIn = document.querySelector('.signIn')
@@ -113,6 +127,7 @@ export class AuthView extends EventEmitter {
             e.preventDefault()
             const emailInput = document.querySelector('.email-input') as HTMLInputElement
             const passwordInput = document.querySelector('.password-input') as HTMLInputElement
+            submitButton.disabled = true
             if (emailInput && passwordInput) {
                 const emailValidate = this.validateInputs(
                     emailInput,
@@ -124,7 +139,11 @@ export class AuthView extends EventEmitter {
                 )
                 if (emailValidate && passwordValidate) {
                     this.emit('LOGIN', undefined, { email: emailInput.value, password: passwordInput.value })
+                } else {
+                    submitButton.disabled = false
                 }
+            } else {
+                submitButton.disabled = false
             }
         })
         const emailInput = document.querySelector('.email-input') as HTMLInputElement
@@ -203,7 +222,9 @@ export class AuthView extends EventEmitter {
                     passLengthError.hidden = !(passValue.length < 8 && passValue.length > 16)
                 }
             } else {
-                passError.hidden = true
+                if (passError) {
+                    passError.hidden = true
+                }
             }
         })
         const passwordRepeatInput = document.querySelector('.password-repeat-input') as HTMLInputElement
