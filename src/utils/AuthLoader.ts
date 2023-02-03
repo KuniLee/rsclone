@@ -5,6 +5,7 @@ import {
     onAuthStateChanged,
     signInWithEmailAndPassword,
     fetchSignInMethodsForEmail,
+    updateProfile,
 } from 'firebase/auth'
 import { FirebaseConfigType } from 'types/types'
 
@@ -26,7 +27,7 @@ export class AuthLoader {
         this.app = initializeApp(this.firebaseConfig)
     }
 
-    async signUp(email: string, password: string) {
+    async signUp(email: string, password: string, nick: string) {
         const auth = getAuth()
         const result = await createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
@@ -39,6 +40,18 @@ export class AuthLoader {
                 console.log(errorCode, errorMessage)
                 return false
             })
+        if (auth.currentUser) {
+            await updateProfile(auth.currentUser, {
+                displayName: `${nick}`,
+                photoURL: '',
+            })
+                .then((result) => {
+                    console.log('name added')
+                })
+                .catch((er) => {
+                    console.log(er)
+                })
+        }
         return result
     }
 

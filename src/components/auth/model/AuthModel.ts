@@ -32,8 +32,10 @@ export class AuthModel extends EventEmitter {
         if (data.email && data.password && data.nick) {
             const checkExistEmail = await this.loader.checkEmailInDatabase(data.email)
             if (checkExistEmail.length === 0) {
-                const result = this.loader.signUp(data.email, data.password)
-                this.emit('USER_SIGNED_UP')
+                const result = await this.loader.signUp(data.email, data.password, data.nick)
+                if (result) {
+                    this.emit('USER_SIGNED_UP')
+                }
             } else {
                 this.emit('EMAIL_EXIST')
             }
