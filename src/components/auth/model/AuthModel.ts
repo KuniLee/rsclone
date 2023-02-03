@@ -5,6 +5,7 @@ import { URLParams } from 'types/interfaces'
 import { ParsedQuery } from 'query-string'
 import { AuthViewTypes } from 'types/types'
 import { User } from 'firebase/auth'
+import { serverTimestamp } from 'firebase/firestore'
 
 type PageModelEventsName = 'CHANGE_PAGE' | '404' | 'USER_SIGNED_UP' | 'USER_SIGNED_IN' | 'EMAIL_EXIST' | 'WRONG_DATA'
 export type AuthModelInstance = InstanceType<typeof AuthModel>
@@ -49,7 +50,7 @@ export class AuthModel extends EventEmitter {
         const data = {
             email: user.email,
             displayName: user.displayName,
-            createdAt: user.metadata.creationTime,
+            createdAt: serverTimestamp(),
         }
         return this.loader.setDocument('users', data, [user.uid])
     }
