@@ -5,7 +5,7 @@ import { URLParams } from 'types/interfaces'
 import { ParsedQuery } from 'query-string'
 import { AuthViewTypes } from 'types/types'
 
-type PageModelEventsName = 'CHANGE_PAGE' | '404' | 'USER_SIGNED_UP' | 'EMAIL_EXIST' | 'WRONG_DATA'
+type PageModelEventsName = 'CHANGE_PAGE' | '404' | 'USER_SIGNED_UP' | 'USER_SIGNED_IN' | 'EMAIL_EXIST' | 'WRONG_DATA'
 export type AuthModelInstance = InstanceType<typeof AuthModel>
 
 export class AuthModel extends EventEmitter {
@@ -22,7 +22,7 @@ export class AuthModel extends EventEmitter {
     async signInUser(email: string, password: string) {
         const result = await this.loader.signIn(email, password)
         if (result) {
-            this.emit('USER_SIGNED_UP')
+            this.emit('USER_SIGNED_IN')
         } else {
             this.emit('WRONG_DATA')
         }

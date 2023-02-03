@@ -27,8 +27,10 @@ export class AuthView extends EventEmitter {
             if (this.model.path[0] === Paths.Auth) this.buildPage()
             if (this.model.path[0] === Paths.Registration) this.buildPage(true)
         })
-
         this.model.on('USER_SIGNED_UP', () => {
+            this.emit('GOTO', window.location.origin + '/login')
+        })
+        this.model.on('USER_SIGNED_IN', () => {
             const logo = document.querySelector('.header__logo') as HTMLElement
             if (logo) {
                 logo.click()
