@@ -1,6 +1,6 @@
 import EventEmitter from 'events'
 import type { EditorModel } from '../model/EditorModel'
-import headerTemplate from '@/templates/header.hbs'
+import textEditor from '@/templates/textEditor.hbs'
 import { Flows, Paths, Sandbox } from 'types/enums'
 import dictionary from '@/utils/dictionary'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
@@ -27,8 +27,26 @@ export class EditorView extends EventEmitter {
     private buildPage() {
         const main = document.querySelector('main')
         if (main) {
-            main.textContent = 'test'
+            main.innerHTML = textEditor({})
         }
+        this.addListeners()
+    }
+
+    addListeners() {
+        document.querySelectorAll('.editable').forEach((el) => {
+            el.addEventListener('input', (e) => {
+                const target = el as HTMLElement
+                const value = target.textContent
+                const parent = el.parentNode as HTMLElement
+                if (parent) {
+                    if (value) {
+                        parent.classList.add('before:hidden')
+                    } else {
+                        parent.classList.remove('before:hidden')
+                    }
+                }
+            })
+        })
     }
 
     emit<T>(event: ItemViewEventsName, arg?: T) {
