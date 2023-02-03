@@ -1,4 +1,4 @@
-<div class="py-[20px] max-w-[1200px] mx-auto">
+<div class="py-[20px] max-w-[1200px] m-auto">
   <a href="/" class="w-fit inline-block">
     <h1 class="mb-[10px] font-bold text-[#303b44] w-max">Habr</h1>
   </a>
@@ -7,7 +7,7 @@
     <nav class="flex gap-5 nav">
       {{#each flows}}
       {{#if (eq this.link '/flows/all')}}
-      <a href="{{this.link}}" class="hover:text-[#5096b1] transition text-[#000000]">{{this.name}}</a>
+      <a href="{{this.link}}" class="hover:text-[#5096b1] transition text-[#333]">{{this.name}}</a>
       {{else}}
       <a href="{{this.link}}" class="hover:text-[#5096b1] transition text-[#909090]">{{this.name}}</a>
       {{/if}}

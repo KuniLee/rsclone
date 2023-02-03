@@ -19,11 +19,6 @@ export class DropdownMenu {
                 return { ...acc, [key]: dictionary.buttons[key][this.model.lang] }
             }, {})
         this.dropdownMenu.innerHTML = dropDownTemplate({ buttons })
-        const settings = document.querySelector('.settings')
-        if (settings)
-            settings.addEventListener('click', () => {
-                console.log('hhh')
-            })
         return this.dropdownMenu
     }
 }

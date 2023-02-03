@@ -1,9 +1,11 @@
+import { PopupSettings } from './../../../utils/popupSettings'
 import EventEmitter from 'events'
 import type { PageModel } from '../model/PageModel'
 import headerTemplate from '@/templates/header.hbs'
 import { Flows, Paths } from 'types/enums'
 import dictionary from '@/utils/dictionary'
 import { DropdownMenu } from '@/utils/dropdownMenu'
+import { findSourceMap } from 'module'
 
 type ItemViewEventsName = 'GOTO'
 
@@ -13,12 +15,14 @@ export class MainView extends EventEmitter {
     private model: PageModel
     private headerEl: HTMLElement
     private mainPageContainer: HTMLElement
-    private dropDownMenu: DropdownMenu
+    private dropdownMenu: DropdownMenu
+    private popupSettings: PopupSettings
 
     constructor(model: PageModel) {
         super()
         this.model = model
-        this.dropDownMenu = new DropdownMenu(this.model)
+        this.dropdownMenu = new DropdownMenu(this.model)
+        this.popupSettings = new PopupSettings(this.model)
         this.headerEl = this.renderHeader()
         this.mainPageContainer = document.createElement('main')
         this.show()
@@ -38,7 +42,6 @@ export class MainView extends EventEmitter {
 
     private addListeners() {
         const nav = document.querySelector('.nav')
-        const user = document.querySelector('.ico_user')
         if (nav) {
             nav.addEventListener('click', (ev) => {
                 if (ev.target instanceof HTMLAnchorElement) {
@@ -53,20 +56,8 @@ export class MainView extends EventEmitter {
         }
         document.body.addEventListener('click', (ev) => {
             if (ev.target instanceof HTMLElement) {
-                if (ev.target === user) {
-                    ev.target.classList.toggle('active')
-                    if (ev.target.classList.contains('active')) {
-                        this.headerEl.appendChild(this.dropDownMenu.renderNotAuth())
-                    } else {
-                        this.headerEl.removeChild(this.dropDownMenu.renderNotAuth())
-                    }
-                }
-                if (!ev.target.closest('.drop-down-menu') && ev.target !== user) {
-                    if (user && user.classList.contains('active')) {
-                        user.classList.remove('active')
-                        this.headerEl.removeChild(this.dropDownMenu.renderNotAuth())
-                    }
-                }
+                this.toggleDropdownMenu(ev.target)
+                this.togglePopupSettings(ev.target)
             }
         })
     }
@@ -75,10 +66,46 @@ export class MainView extends EventEmitter {
         this.mainPageContainer.innerText = '404'
     }
 
+    private togglePopupSettings(element: HTMLElement) {
+        const settingsBtn = document.querySelector('.settings')
+        const popupSettings = document.querySelector('.popup-settings')
+        if (settingsBtn) {
+            settingsBtn.addEventListener('click', () => {
+                document.body.appendChild(this.popupSettings.render())
+            })
+        }
+        if (popupSettings) {
+            if (
+                !element.closest('.settings') &&
+                (!element.closest('.popup-settings') || element.classList.contains('ico_close'))
+            ) {
+                document.body.removeChild(this.popupSettings.render())
+            }
+        }
+    }
+
+    private toggleDropdownMenu(element: HTMLElement) {
+        const user = document.querySelector('.ico_user')
+        if (element === user) {
+            element.classList.toggle('active')
+            if (element.classList.contains('active')) {
+                this.headerEl.appendChild(this.dropdownMenu.renderNotAuth())
+            } else {
+                this.headerEl.removeChild(this.dropdownMenu.renderNotAuth())
+            }
+        }
+        if (!element.closest('.drop-down-menu') && element !== user) {
+            if (user && user.classList.contains('active')) {
+                user.classList.remove('active')
+                this.headerEl.removeChild(this.dropdownMenu.renderNotAuth())
+            }
+        }
+    }
+
     private setActiveLink(links: HTMLCollection, currentLink: HTMLElement) {
         Array.from(links).forEach((link) => {
-            if (link !== currentLink) link.classList.replace('text-[#000000]', 'text-[#909090]')
-            currentLink.classList.replace('text-[#909090]', 'text-[#000000]')
+            if (link !== currentLink) link.classList.replace('text-[#333]', 'text-[#909090]')
+            currentLink.classList.replace('text-[#909090]', 'text-[#333]')
         })
     }
 

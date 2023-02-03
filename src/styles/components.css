@@ -19,6 +19,13 @@
   height: 20px;
 }
 
+.ico_close {
+  background: url(../assets/icons/ico-cross.svg) center no-repeat;
+  background-size: contain;
+  width: 25px;
+  height: 25px;
+}
+
 .drop-down-menu {
   position: absolute;
   right: calc(100% - 90%);
@@ -27,4 +34,17 @@
   background-color: #ffffff;
   box-shadow: 0 0 12px rgb(0 0 0 / 16%);
   border-radius: 4px;
+}
+
+.popup {
+  z-index: 10;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.input-radio:checked+.input-radio-fake {
+  border: 5px solid #548eaa;
 }

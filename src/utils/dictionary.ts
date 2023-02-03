@@ -15,4 +15,10 @@ const buttons: Record<string, language> = {
     Settings: { ru: 'Настройки', en: 'Settings' },
 }
 
-export default { flowsNames, buttons }
+const popupSettings: Record<string, language> = {
+    Title: { ru: 'Настройки страницы', en: 'Page Settings' },
+    Interface: { ru: 'Интерфейс', en: 'Content' },
+    Save: { ru: 'Сохранить настройки', en: 'Save preferences' },
+}
+
+export default { flowsNames, buttons, popupSettings }
