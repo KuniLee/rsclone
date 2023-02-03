@@ -4,9 +4,9 @@ import { AuthModel } from '@/components/auth/model/AuthModel'
 import { AuthController } from '@/components/auth/controller/AuthController'
 import { Router } from '@/utils/Rooter'
 import { AuthView } from '@/components/auth/views/AuthView'
-import { AuthLoader } from '@/utils/AuthLoader'
+import { FireBaseAPI } from '@/utils/FireBaseAPI'
 
-const authLoader = new AuthLoader()
+const authLoader = new FireBaseAPI()
 
 const authModel = new AuthModel(authLoader)
 const router = new Router(authModel)

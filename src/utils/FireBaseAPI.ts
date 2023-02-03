@@ -1,4 +1,15 @@
-import { initializeApp } from 'firebase/app'
+import { initializeApp, FirebaseApp } from 'firebase/app'
+import {
+    getFirestore,
+    Firestore,
+    collection,
+    addDoc,
+    getDoc,
+    getDocs,
+    doc,
+    setDoc,
+    DocumentData,
+} from 'firebase/firestore'
 import {
     createUserWithEmailAndPassword,
     getAuth,
@@ -6,14 +17,17 @@ import {
     signInWithEmailAndPassword,
     fetchSignInMethodsForEmail,
     updateProfile,
+    signOut,
 } from 'firebase/auth'
 import { FirebaseConfigType } from 'types/types'
 
-export type AuthLoaderInstance = InstanceType<typeof AuthLoader>
+export type FireBaseAPIInstance = InstanceType<typeof FireBaseAPI>
 
-export class AuthLoader {
+export class FireBaseAPI {
     private firebaseConfig: FirebaseConfigType
-    private app: unknown
+    public app: FirebaseApp
+    public db: Firestore
+
     constructor() {
         this.firebaseConfig = {
             apiKey: process.env.FIREBASE_API_KEY || '',
@@ -25,15 +39,49 @@ export class AuthLoader {
             appId: process.env.FIREBASE_API_ID || '',
         }
         this.app = initializeApp(this.firebaseConfig)
+        this.db = getFirestore(this.app)
+    }
+
+    async getAllDocsInCollection(path: string) {
+        const querySnapshot = await getDocs(collection(this.db, path))
+        querySnapshot.forEach((doc) => {
+            console.log(doc.id, ' => ', doc.data())
+        })
+    }
+
+    async getDocument(path: string, ...pathSegments: Array<string>) {
+        const docRef = doc(this.db, path, ...pathSegments)
+        const docSnap = await getDoc(docRef)
+
+        if (docSnap.exists()) {
+            console.log('Document data:', docSnap.data())
+        } else {
+            // doc.data() will be undefined in this case
+            console.log('No such document!')
+        }
+    }
+
+    async addCollection(path: string) {
+        try {
+            const docRef = await addDoc(collection(this.db, path), {
+                first: 'Ada',
+                last: 'Lovelace',
+                born: 1815,
+            })
+            console.log('Document written with ID: ', docRef.id)
+        } catch (e) {
+            console.error('Error adding document: ', e)
+        }
+    }
+
+    async setDocument(path: string, data: DocumentData, pathSegments: Array<string>) {
+        await setDoc(doc(this.db, path, ...pathSegments), data)
     }
 
     async signUp(email: string, password: string, nick: string) {
         const auth = getAuth()
         const result = await createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user
-                return user
-            })
+            .then((userCredential) => userCredential.user)
             .catch((error) => {
                 const errorCode = error.code
                 const errorMessage = error.message
@@ -45,7 +93,7 @@ export class AuthLoader {
                 displayName: `${nick}`,
                 photoURL: '',
             })
-                .then((result) => {
+                .then(() => {
                     console.log('name added')
                 })
                 .catch((er) => {
@@ -70,11 +118,23 @@ export class AuthLoader {
         return result
     }
 
+    async signOut() {
+        const auth = getAuth()
+        signOut(auth)
+            .then(() => {
+                return true
+            })
+            .catch((error) => {
+                // An error happened.
+            })
+    }
+
     async checkAuthState() {
         const auth = getAuth()
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 const uid = user.uid
+                console.log(user)
             } else {
                 console.log('Unknown user')
             }
