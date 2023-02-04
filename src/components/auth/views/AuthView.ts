@@ -23,7 +23,7 @@ export class AuthView extends EventEmitter {
         this.headerEl = this.renderHeader()
         this.footerEl = this.renderFooter()
         this.mainPageContainer = document.createElement('main')
-        this.mainPageContainer.className = 'bg-[#f0f0f0] flex-grow'
+        this.mainPageContainer.className = 'bg-color-bg-dark flex-grow'
         this.show()
         this.buildPage()
         this.model.on('CHANGE_PAGE', () => {
@@ -262,11 +262,11 @@ export class AuthView extends EventEmitter {
         if (passwordRepeatInput && passwordInput) {
             if (passwordRepeatInput.value.length !== 0) {
                 if (passwordInput.value !== passwordRepeatInput.value) {
-                    passwordInput.classList.add('border-[#ff6e6e]')
-                    passwordRepeatInput.classList.add('border-[#ff6e6e]')
+                    passwordInput.classList.add('border-color-border-input')
+                    passwordRepeatInput.classList.add('border-color-border-input')
                 } else {
-                    passwordInput.classList.remove('border-[#ff6e6e]')
-                    passwordRepeatInput.classList.remove('border-[#ff6e6e]')
+                    passwordInput.classList.remove('border-color-border-input')
+                    passwordRepeatInput.classList.remove('border-color-border-input')
                     return true
                 }
             }
@@ -277,8 +277,8 @@ export class AuthView extends EventEmitter {
         const value = element.value
         const patternMatch = value.match(reg)
         if (patternMatch || value.length === 0) {
-            if (element.classList.contains('border-[#ff6e6e]')) {
-                element.classList.remove('border-[#ff6e6e]')
+            if (element.classList.contains('border-color-border-input')) {
+                element.classList.remove('border-color-border-input')
             }
             if (value.length === 0) {
                 return null
@@ -287,7 +287,7 @@ export class AuthView extends EventEmitter {
                 return true
             }
         } else {
-            element.classList.add('border-[#ff6e6e]')
+            element.classList.add('border-color-border-input')
         }
     }
 
@@ -297,7 +297,7 @@ export class AuthView extends EventEmitter {
 
     private renderHeader() {
         const header = document.createElement('header')
-        header.className = 'border-solid border-b-[1px] border-[#dedede]'
+        header.className = 'border-solid border-b-[1px] border-color-border-header'
         header.innerHTML = headerTemplate({})
         return header
     }

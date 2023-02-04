@@ -1,15 +1,15 @@
 <div class="py-[20px] max-w-[1200px] m-auto">
   <a href="/" class="w-fit inline-block">
-    <h1 class="mb-[10px] font-bold text-[#303b44] w-max">Habr</h1>
+    <h1 class="mb-[10px] font-bold text-color-logo w-max">Habr</h1>
   </a>
   {{#if flows}}
   <div class="flex place-content-between">
     <nav class="flex gap-5 nav">
       {{#each flows}}
       {{#if (eq this.link '/flows/all')}}
-      <a href="{{this.link}}" class="hover:text-[#5096b1] transition text-[#333]">{{this.name}}</a>
+      <a href="{{this.link}}" class="hover:text-color-link-hover transition text-color-text-dark">{{this.name}}</a>
       {{else}}
-      <a href="{{this.link}}" class="hover:text-[#5096b1] transition text-[#909090]">{{this.name}}</a>
+      <a href="{{this.link}}" class="hover:text-color-link-hover transition text-color-text-light">{{this.name}}</a>
       {{/if}}
       {{/each}}
     </nav>

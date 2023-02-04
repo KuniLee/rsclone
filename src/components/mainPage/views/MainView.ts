@@ -107,14 +107,14 @@ export class MainView extends EventEmitter {
 
     private setActiveLink(links: HTMLCollection, currentLink: HTMLElement) {
         Array.from(links).forEach((link) => {
-            if (link !== currentLink) link.classList.replace('text-[#333]', 'text-[#909090]')
-            currentLink.classList.replace('text-[#909090]', 'text-[#333]')
+            if (link !== currentLink) link.classList.replace('text-color-text-dark', 'text-color-text-light')
+            currentLink.classList.replace('text-color-text-light', 'text-color-text-dark')
         })
     }
 
     private renderHeader() {
         const header = document.createElement('header')
-        header.className = 'border-solid border-b-[1px] border-[#dedede] sticky top-0 bg-white'
+        header.className = 'border-solid border-b-[1px] border-color-border-header sticky top-0 bg-color-light'
         const flows = Object.keys(Flows).map((el) => ({
             name: dictionary.flowsNames[el as keyof typeof Flows][this.model.lang],
             link: '/flows' + Flows[el as keyof typeof Flows],

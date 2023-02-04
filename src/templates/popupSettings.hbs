@@ -1,33 +1,33 @@
 <div class="bg-[rgba(0,0,0,.2)] fixed top-0 bottom-0 left-0 right-0"></div>
 <div class="flex h-[100vh] z-2 relative">
   <div class="m-auto flex-[0_320px] relative">
-    <div class="bg-white min-h-[56px] pb-[24px] popup-settings">
+    <div class="bg-color-light min-h-[56px] pb-[24px] popup-settings">
       <form>
         <div class="flex place-content-between items-center px-[24px]">
-          <div class="leading-[3.5rem] text-[#333]">{{textData.Title}}</div>
+          <div class="leading-[3.5rem] text-color-text-dark">{{textData.Title}}</div>
           <span class="ico ico_close"></span>
         </div>
         <div class="mb-[30px]">
-          <div class="bg-[#ebf1f3] px-[24px] leading-10 text-[#838a92]">{{textData.Interface}}</div>
+          <div class="bg-color-bg-light px-[24px] leading-10 text-color-popup-text">{{textData.Interface}}</div>
           <div class="mt-[15px]">
             <div class="px-[24px] mb-[10px]">
-              <label class="text-[#333] flex items-center">
+              <label class="text-color-text-dark flex items-center">
                 <div class="relative mr-[8px]">
                   <input type="radio" id="ru" name="lang"
                     class="opacity-0 block w-[16px] h-[16px] cursor-pointer input-radio" />
                   <span
-                    class="bg-[#fff] rounded-[50%] block absolute w-[16px] h-[16px] left-0 top-0 border-solid border-[1px] border-[#acb8bf] input-radio-fake"></span>
+                    class="bg-color-light rounded-[50%] block absolute w-[16px] h-[16px] left-0 top-0 border-solid border-[1px] border-color-border-dark input-radio-fake"></span>
                 </div>
                 Русский
               </label>
             </div>
             <div class="px-[24px] mb-[10px]">
-              <label class="text-[#333] flex items-center">
+              <label class="text-color-text-dark flex items-center">
                 <div class="relative mr-[8px]">
                   <input type="radio" id="en" name="lang"
                     class="opacity-0 block w-[16px] h-[16px] cursor-pointer input-radio" />
                   <span
-                    class="bg-[#fff] rounded-[50%] block absolute w-[16px] h-[16px] left-0 top-0 border-solid border-[1px] border-[#acb8bf] input-radio-fake"></span>
+                    class="bg-color-light rounded-[50%] block absolute w-[16px] h-[16px] left-0 top-0 border-solid border-[1px] border-color-border-dark input-radio-fake"></span>
                 </div>
                 English
               </label>
@@ -36,7 +36,7 @@
         </div>
         <div class="px-[24px]">
           <button
-            class="px-[16px] py-[12px] bg-[#548eaa] text-white w-[100%] rounded hover:bg-[#39728e] transition">{{textData.Save}}</button>
+            class="px-[16px] py-[12px] bg-color-button text-color-light w-[100%] rounded hover:bg-color-popup-btn-hover transition">{{textData.Save}}</button>
         </div>
       </form>
     </div>
