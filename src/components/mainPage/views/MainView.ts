@@ -1,4 +1,4 @@
-import { PopupSettings } from './../../../utils/popupSettings'
+import { PopupSettings } from '@/utils/popupSettings'
 import EventEmitter from 'events'
 import type { PageModel } from '../model/PageModel'
 import headerTemplate from '@/templates/header.hbs'
