@@ -1,15 +1,5 @@
-import { initializeApp, FirebaseApp } from 'firebase/app'
-import {
-    getFirestore,
-    Firestore,
-    collection,
-    addDoc,
-    getDoc,
-    getDocs,
-    doc,
-    setDoc,
-    DocumentData,
-} from 'firebase/firestore'
+import { initializeApp } from 'firebase/app'
+import { getFirestore, serverTimestamp, setDoc, doc } from 'firebase/firestore'
 import {
     createUserWithEmailAndPassword,
     getAuth,
@@ -19,17 +9,26 @@ import {
     updateProfile,
     signOut,
 } from 'firebase/auth'
-import { FirebaseConfigType } from 'types/types'
+import type { FirebaseApp } from 'firebase/app'
+import type { User, Auth } from 'firebase/auth'
+import type { Firestore } from 'firebase/firestore'
 
+export { serverTimestamp, setDoc, doc }
+import EventEmitter from 'events'
+
+export type { User, Auth, Firestore }
+
+export type FirebaseEvents = 'CHANGE_AUTH'
 export type FireBaseAPIInstance = InstanceType<typeof FireBaseAPI>
 
-export class FireBaseAPI {
-    private firebaseConfig: FirebaseConfigType
+export class FireBaseAPI extends EventEmitter {
     public app: FirebaseApp
     public db: Firestore
+    public auth: Auth
 
     constructor() {
-        this.firebaseConfig = {
+        super()
+        const config = {
             apiKey: process.env.FIREBASE_API_KEY || '',
             authDomain: process.env.FIREBASE_AUTH_DOMAIN || '',
             databaseURL: process.env.FIREBASE_DATABASE_URL || '',
@@ -38,44 +37,12 @@ export class FireBaseAPI {
             messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || '',
             appId: process.env.FIREBASE_API_ID || '',
         }
-        this.app = initializeApp(this.firebaseConfig)
+        this.app = initializeApp(config)
         this.db = getFirestore(this.app)
-    }
-
-    async getAllDocsInCollection(path: string) {
-        const querySnapshot = await getDocs(collection(this.db, path))
-        querySnapshot.forEach((doc) => {
-            console.log(doc.id, ' => ', doc.data())
+        this.auth = getAuth()
+        onAuthStateChanged(this.auth, (user) => {
+            if (user) this.emit<User>('CHANGE_AUTH', user)
         })
-    }
-
-    async getDocument(path: string, ...pathSegments: Array<string>) {
-        const docRef = doc(this.db, path, ...pathSegments)
-        const docSnap = await getDoc(docRef)
-
-        if (docSnap.exists()) {
-            console.log('Document data:', docSnap.data())
-        } else {
-            // doc.data() will be undefined in this case
-            console.log('No such document!')
-        }
-    }
-
-    async addCollection(path: string) {
-        try {
-            const docRef = await addDoc(collection(this.db, path), {
-                first: 'Ada',
-                last: 'Lovelace',
-                born: 1815,
-            })
-            console.log('Document written with ID: ', docRef.id)
-        } catch (e) {
-            console.error('Error adding document: ', e)
-        }
-    }
-
-    async setDocument(path: string, data: DocumentData, pathSegments: Array<string>) {
-        await setDoc(doc(this.db, path, ...pathSegments), data)
     }
 
     async signUp(email: string, password: string, nick: string) {
@@ -104,8 +71,7 @@ export class FireBaseAPI {
     }
 
     async signIn(email: string, password: string) {
-        const auth = getAuth()
-        const result = signInWithEmailAndPassword(auth, email, password)
+        return signInWithEmailAndPassword(this.auth, email, password)
             .then((userCredential) => {
                 console.log(userCredential)
                 return userCredential.user
@@ -115,7 +81,6 @@ export class FireBaseAPI {
                 const errorMessage = error.message
                 return null
             })
-        return result
     }
 
     async signOut() {
@@ -129,27 +94,21 @@ export class FireBaseAPI {
             })
     }
 
-    async checkAuthState() {
-        const auth = getAuth()
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                const uid = user.uid
-                console.log(user)
-            } else {
-                console.log('Unknown user')
-            }
-        })
-    }
-
     async checkEmailInDatabase(email: string) {
-        const auth = getAuth()
-        const result = await fetchSignInMethodsForEmail(auth, email)
+        return await fetchSignInMethodsForEmail(this.auth, email)
             .then((result) => {
                 return result
             })
             .catch((err) => {
                 return err
             })
-        return result
+    }
+
+    emit<T>(event: FirebaseEvents, arg?: T) {
+        return super.emit(event, arg)
+    }
+
+    on<T>(event: FirebaseEvents, callback: (arg: T) => void) {
+        return super.on(event, callback)
     }
 }

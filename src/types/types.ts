@@ -1,3 +1,6 @@
+import EventEmitter from 'events'
+import { ParsedQuery } from 'query-string'
+
 export type FirebaseConfigType = {
     storageBucket: string
     apiKey: string
@@ -14,4 +17,10 @@ export type AuthViewTypes = {
     nick?: string
     path?: string
     query?: string
+}
+
+export interface rootModel extends EventEmitter {
+    path: Array<string>
+    search: ParsedQuery
+    lang: 'ru' | 'en'
 }
