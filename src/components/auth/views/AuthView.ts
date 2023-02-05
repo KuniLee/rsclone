@@ -5,6 +5,7 @@ import { Paths } from 'types/enums'
 import { AuthModelInstance } from '@/components/auth/model/AuthModel'
 import headerTemplate from '@/templates/header.hbs'
 import { AuthViewTypes } from 'types/types'
+import footerTemplate from '@/templates/footer.hbs'
 
 type ItemViewEventsName = 'GOTO' | 'LOGIN' | 'CHECK_EMAIL' | 'SIGN_UP'
 
@@ -13,14 +14,16 @@ export type AuthViewInstance = InstanceType<typeof AuthView>
 export class AuthView extends EventEmitter {
     private model: AuthModelInstance
     private headerEl: HTMLElement
+    private footerEl: HTMLElement
     private mainPageContainer: HTMLElement
 
     constructor(authModel: AuthModelInstance) {
         super()
         this.model = authModel
         this.headerEl = this.renderHeader()
+        this.footerEl = this.renderFooter()
         this.mainPageContainer = document.createElement('main')
-        this.mainPageContainer.className = 'bg-[#f0f0f0] flex-grow'
+        this.mainPageContainer.className = 'bg-color-bg-dark flex-grow'
         this.show()
         this.buildPage()
         this.model.on('CHANGE_PAGE', () => {
@@ -259,11 +262,11 @@ export class AuthView extends EventEmitter {
         if (passwordRepeatInput && passwordInput) {
             if (passwordRepeatInput.value.length !== 0) {
                 if (passwordInput.value !== passwordRepeatInput.value) {
-                    passwordInput.classList.add('border-[#ff6e6e]')
-                    passwordRepeatInput.classList.add('border-[#ff6e6e]')
+                    passwordInput.classList.add('border-color-border-input')
+                    passwordRepeatInput.classList.add('border-color-border-input')
                 } else {
-                    passwordInput.classList.remove('border-[#ff6e6e]')
-                    passwordRepeatInput.classList.remove('border-[#ff6e6e]')
+                    passwordInput.classList.remove('border-color-border-input')
+                    passwordRepeatInput.classList.remove('border-color-border-input')
                     return true
                 }
             }
@@ -274,8 +277,8 @@ export class AuthView extends EventEmitter {
         const value = element.value
         const patternMatch = value.match(reg)
         if (patternMatch || value.length === 0) {
-            if (element.classList.contains('border-[#ff6e6e]')) {
-                element.classList.remove('border-[#ff6e6e]')
+            if (element.classList.contains('border-color-border-input')) {
+                element.classList.remove('border-color-border-input')
             }
             if (value.length === 0) {
                 return null
@@ -284,7 +287,7 @@ export class AuthView extends EventEmitter {
                 return true
             }
         } else {
-            element.classList.add('border-[#ff6e6e]')
+            element.classList.add('border-color-border-input')
         }
     }
 
@@ -294,12 +297,20 @@ export class AuthView extends EventEmitter {
 
     private renderHeader() {
         const header = document.createElement('header')
+        header.className = 'border-solid border-b-[1px] border-color-border-header'
         header.innerHTML = headerTemplate({})
         return header
     }
 
+    private renderFooter() {
+        const footer = document.createElement('footer')
+        footer.classList.add('footer')
+        footer.innerHTML = footerTemplate({})
+        return footer
+    }
+
     private show() {
-        document.body.append(this.headerEl, this.mainPageContainer)
+        document.body.append(this.headerEl, this.mainPageContainer, this.footerEl)
     }
 
     private openRegistrationForm() {

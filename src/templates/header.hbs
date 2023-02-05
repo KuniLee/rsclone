@@ -1,10 +1,22 @@
-<header>
-  <div class="max-w-[1200px] mx-auto">
-    <a class='header__logo' href="/">Habr</a>
+<div class="py-[20px] max-w-[1200px] px-[15px] m-auto">
+  <a href="/" class="w-fit inline-block">
+    <h1 class="mb-[10px] font-bold text-color-logo w-max">Habr</h1>
+  </a>
+  {{#if flows}}
+  <div class="flex place-content-between gap-y-8">
+    <nav class="flex gap-2 nav flex-col sm:flex-row sm:gap-5">
+      {{#each flows}}
+      {{#if (eq this.link '/flows/all')}}
+      <a href="{{this.link}}" class="hover:text-color-link-hover transition text-color-text-dark">{{this.name}}</a>
+      {{else}}
+      <a href="{{this.link}}" class="hover:text-color-link-hover transition text-color-text-light">{{this.name}}</a>
+      {{/if}}
+      {{/each}}
+    </nav>
+    <div class="flex gap-5 header__menu">
+      <a href="/search"><span class="ico ico_search"></span></a>
+      <span class="ico ico_user"></span>
+    </div>
+    {{/if}}
   </div>
-  <nav class="bg-cyan-200 flex">
-    {{#each flows}}
-      <a href="{{this.link}}">{{this.name}}</a>
-    {{/each}}
-  </nav>
-</header>
+</div>

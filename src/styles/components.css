@@ -1,0 +1,65 @@
+.ico_user {
+  background: url(../assets/icons/ico-user.svg) center no-repeat;
+  background-size: contain;
+  width: 24px;
+  height: 24px;
+}
+
+.ico_search {
+  background: url(../assets/icons/ico-search.svg) center no-repeat;
+  background-size: contain;
+  width: 24px;
+  height: 24px;
+}
+
+.ico_settings {
+  background: url(../assets/icons/ico-settings.svg) center no-repeat;
+  background-size: contain;
+  width: 20px;
+  height: 20px;
+}
+
+.ico_close {
+  background: url(../assets/icons/ico-cross.svg) center no-repeat;
+  background-size: contain;
+  width: 25px;
+  height: 25px;
+}
+
+.ico_rs {
+  background: url(../assets/icons/ico-rs.svg) center no-repeat;
+  background-size: contain;
+  width: 60px;
+  height: 30px;
+}
+
+.drop-down-menu {
+  position: absolute;
+  right: calc(100% - 90%);
+  color: #303b44;
+  background-color: #ffffff;
+  box-shadow: 0 0 12px rgb(0 0 0 / 16%);
+  border-radius: 4px;
+}
+
+@media (max-width:640px) {
+  .drop-down-menu {
+    top: 0;
+    right: 0;
+    width: 70%;
+    height: 100vh;
+  }
+}
+
+.popup {
+  z-index: 10;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.input-radio:checked+.input-radio-fake {
+  border: 5px solid #548eaa;
+}

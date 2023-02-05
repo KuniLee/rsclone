@@ -124,6 +124,9 @@ const config = {
             {
                 test: /\.hbs$/,
                 loader: 'handlebars-loader',
+                options: {
+                    runtime: path.resolve(__dirname, 'src/utils/handlebars.js'),
+                },
             },
         ],
     },
