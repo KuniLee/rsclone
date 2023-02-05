@@ -8,8 +8,8 @@ export class FeedController {
     private view: FeedViewInstance
     private pageModel: PageModelInstance
     private feedModel: FeedModelInstance
-    private db: Firestore
-    private auth: Auth
+    private readonly db: Firestore
+    private readonly auth: Auth
 
     constructor(
         view: FeedViewInstance,
@@ -25,7 +25,7 @@ export class FeedController {
             console.log('смена: ', user)
         })
         this.view.on('LOAD_ARTICLES', async () => {
-            console.log(this.pageModel.path)
+            console.log(this.pageModel.path[0])
             this.feedModel.setArticles(await this.loadArticles())
         })
     }

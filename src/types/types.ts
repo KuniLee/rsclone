@@ -1,6 +1,3 @@
-import EventEmitter from 'events'
-import { ParsedQuery } from 'query-string'
-
 export type FirebaseConfigType = {
     storageBucket: string
     apiKey: string
