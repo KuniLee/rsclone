@@ -1,14 +1,14 @@
 [[redirects]]
+from = "/login"
+to = "/auth.html"
+status = 200
+
+[[redirects]]
+from = "/register"
+to = "/auth.html"
+status = 200
+
+[[redirects]]
 from = "/*"
 to = "/index.html"
-status = 200
-
-[[redirects]]
-from = "/login/*"
-to = "/auth.html"
-status = 200
-
-[[redirects]]
-from = "/register/*"
-to = "/auth.html"
 status = 200
