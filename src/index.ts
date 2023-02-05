@@ -14,7 +14,7 @@ const feedModel = new FeedModel()
 
 const router = new Router(pageModel)
 const mainView = new MainView(pageModel)
-const feedView = new FeedView(pageModel)
+const feedView = new FeedView({ feedModel, pageModel })
 
 const api = new FireBaseAPI()
 

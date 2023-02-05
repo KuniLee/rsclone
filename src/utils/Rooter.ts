@@ -3,7 +3,7 @@ import queryString from 'query-string'
 
 import EventEmitter from 'events'
 import { URLParams } from 'types/interfaces'
-import { rootModel } from 'types/types'
+import { rootModel } from 'types/interfaces'
 
 type RouterEventsName = 'ROUTE'
 

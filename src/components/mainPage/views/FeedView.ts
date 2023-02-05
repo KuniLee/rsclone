@@ -1,21 +1,30 @@
 import EventEmitter from 'events'
-import type { PageModel } from '../model/PageModel'
 import { Paths } from 'types/enums'
+import { PageModelInstance } from '../model/PageModel'
+import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
 
-type FeedViewEventsName = 'GOTO'
+type FeedViewEventsName = 'LOAD_ARTICLES'
 
 export type FeedViewInstance = InstanceType<typeof FeedView>
 
 export class FeedView extends EventEmitter {
-    private model: PageModel
     private mainPageContainer: HTMLElement
+    private pageModel: PageModelInstance
+    private feedModel: FeedModelInstance
 
-    constructor(model: PageModel) {
+    constructor(models: { pageModel: PageModelInstance; feedModel: FeedModelInstance }) {
         super()
-        this.model = model
+        this.pageModel = models.pageModel
+        this.feedModel = models.feedModel
         this.mainPageContainer = document.querySelector('main') as HTMLElement
-        this.model.on('CHANGE_PAGE', () => {
-            if (this.model.path[0] === Paths.Feed) this.show()
+        this.pageModel.on('CHANGE_PAGE', () => {
+            if (this.pageModel.path[0] === Paths.All) {
+                this.showPreloader()
+                this.emit('LOAD_ARTICLES')
+            }
+        })
+        this.feedModel.on('LOADED', () => {
+            this.renderArticles()
         })
     }
 
@@ -27,7 +36,11 @@ export class FeedView extends EventEmitter {
         return super.on(event, callback)
     }
 
-    private show() {
-        this.mainPageContainer.innerText = 'Общая лента'
+    private showPreloader() {
+        this.mainPageContainer.innerText = 'Загружается общая лента...'
+    }
+
+    private renderArticles() {
+        this.mainPageContainer.innerText = JSON.stringify(this.feedModel.articles)
     }
 }

@@ -19,8 +19,8 @@ export type AuthViewTypes = {
     query?: string
 }
 
-export interface rootModel extends EventEmitter {
-    path: Array<string>
-    search: ParsedQuery
-    lang: 'ru' | 'en'
+export type Article = {
+    id: string
+    title: string
+    userId: string
 }
