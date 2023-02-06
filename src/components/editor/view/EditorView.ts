@@ -122,6 +122,7 @@ export class EditorView extends EventEmitter {
     }
 
     addTextElementListeners(textElement: HTMLElement) {
+        const editor = document.querySelector('.textEditor') as HTMLElement
         textElement.addEventListener('click', (e) => {
             const el = e.target as HTMLElement
             if (el.closest('.options__open-btn')) {
@@ -131,6 +132,11 @@ export class EditorView extends EventEmitter {
                     dropMenu.classList.add('open')
                     e.stopImmediatePropagation()
                 }
+            }
+        })
+        textElement.querySelector('.delete-btn')?.addEventListener('click', () => {
+            if (document.querySelectorAll('.textElement')?.length !== 1) {
+                this.deleteElement(textElement)
             }
         })
     }
@@ -147,6 +153,7 @@ export class EditorView extends EventEmitter {
                 if (newElemField) {
                     newElem.classList.remove('new')
                     this.addTextInputListeners(newElemField)
+                    this.addTextElementListeners(newElem)
                     newElemField.focus()
                 }
             }
