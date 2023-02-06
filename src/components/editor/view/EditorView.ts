@@ -45,7 +45,6 @@ export class EditorView extends EventEmitter {
                     key: event.key,
                 })
                 el.dispatchEvent(eventD)
-                console.log('dipatched')
             }
             if (event.key === 'Enter') {
                 this.addNewField()
@@ -54,7 +53,6 @@ export class EditorView extends EventEmitter {
         el.addEventListener('input', (e) => {
             e.preventDefault()
             const event = e as KeyboardEvent
-            console.log(event.key)
             const target = el as HTMLElement
             if (event.key !== undefined) {
                 target.textContent += event.key
@@ -71,6 +69,17 @@ export class EditorView extends EventEmitter {
                     parent.classList.add('before:hidden')
                 } else {
                     parent.classList.remove('before:hidden')
+                }
+            }
+        })
+        el.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace') {
+                const target = el as HTMLElement
+                const value = target.textContent
+                const parent = target.parentElement
+                const listOfElements = document.querySelectorAll('.textElement')
+                if (value === '' && parent && parent.classList.contains('textElement') && listOfElements.length !== 1) {
+                    this.deleteElement(parent)
                 }
             }
         })
@@ -106,6 +115,20 @@ export class EditorView extends EventEmitter {
             }
         }
         this.hidePlaceholder()
+    }
+    deleteElement(element: HTMLElement) {
+        element.remove()
+        const editor = document.querySelector('.textEditor') as HTMLElement
+        if (editor) {
+            const lastChild = editor.lastElementChild as HTMLElement
+            const lastChildInputField = lastChild.querySelector('.editable') as HTMLElement
+            if (lastChild && lastChildInputField) {
+                if (lastChildInputField.textContent === '') {
+                    lastChild.classList.remove('before:hidden')
+                }
+                lastChildInputField.focus()
+            }
+        }
     }
 
     hidePlaceholder() {
