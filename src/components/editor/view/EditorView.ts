@@ -141,6 +141,10 @@ export class EditorView extends EventEmitter {
         const editor = document.querySelector('.textEditor') as HTMLElement
         textElement.addEventListener('click', (e) => {
             const el = e.target as HTMLElement
+            document.querySelectorAll('.open')?.forEach((el) => {
+                el.classList.remove('open')
+                ;(el as HTMLElement).hidden = true
+            })
             if (el.closest('.options__open-btn')) {
                 const dropMenu = textElement.querySelector('.options__drop-menu') as HTMLElement
                 if (dropMenu) {
