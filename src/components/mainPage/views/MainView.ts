@@ -44,14 +44,16 @@ export class MainView extends EventEmitter {
     }
 
     private addListeners() {
-        const nav = document.querySelector('.nav')
-        if (nav) {
-            nav.addEventListener('click', (ev) => {
+        const navEl = document.querySelector('.nav')
+        const headerFlowsEl = document.querySelector('.header__flows')
+        const sideBarBgEl = document.querySelector('.sidebar-bg')
+        if (navEl) {
+            navEl.addEventListener('click', (ev) => {
                 if (ev.target instanceof HTMLAnchorElement) {
                     const pathname = ev.target.href
                     if (!pathname.includes(Paths.Auth) && !pathname.includes(Paths.Registration)) {
                         ev.preventDefault()
-                        this.setActiveLink(nav.children, ev.target)
+                        this.setActiveLink(navEl.children, ev.target)
                         this.emit<string>('GOTO', ev.target.href)
                     }
                 }
@@ -61,6 +63,22 @@ export class MainView extends EventEmitter {
             if (ev.target instanceof HTMLElement) {
                 this.toggleDropdownMenu(ev.target)
                 this.togglePopupSettings(ev.target)
+                if (headerFlowsEl && sideBarBgEl) {
+                    this.toggleSidebar(ev.target, headerFlowsEl, sideBarBgEl)
+                }
+            }
+        })
+
+        window.addEventListener('resize', () => {
+            if (
+                sideBarBgEl &&
+                headerFlowsEl &&
+                window.innerWidth > 768 &&
+                headerFlowsEl.classList.contains('sidebar')
+            ) {
+                headerFlowsEl.classList.remove('sidebar')
+                headerFlowsEl.classList.add('hidden')
+                sideBarBgEl.classList.add('hidden')
             }
         })
     }
@@ -87,9 +105,23 @@ export class MainView extends EventEmitter {
         }
     }
 
+    private toggleSidebar(element: HTMLElement, headerFlows: Element, sideBarBg: Element) {
+        if (element.closest('.burger')) {
+            headerFlows.classList.add('sidebar')
+            headerFlows.classList.remove('hidden')
+            sideBarBg.classList.remove('hidden')
+        }
+        if (headerFlows.classList.contains('sidebar') && !element.closest('.sidebar') && !element.closest('.burger')) {
+            headerFlows.classList.remove('sidebar')
+            headerFlows.classList.add('hidden')
+            sideBarBg.classList.add('hidden')
+        }
+    }
+
     private toggleDropdownMenu(element: HTMLElement) {
-        const user = document.querySelector('.ico_user')
-        if (element === user) {
+        const userIconLight = document.querySelector('.ico_user-light')
+        const userIcon = document.querySelector('.ico_user')
+        if (element.classList.contains('ico_user') || element.classList.contains('ico_user-light')) {
             element.classList.toggle('active')
             if (element.classList.contains('active')) {
                 this.headerEl.appendChild(this.dropdownMenu.renderNotAuth())
@@ -97,9 +129,19 @@ export class MainView extends EventEmitter {
                 this.headerEl.removeChild(this.dropdownMenu.renderNotAuth())
             }
         }
-        if (!element.closest('.drop-down-menu') && element !== user) {
-            if (user && user.classList.contains('active')) {
-                user.classList.remove('active')
+        if (!element.closest('.drop-down-menu') && !element.classList.contains('ico_user')) {
+            if (userIcon && userIcon.classList.contains('active')) {
+                userIcon.classList.remove('active')
+                this.headerEl.removeChild(this.dropdownMenu.renderNotAuth())
+            }
+        }
+        if (
+            !element.closest('.drop-down-menu') &&
+            !element.classList.contains('ico_user-light') &&
+            !element.classList.contains('ico_close')
+        ) {
+            if (userIconLight && userIconLight.classList.contains('active')) {
+                userIconLight.classList.remove('active')
                 this.headerEl.removeChild(this.dropdownMenu.renderNotAuth())
             }
         }
@@ -114,7 +156,7 @@ export class MainView extends EventEmitter {
 
     private renderHeader() {
         const header = document.createElement('header')
-        header.className = 'border-solid border-b border-color-border-header sticky top-0'
+        header.className = 'border-solid border-b border-color-border-header sticky top-0 header'
         const flows = Object.keys(Flows).map((el) => ({
             name: dictionary.flowsNames[el as keyof typeof Flows][this.model.lang],
             link: '/flows' + Flows[el as keyof typeof Flows],

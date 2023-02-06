@@ -1,14 +1,26 @@
 <div class="bg-color-logo">
-  <div class="container mx-auto flex flex-col items-start justify-center h-12">
-    <a href="/">
-      <h1 class="font-bold text-color-light m-0">{{logo}}</h1>
-    </a>
+  <div class="container mx-auto flex justify-start items-center h-12">
+    <div class="flex gap-4 items-center">
+      {{#if flows}}
+      <span class="header__burger burger md:hidden"><span class="burger__line"></span></span>
+      {{/if}}
+      <a href="/">
+        <h1 class="font-bold text-color-light m-0">{{logo}}</h1>
+      </a>
+    </div>
+    {{#if flows}}
+    <div class="gap-5 header__menu md:hidden flex ml-auto items-center">
+      <a href="/search" class="h-6"><span class="ico ico_search ico_search-light"></span></a>
+      <span class="ico ico_user-light"></span>
+    </div>
+    {{/if}}
   </div>
 </div>
-<div class="container m-auto">
+<div class="bg-color-popup-bg fixed top-0 bottom-0 left-0 right-0 hidden sidebar-bg"></div>
+<div class="m-auto bg-color-light md:container md:block hidden header__flows">
   {{#if flows}}
   <div class="flex place-content-between gap-y-8 py-3 items-center">
-    <nav class="flex gap-2 nav flex-col sm:flex-row sm:gap-5">
+    <nav class="flex gap-4 flex-col nav md:flex-row">
       {{#each flows}}
       {{#if (eq this.link '/flows/all')}}
       <a href="{{this.link}}" class="hover:text-color-link-hover transition text-color-text-dark">{{this.name}}</a>
@@ -17,7 +29,7 @@
       {{/if}}
       {{/each}}
     </nav>
-    <div class="flex gap-5 header__menu">
+    <div class="md:flex gap-5 header__menu hidden">
       <a href="/search"><span class="ico ico_search"></span></a>
       <span class="ico ico_user"></span>
     </div>
