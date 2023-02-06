@@ -15,11 +15,13 @@ export type EditorViewInstance = InstanceType<typeof EditorView>
 export class EditorView extends EventEmitter {
     private editorModel: EditorModel
     private pageModel: PageModelInstance
+    private isGlobalListener: boolean
 
     constructor(editorModel: EditorModel, pageModel: PageModelInstance) {
         super()
         this.editorModel = editorModel
         this.pageModel = pageModel
+        this.isGlobalListener = false
         this.pageModel.on('CHANGE_PAGE', () => {
             if (this.pageModel.path[0] === Paths.Sandbox && this.pageModel.path[1] === Sandbox.New) {
                 this.buildPage()
@@ -54,16 +56,19 @@ export class EditorView extends EventEmitter {
     }
 
     addGlobalEventListener() {
-        document.addEventListener('click', (e) => {
-            const modalOptionsList = document.querySelectorAll('.options__drop-menu')
-            modalOptionsList.forEach((el) => {
-                const element = el as HTMLElement
-                if (element.classList.contains('open')) {
-                    element.hidden = true
-                    element.classList.remove('open')
-                }
+        if (!this.isGlobalListener) {
+            this.isGlobalListener = true
+            document.addEventListener('click', (e) => {
+                const modalOptionsList = document.querySelectorAll('.options__drop-menu')
+                modalOptionsList.forEach((el) => {
+                    const element = el as HTMLElement
+                    if (element.classList.contains('open')) {
+                        element.hidden = true
+                        element.classList.remove('open')
+                    }
+                })
             })
-        })
+        }
     }
 
     addTextInputListeners(el: HTMLElement) {

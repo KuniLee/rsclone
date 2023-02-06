@@ -7,8 +7,6 @@ type EditorModelEventsName = 'CHANGE_PAGE' | '404'
 export type EditorModelInstance = InstanceType<typeof EditorModel>
 
 export class EditorModel extends EventEmitter {
-    public path: Array<string> = []
-    public lang: 'ru' | 'en' = 'ru'
     public search: ParsedQuery<string> = {}
 
     constructor() {
