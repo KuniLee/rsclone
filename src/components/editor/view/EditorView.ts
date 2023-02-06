@@ -1,6 +1,7 @@
 import EventEmitter from 'events'
 import type { EditorModel } from '../model/EditorModel'
 import textEditor from '@/templates/textEditor.hbs'
+import newField from '@/templates/textEditorNewField.hbs'
 import { Flows, Paths, Sandbox } from 'types/enums'
 import dictionary from '@/utils/dictionary'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
@@ -29,58 +30,81 @@ export class EditorView extends EventEmitter {
         if (main) {
             main.innerHTML = textEditor({})
         }
-        this.addListeners()
+        document.querySelectorAll('.editable')?.forEach((el) => {
+            this.addListeners(el as HTMLElement)
+        })
     }
 
-    addListeners() {
-        document.querySelector('.textEditor')?.addEventListener('keypress', (e) => {
-            const el = document.querySelector('.focused')
+    addListeners(el: HTMLElement) {
+        el.addEventListener('keypress', (e) => {
+            e.preventDefault()
+            const event = e as KeyboardEvent
+            const item = document.querySelector('.focused')
+            if (event.key !== 'Enter' && item) {
+                const eventD = new KeyboardEvent('input', {
+                    key: event.key,
+                })
+                el.dispatchEvent(eventD)
+                console.log('dipatched')
+            }
+            if (event.key === 'Enter') {
+                this.addNewField()
+            }
         })
-        document.querySelectorAll('.editable').forEach((el) => {
-            el.addEventListener('keypress', (e) => {
-                e.preventDefault()
-                const event = e as KeyboardEvent
-                const item = document.querySelector('.focused')
-                if (event.key !== 'Enter' && item) {
-                    const eventD = new KeyboardEvent('input', {
-                        key: event.key,
-                    })
-                    el.dispatchEvent(eventD)
-                    console.log('dipatched')
+        el.addEventListener('input', (e) => {
+            e.preventDefault()
+            const event = e as KeyboardEvent
+            console.log(event.key)
+            const target = el as HTMLElement
+            if (event.key !== undefined) {
+                target.textContent += event.key
+                const sel = window.getSelection()
+                if (sel) {
+                    sel.selectAllChildren(el)
+                    sel.collapseToEnd()
                 }
-            })
-            el.addEventListener('input', (e) => {
-                e.preventDefault()
-                const event = e as KeyboardEvent
-                console.log(event.key)
-                const target = el as HTMLElement
-                if (event.key !== undefined) {
-                    target.textContent += event.key
-                    const sel = window.getSelection()
-                    if (sel) {
-                        sel.selectAllChildren(el)
-                        sel.collapseToEnd()
-                    }
+            }
+            const value = target.textContent
+            const parent = el.parentNode as HTMLElement
+            if (parent) {
+                if (value) {
+                    parent.classList.add('before:hidden')
+                } else {
+                    parent.classList.remove('before:hidden')
                 }
-                const value = target.textContent
-                const parent = el.parentNode as HTMLElement
-                if (parent) {
-                    if (value) {
-                        parent.classList.add('before:hidden')
-                    } else {
-                        parent.classList.remove('before:hidden')
-                    }
-                }
-            })
-            el.addEventListener('focus', (e) => {
-                const target = el as HTMLElement
-                target.classList.add('focused')
-            })
-            el.addEventListener('blur', (e) => {
-                const target = el as HTMLElement
-                target.classList.remove('focused')
-            })
+            }
         })
+        el.addEventListener('focus', (e) => {
+            const target = el as HTMLElement
+            const parent = target.parentElement
+            if (parent) {
+                parent.classList.add('focused')
+            }
+        })
+        el.addEventListener('blur', (e) => {
+            const target = el as HTMLElement
+            const parent = target.parentElement
+            if (parent) {
+                parent.classList.remove('focused')
+            }
+        })
+    }
+    addNewField() {
+        const el = document.querySelector('.focused') as HTMLElement
+        if (el) {
+            const template = document.createElement('template')
+            template.innerHTML = newField({})
+            el.after(template.content)
+            const newElem = document.querySelector('.new') as HTMLElement
+            if (newElem) {
+                const newElemField = newElem.querySelector('.editable') as HTMLElement
+                if (newElemField) {
+                    newElem.classList.remove('new')
+                    this.addListeners(newElemField)
+                    newElemField.focus()
+                }
+            }
+        }
     }
 
     emit<T>(event: ItemViewEventsName, arg?: T) {
