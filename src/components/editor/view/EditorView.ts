@@ -6,6 +6,9 @@ import { Flows, Paths, Sandbox } from 'types/enums'
 import dictionary from '@/utils/dictionary'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { Sortable } from '@shopify/draggable'
+import { SortableEventNames } from '@shopify/draggable'
+
+type TExtendSortable = SortableEventNames & 'drag:stopped'
 
 type ItemViewEventsName = 'GOTO'
 
@@ -47,7 +50,7 @@ export class EditorView extends EventEmitter {
                 touch: 100,
             },
         })
-        sortable.on('drag:stopped', () => {
+        sortable.on('drag:stopped' as TExtendSortable, () => {
             this.hidePlaceholder()
         })
     }
