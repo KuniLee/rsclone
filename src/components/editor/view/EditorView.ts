@@ -33,9 +33,35 @@ export class EditorView extends EventEmitter {
     }
 
     addListeners() {
+        document.querySelector('.textEditor')?.addEventListener('keypress', (e) => {
+            const el = document.querySelector('.focused')
+        })
         document.querySelectorAll('.editable').forEach((el) => {
+            el.addEventListener('keypress', (e) => {
+                e.preventDefault()
+                const event = e as KeyboardEvent
+                const item = document.querySelector('.focused')
+                if (event.key !== 'Enter' && item) {
+                    const eventD = new KeyboardEvent('input', {
+                        key: event.key,
+                    })
+                    el.dispatchEvent(eventD)
+                    console.log('dipatched')
+                }
+            })
             el.addEventListener('input', (e) => {
+                e.preventDefault()
+                const event = e as KeyboardEvent
+                console.log(event.key)
                 const target = el as HTMLElement
+                if (event.key !== undefined) {
+                    target.textContent += event.key
+                    const sel = window.getSelection()
+                    if (sel) {
+                        sel.selectAllChildren(el)
+                        sel.collapseToEnd()
+                    }
+                }
                 const value = target.textContent
                 const parent = el.parentNode as HTMLElement
                 if (parent) {
@@ -45,6 +71,14 @@ export class EditorView extends EventEmitter {
                         parent.classList.remove('before:hidden')
                     }
                 }
+            })
+            el.addEventListener('focus', (e) => {
+                const target = el as HTMLElement
+                target.classList.add('focused')
+            })
+            el.addEventListener('blur', (e) => {
+                const target = el as HTMLElement
+                target.classList.remove('focused')
             })
         })
     }
