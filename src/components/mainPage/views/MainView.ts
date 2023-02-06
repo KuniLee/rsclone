@@ -44,9 +44,10 @@ export class MainView extends EventEmitter {
     }
 
     private addListeners() {
-        const navEl = document.querySelector('.nav')
-        const headerFlowsEl = document.querySelector('.header__flows')
-        const sideBarBgEl = document.querySelector('.sidebar-bg')
+        const navEl = this.headerEl.querySelector('.nav')
+        const headerFlowsEl = this.headerEl.querySelector('.header__flows')
+        const sideBarBgEl = this.headerEl.querySelector('.sidebar-bg')
+
         if (navEl) {
             navEl.addEventListener('click', (ev) => {
                 if (ev.target instanceof HTMLAnchorElement) {
@@ -59,6 +60,7 @@ export class MainView extends EventEmitter {
                 }
             })
         }
+
         document.body.addEventListener('click', (ev) => {
             if (ev.target instanceof HTMLElement) {
                 this.toggleDropdownMenu(ev.target)
@@ -76,9 +78,7 @@ export class MainView extends EventEmitter {
                 window.innerWidth > 768 &&
                 headerFlowsEl.classList.contains('sidebar')
             ) {
-                headerFlowsEl.classList.remove('sidebar')
-                headerFlowsEl.classList.add('hidden')
-                sideBarBgEl.classList.add('hidden')
+                this.closeSidebar(headerFlowsEl, sideBarBgEl)
             }
         })
     }
@@ -88,7 +88,7 @@ export class MainView extends EventEmitter {
     }
 
     private togglePopupSettings(element: HTMLElement) {
-        const settingsBtn = document.querySelector('.settings')
+        const settingsBtn = this.headerEl.querySelector('.settings')
         const popupSettings = document.querySelector('.popup-settings')
         if (settingsBtn) {
             settingsBtn.addEventListener('click', () => {
@@ -105,22 +105,34 @@ export class MainView extends EventEmitter {
         }
     }
 
+    private openSidebar(headerFlows: Element, sideBarBg: Element) {
+        headerFlows.classList.add('sidebar')
+        headerFlows.classList.remove('hidden')
+        sideBarBg.classList.remove('hidden')
+    }
+
+    private closeSidebar(headerFlows: Element, sideBarBg: Element) {
+        headerFlows.classList.remove('sidebar')
+        headerFlows.classList.add('hidden')
+        sideBarBg.classList.add('hidden')
+    }
+
     private toggleSidebar(element: HTMLElement, headerFlows: Element, sideBarBg: Element) {
         if (element.closest('.burger')) {
-            headerFlows.classList.add('sidebar')
-            headerFlows.classList.remove('hidden')
-            sideBarBg.classList.remove('hidden')
+            this.openSidebar(headerFlows, sideBarBg)
         }
-        if (headerFlows.classList.contains('sidebar') && !element.closest('.sidebar') && !element.closest('.burger')) {
-            headerFlows.classList.remove('sidebar')
-            headerFlows.classList.add('hidden')
-            sideBarBg.classList.add('hidden')
+        if (
+            headerFlows.classList.contains('sidebar') &&
+            (element.classList.contains('flow-link') || element.classList.contains('sidebar-bg')) &&
+            !element.closest('.burger')
+        ) {
+            this.closeSidebar(headerFlows, sideBarBg)
         }
     }
 
     private toggleDropdownMenu(element: HTMLElement) {
-        const userIconLight = document.querySelector('.ico_user-light')
-        const userIcon = document.querySelector('.ico_user')
+        const userIconLight = this.headerEl.querySelector('.ico_user-light')
+        const userIcon = this.headerEl.querySelector('.ico_user')
         if (element.classList.contains('ico_user') || element.classList.contains('ico_user-light')) {
             element.classList.toggle('active')
             if (element.classList.contains('active')) {
@@ -159,7 +171,7 @@ export class MainView extends EventEmitter {
         header.className = 'border-solid border-b border-color-border-header sticky top-0 header'
         const flows = Object.keys(Flows).map((el) => ({
             name: dictionary.flowsNames[el as keyof typeof Flows][this.model.lang],
-            link: '/flows' + Flows[el as keyof typeof Flows],
+            link: Paths.Flows + Flows[el as keyof typeof Flows],
         }))
         flows.unshift({ name: dictionary.buttons.Feed[this.model.lang], link: Paths.Feed })
         const logo = dictionary.logo.Logo[this.model.lang]
