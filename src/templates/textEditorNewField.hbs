@@ -1,3 +1,15 @@
-<div class="textElement before:content-[attr(data-is-empty)] before:absolute before:text-[#c0c0c0] before:pointer-events-none text-xl new" data-is-empty="Нажмите '/' для вызова меню">
-  <p contenteditable="true" class="editable outline-0 whitespace-pre-wrap"></p>
+<div class="textElement before:content-[attr(data-is-empty)] before:absolute before:text-[#c0c0c0] before:pointer-events-none text-xl new flex items-center" data-is-empty="Нажмите '/' для вызова меню">
+  <p contenteditable="true" class="editable outline-0 whitespace-pre-wrap flex-grow"></p>
+  <div class="options cursor-pointer">
+    <button class="options__open-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+      </svg>
+    </button>
+    <div class="options__drop-menu absolute w-[220px] shadow right-0 bg-color-light" hidden>
+      <div class="py-[5px]">
+        <button class="delete-btn py-[10px] hover:bg-[rgba] w-full text-[13px] hover:bg-color-gray-light transition">Удалить</button>
+      </div>
+    </div>
+  </div>
 </div>

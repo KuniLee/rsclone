@@ -30,12 +30,29 @@ export class EditorView extends EventEmitter {
         if (main) {
             main.innerHTML = textEditor({})
         }
+        this.addGlobalEventListener()
         document.querySelectorAll('.editable')?.forEach((el) => {
-            this.addListeners(el as HTMLElement)
+            this.addTextInputListeners(el as HTMLElement)
+        })
+        document.querySelectorAll('.textElement')?.forEach((el) => {
+            this.addTextElementListeners(el as HTMLElement)
         })
     }
 
-    addListeners(el: HTMLElement) {
+    addGlobalEventListener() {
+        document.addEventListener('click', (e) => {
+            const modalOptionsList = document.querySelectorAll('.options__drop-menu')
+            modalOptionsList.forEach((el) => {
+                const element = el as HTMLElement
+                if (element.classList.contains('open')) {
+                    element.hidden = true
+                    element.classList.remove('open')
+                }
+            })
+        })
+    }
+
+    addTextInputListeners(el: HTMLElement) {
         const editor = document.querySelector('.textEditor') as HTMLElement
         el.addEventListener('keypress', (e) => {
             e.preventDefault()
@@ -81,7 +98,9 @@ export class EditorView extends EventEmitter {
                 const value = target.textContent
                 const parent = target.parentElement
                 const listOfElements = document.querySelectorAll('.textElement')
+                console.log('test')
                 if (value === '' && parent && parent.classList.contains('textElement') && listOfElements.length !== 1) {
+                    console.log('1')
                     this.deleteElement(parent)
                 }
             }
@@ -101,6 +120,20 @@ export class EditorView extends EventEmitter {
             }
         })
     }
+
+    addTextElementListeners(textElement: HTMLElement) {
+        textElement.addEventListener('click', (e) => {
+            const el = e.target as HTMLElement
+            if (el.closest('.options__open-btn')) {
+                const dropMenu = textElement.querySelector('.options__drop-menu') as HTMLElement
+                if (dropMenu) {
+                    dropMenu.hidden = false
+                    dropMenu.classList.add('open')
+                    e.stopImmediatePropagation()
+                }
+            }
+        })
+    }
     addNewField() {
         const el = document.querySelector('.focused') as HTMLElement
         if (el) {
@@ -108,11 +141,12 @@ export class EditorView extends EventEmitter {
             template.innerHTML = newField({})
             el.after(template.content)
             const newElem = document.querySelector('.new') as HTMLElement
+            console.log(newElem)
             if (newElem) {
                 const newElemField = newElem.querySelector('.editable') as HTMLElement
                 if (newElemField) {
                     newElem.classList.remove('new')
-                    this.addListeners(newElemField)
+                    this.addTextInputListeners(newElemField)
                     newElemField.focus()
                 }
             }
