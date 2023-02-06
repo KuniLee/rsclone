@@ -8,8 +8,6 @@ import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { Sortable } from '@shopify/draggable'
 import { SortableEventNames } from '@shopify/draggable'
 
-type TExtendSortable = SortableEventNames & 'drag:stopped'
-
 type ItemViewEventsName = 'GOTO'
 
 export type EditorViewInstance = InstanceType<typeof EditorView>
@@ -42,7 +40,7 @@ export class EditorView extends EventEmitter {
             this.addTextElementListeners(el as HTMLElement)
         })
         const editor = document.querySelector('.textEditor') as HTMLElement
-        const sortable = new Sortable(editor, {
+        const sortable = new Sortable<SortableEventNames | 'drag:stopped'>(editor, {
             draggable: '.textElement',
             delay: {
                 mouse: 100,
@@ -50,7 +48,7 @@ export class EditorView extends EventEmitter {
                 touch: 100,
             },
         })
-        sortable.on('drag:stopped' as TExtendSortable, () => {
+        sortable.on('drag:stopped', () => {
             this.hidePlaceholder()
         })
     }
