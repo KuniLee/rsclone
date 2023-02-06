@@ -5,6 +5,7 @@ import newField from '@/templates/textEditorNewField.hbs'
 import { Flows, Paths, Sandbox } from 'types/enums'
 import dictionary from '@/utils/dictionary'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
+import { Sortable } from '@shopify/draggable'
 
 type ItemViewEventsName = 'GOTO'
 
@@ -36,6 +37,18 @@ export class EditorView extends EventEmitter {
         })
         document.querySelectorAll('.textElement')?.forEach((el) => {
             this.addTextElementListeners(el as HTMLElement)
+        })
+        const editor = document.querySelector('.textEditor') as HTMLElement
+        const sortable = new Sortable(editor, {
+            draggable: '.textElement',
+            delay: {
+                mouse: 100,
+                drag: 100,
+                touch: 100,
+            },
+        })
+        sortable.on('drag:stopped', () => {
+            this.hidePlaceholder()
         })
     }
 
@@ -178,10 +191,16 @@ export class EditorView extends EventEmitter {
     hidePlaceholder() {
         const elements = document.querySelectorAll('.textElement')
         for (let i = 0; i < elements.length; i++) {
+            console.log(elements.length)
             if (elements.length - 1 !== i) {
                 elements[i].classList.add('before:hidden')
             } else {
-                elements[i].classList.remove('before:hidden')
+                const elem = elements[i].querySelector('.editable') as HTMLElement
+                if (elem) {
+                    if (elem.textContent?.length === 0) {
+                        elements[i].classList.remove('before:hidden')
+                    }
+                }
             }
         }
     }
