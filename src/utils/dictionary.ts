@@ -2,6 +2,10 @@ import { Flows } from 'types/enums'
 
 type language = { ru: string; en: string }
 
+const logo: Record<string, language> = {
+    Logo: { ru: 'Хабр', en: 'Habr' },
+}
+
 const flowsNames: Record<keyof typeof Flows, language> = {
     All: { ru: 'Все потоки', en: 'All streams' },
     Develop: { ru: 'Разработка', en: 'Development' },
@@ -21,4 +25,4 @@ const popupSettings: Record<string, language> = {
     Save: { ru: 'Сохранить настройки', en: 'Save preferences' },
 }
 
-export default { flowsNames, buttons, popupSettings }
+export default { flowsNames, buttons, popupSettings, logo }

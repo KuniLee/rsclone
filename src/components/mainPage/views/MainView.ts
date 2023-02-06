@@ -114,13 +114,14 @@ export class MainView extends EventEmitter {
 
     private renderHeader() {
         const header = document.createElement('header')
-        header.className = 'border-solid border-b-[1px] border-color-border-header sticky top-0 bg-color-light'
+        header.className = 'border-solid border-b-[1px] border-color-border-header sticky top-0'
         const flows = Object.keys(Flows).map((el) => ({
             name: dictionary.flowsNames[el as keyof typeof Flows][this.model.lang],
             link: '/flows' + Flows[el as keyof typeof Flows],
         }))
         flows.unshift({ name: dictionary.buttons.Feed[this.model.lang], link: Paths.Feed })
-        header.innerHTML = headerTemplate({ flows })
+        const logo = dictionary.logo.Logo[this.model.lang]
+        header.innerHTML = headerTemplate({ flows, logo })
         return header
     }
 

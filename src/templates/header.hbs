@@ -1,9 +1,13 @@
-<div class="py-[20px] max-w-[1200px] px-[15px] m-auto">
-  <a href="/" class="w-fit inline-block">
-    <h1 class="mb-[10px] font-bold text-color-logo w-max">Habr</h1>
-  </a>
+<div class="bg-color-logo">
+  <div class="container mx-auto flex flex-col items-start justify-center h-12">
+    <a href="/">
+      <h1 class="font-bold text-color-light m-0">{{logo}}</h1>
+    </a>
+  </div>
+</div>
+<div class="container m-auto">
   {{#if flows}}
-  <div class="flex place-content-between gap-y-8">
+  <div class="flex place-content-between gap-y-8 py-3 items-center">
     <nav class="flex gap-2 nav flex-col sm:flex-row sm:gap-5">
       {{#each flows}}
       {{#if (eq this.link '/flows/all')}}
