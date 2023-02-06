@@ -105,6 +105,18 @@ export class EditorView extends EventEmitter {
                 }
             }
         }
+        this.hidePlaceholder()
+    }
+
+    hidePlaceholder() {
+        const elements = document.querySelectorAll('.textElement')
+        for (let i = 0; i < elements.length; i++) {
+            if (elements.length - 1 !== i) {
+                elements[i].classList.add('before:hidden')
+            } else {
+                elements[i].classList.remove('before:hidden')
+            }
+        }
     }
 
     emit<T>(event: ItemViewEventsName, arg?: T) {
