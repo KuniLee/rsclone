@@ -298,7 +298,7 @@ export class AuthView extends EventEmitter {
 
     private renderHeader() {
         const header = document.createElement('header')
-        header.className = 'border-solid border-b-[1px] border-color-border-header'
+        header.className = 'border-solid border-b border-color-border-header'
         const logo = dictionary.logo.Logo[this.model.lang]
         header.innerHTML = headerTemplate({ logo })
         return header

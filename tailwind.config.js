@@ -24,9 +24,11 @@ module.exports = {
                 'color-additional': '#558cb7',
                 'color-link-hover': '#5096b1',
                 'color-button': '#548eaa',
-                'color-dropdown-menu-btn-hover': '#76a5bb',
+                'color-dropdown-menu-link-hover': '#76a5bb',
+                'color-dropdown-menu-btn-hover': '#edf5f9',
                 'color-popup-btn-hover': '#39728e',
                 'color-popup-text': '#838a92',
+                'color-popup-bg': 'rgba(0,0,0,.2)'
             }
         },
         fontFamily: {
