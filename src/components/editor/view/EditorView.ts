@@ -36,6 +36,7 @@ export class EditorView extends EventEmitter {
     }
 
     addListeners(el: HTMLElement) {
+        const editor = document.querySelector('.textEditor') as HTMLElement
         el.addEventListener('keypress', (e) => {
             e.preventDefault()
             const event = e as KeyboardEvent
@@ -68,7 +69,9 @@ export class EditorView extends EventEmitter {
                 if (value) {
                     parent.classList.add('before:hidden')
                 } else {
-                    parent.classList.remove('before:hidden')
+                    if (editor.lastElementChild === parent) {
+                        parent.classList.remove('before:hidden')
+                    }
                 }
             }
         })
