@@ -23,13 +23,15 @@
     <nav class="flex gap-4 flex-col nav md:flex-row">
       {{#each flows}}
       {{#if (eq this.link '/flows/all')}}
-      <a href="{{this.link}}" class="hover:text-color-link-hover transition text-color-text-dark">{{this.name}}</a>
+      <a href="{{this.link}}"
+        class="hover:text-color-link-hover transition text-color-text-dark flow-link">{{this.name}}</a>
       {{else}}
-      <a href="{{this.link}}" class="hover:text-color-link-hover transition text-color-text-light">{{this.name}}</a>
+      <a href="{{this.link}}"
+        class="hover:text-color-link-hover transition text-color-text-light flow-link">{{this.name}}</a>
       {{/if}}
       {{/each}}
     </nav>
-    <div class="md:flex gap-5 header__menu hidden">
+    <div class=" md:flex gap-5 header__menu hidden">
       <a href="/search"><span class="ico ico_search"></span></a>
       <span class="ico ico_user"></span>
     </div>

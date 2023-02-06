@@ -33,14 +33,13 @@ h1 {
     display: inline-block;
     position: relative;
     width: 20px;
-    height: 13px;
+    height: 14px;
     cursor: pointer;
 }
 
 .burger::after {
     top: 0;
     left: 0;
-    content: "";
     content: "";
     display: inline-block;
     position: absolute;
