@@ -175,8 +175,6 @@ export class MainView extends EventEmitter {
         }))
         flows.unshift({ name: dictionary.buttons.Feed[this.model.lang], link: Paths.Feed })
         flows.push({ name: dictionary.buttons.Sandbox[this.model.lang], link: Paths.Sandbox + '/new' })
-        flows.push({ name: dictionary.buttons.Auth[this.model.lang], link: Paths.Auth })
-        flows.push({ name: dictionary.buttons.Registration[this.model.lang], link: Paths.Registration })
         const logo = dictionary.logo.Logo[this.model.lang]
         header.innerHTML = headerTemplate({ flows, logo })
         return header

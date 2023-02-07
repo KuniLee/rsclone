@@ -1,6 +1,5 @@
 import { RouterInstance } from '@/utils/Rooter'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
-import { URLParams } from 'types/interfaces'
 import { EditorViewInstance } from '@/components/editor/view/EditorView'
 import { EditorModelInstance } from '@/components/editor/model/EditorModel'
 
@@ -25,9 +24,6 @@ export class EditorController {
                 path: this.router.getPathArray(arg),
                 search: this.router.getParsedSearch(arg),
             })
-        })
-        router.on('ROUTE', () => {
-            pageModel.changePage(this.router.getParams())
         })
     }
 }
