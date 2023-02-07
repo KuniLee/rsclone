@@ -15,3 +15,9 @@ export type AuthViewTypes = {
     path?: string
     query?: string
 }
+
+export type Article = {
+    id: string
+    title: string
+    userId: string
+}

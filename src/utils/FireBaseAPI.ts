@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app'
+import { getFirestore, serverTimestamp, setDoc, doc, collection, getDocs } from 'firebase/firestore'
 import {
     createUserWithEmailAndPassword,
     getAuth,
@@ -6,16 +7,28 @@ import {
     signInWithEmailAndPassword,
     fetchSignInMethodsForEmail,
     updateProfile,
+    signOut,
 } from 'firebase/auth'
-import { FirebaseConfigType } from 'types/types'
+import type { FirebaseApp } from 'firebase/app'
+import type { User, Auth } from 'firebase/auth'
+import type { Firestore } from 'firebase/firestore'
 
-export type AuthLoaderInstance = InstanceType<typeof AuthLoader>
+export { serverTimestamp, setDoc, doc, collection, getDocs }
+import EventEmitter from 'events'
 
-export class AuthLoader {
-    private firebaseConfig: FirebaseConfigType
-    private app: unknown
+export type { User, Auth, Firestore }
+
+export type FirebaseEvents = 'CHANGE_AUTH'
+export type FireBaseAPIInstance = InstanceType<typeof FireBaseAPI>
+
+export class FireBaseAPI extends EventEmitter {
+    public app: FirebaseApp
+    public db: Firestore
+    public auth: Auth
+
     constructor() {
-        this.firebaseConfig = {
+        super()
+        const config = {
             apiKey: process.env.FIREBASE_API_KEY || '',
             authDomain: process.env.FIREBASE_AUTH_DOMAIN || '',
             databaseURL: process.env.FIREBASE_DATABASE_URL || '',
@@ -24,16 +37,18 @@ export class AuthLoader {
             messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || '',
             appId: process.env.FIREBASE_API_ID || '',
         }
-        this.app = initializeApp(this.firebaseConfig)
+        this.app = initializeApp(config)
+        this.db = getFirestore(this.app)
+        this.auth = getAuth()
+        onAuthStateChanged(this.auth, (user) => {
+            if (user) this.emit<User>('CHANGE_AUTH', user)
+        })
     }
 
     async signUp(email: string, password: string, nick: string) {
         const auth = getAuth()
         const result = await createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user
-                return user
-            })
+            .then((userCredential) => userCredential.user)
             .catch((error) => {
                 const errorCode = error.code
                 const errorMessage = error.message
@@ -45,7 +60,7 @@ export class AuthLoader {
                 displayName: `${nick}`,
                 photoURL: '',
             })
-                .then((result) => {
+                .then(() => {
                     console.log('name added')
                 })
                 .catch((er) => {
@@ -56,8 +71,7 @@ export class AuthLoader {
     }
 
     async signIn(email: string, password: string) {
-        const auth = getAuth()
-        const result = signInWithEmailAndPassword(auth, email, password)
+        return signInWithEmailAndPassword(this.auth, email, password)
             .then((userCredential) => {
                 console.log(userCredential)
                 return userCredential.user
@@ -67,29 +81,34 @@ export class AuthLoader {
                 const errorMessage = error.message
                 return null
             })
-        return result
     }
 
-    async checkAuthState() {
+    async signOut() {
         const auth = getAuth()
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                const uid = user.uid
-            } else {
-                console.log('Unknown user')
-            }
-        })
+        signOut(auth)
+            .then(() => {
+                return true
+            })
+            .catch((error) => {
+                // An error happened.
+            })
     }
 
     async checkEmailInDatabase(email: string) {
-        const auth = getAuth()
-        const result = await fetchSignInMethodsForEmail(auth, email)
+        return await fetchSignInMethodsForEmail(this.auth, email)
             .then((result) => {
                 return result
             })
             .catch((err) => {
                 return err
             })
-        return result
+    }
+
+    emit<T>(event: FirebaseEvents, arg?: T) {
+        return super.emit(event, arg)
+    }
+
+    on<T>(event: FirebaseEvents, callback: (arg: T) => void) {
+        return super.on(event, callback)
     }
 }
