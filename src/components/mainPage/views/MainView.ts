@@ -7,7 +7,7 @@ import dictionary from '@/utils/dictionary'
 import { DropdownMenu } from '@/utils/dropdownMenu'
 import footerTemplate from '@/templates/footer.hbs'
 
-type ItemViewEventsName = 'GOTO'
+type ItemViewEventsName = 'GOTO' | 'CHANGE_LANG'
 
 export type MainViewInstance = InstanceType<typeof MainView>
 
@@ -85,10 +85,30 @@ export class MainView extends EventEmitter {
     private togglePopupSettings(element: HTMLElement) {
         const settingsBtn = this.headerEl.querySelector('.settings')
         const popupSettings = document.querySelector('.popup-settings')
+        const saveSettingsBtn = document.querySelector('.btn-save')
         if (settingsBtn) {
             settingsBtn.addEventListener('click', () => {
                 document.body.appendChild(this.popupSettings.render())
+                Array.from(document.getElementsByName('lang')).forEach((input) => {
+                    if (input instanceof HTMLInputElement && this.model.lang === input.id) {
+                        input.checked = true
+                    }
+                })
             })
+
+            if (saveSettingsBtn) {
+                saveSettingsBtn.addEventListener('click', (ev) => {
+                    ev.preventDefault()
+                    const selectedLangInput = Array.from(document.getElementsByName('lang')).find(
+                        (input) => input instanceof HTMLInputElement && input.checked
+                    )
+                    if (selectedLangInput) {
+                        const selectedLang = selectedLangInput.id
+                        this.emit<string>('CHANGE_LANG', selectedLang)
+                        this.show()
+                    }
+                })
+            }
         }
         if (popupSettings) {
             if (
@@ -189,6 +209,6 @@ export class MainView extends EventEmitter {
     }
 
     private show() {
-        document.body.append(this.headerEl, this.mainPageContainer, this.footerEl)
+        document.body.replaceChildren(this.headerEl, this.mainPageContainer, this.footerEl)
     }
 }

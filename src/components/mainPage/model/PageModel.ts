@@ -1,6 +1,6 @@
 import EventEmitter from 'events'
 import { Flows, Paths, Sandbox } from 'types/enums'
-import { URLParams } from 'types/interfaces'
+import { rootModel, URLParams } from 'types/interfaces'
 import { ParsedQuery } from 'query-string'
 
 type PageModelEventsName = 'CHANGE_PAGE' | '404'
@@ -13,6 +13,10 @@ export class PageModel extends EventEmitter {
 
     constructor() {
         super()
+    }
+
+    changeLang(lang: rootModel['lang']) {
+        this.lang = lang
     }
 
     on<T>(event: PageModelEventsName, callback: (arg: T) => void) {
