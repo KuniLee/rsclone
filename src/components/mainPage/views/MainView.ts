@@ -6,8 +6,9 @@ import { Flows, Paths } from 'types/enums'
 import dictionary from '@/utils/dictionary'
 import { DropdownMenu } from '@/utils/dropdownMenu'
 import footerTemplate from '@/templates/footer.hbs'
+import { rootModel } from 'types/interfaces'
 
-type ItemViewEventsName = 'GOTO' | 'CHANGE_LANG'
+type ItemViewEventsName = 'GOTO'
 
 export type MainViewInstance = InstanceType<typeof MainView>
 
@@ -103,9 +104,8 @@ export class MainView extends EventEmitter {
                         (input) => input instanceof HTMLInputElement && input.checked
                     )
                     if (selectedLangInput) {
-                        const selectedLang = selectedLangInput.id
-                        this.emit<string>('CHANGE_LANG', selectedLang)
-                        this.show()
+                        localStorage.lang = selectedLangInput.id as rootModel['lang']
+                        location.reload()
                     }
                 })
             }

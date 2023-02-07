@@ -1,7 +1,6 @@
 import { RouterInstance } from '@/utils/Rooter'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { MainViewInstance } from '@/components/mainPage/views/MainView'
-import { rootModel, URLParams } from 'types/interfaces'
 
 export class AppController {
     private router: RouterInstance
@@ -18,7 +17,6 @@ export class AppController {
                 search: this.router.getParsedSearch(arg),
             })
         })
-        view.on<rootModel['lang']>('CHANGE_LANG', (lang) => model.changeLang(lang))
         router.on('ROUTE', () => {
             model.changePage(this.router.getParams())
         })
