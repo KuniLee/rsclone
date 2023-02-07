@@ -13,6 +13,10 @@ export enum Paths {
     Search = '/search',
 }
 
+export enum Sandbox {
+    New = '/new',
+}
+
 export enum Flows {
     All = '/all',
     Develop = '/develop',

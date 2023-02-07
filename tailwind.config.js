@@ -28,8 +28,9 @@ module.exports = {
                 'color-dropdown-menu-btn-hover': '#edf5f9',
                 'color-popup-btn-hover': '#39728e',
                 'color-popup-text': '#838a92',
-                'color-popup-bg': 'rgba(0,0,0,.2)'
-            }
+                'color-popup-bg': 'rgba(0,0,0,.2)',
+                'color-gray-light': '#eeeeee',
+            },
         },
         fontFamily: {
             HelveticaNeueCyr: ['HelveticaNeueCyr', 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif'],
