@@ -3,7 +3,7 @@ import { Flows, Paths } from 'types/enums'
 import { PageModelInstance } from '../model/PageModel'
 import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
 
-type FeedViewEventsName = 'LOAD_ARTICLES' | 'LOAD_IMAGE'
+type FeedViewEventsName = 'LOAD_ARTICLES' | 'DOWNLOAD_IMAGE' | 'UPLOAD_IMAGE'
 
 export type FeedViewInstance = InstanceType<typeof FeedView>
 
@@ -22,6 +22,7 @@ export class FeedView extends EventEmitter {
             // это временно
             if (path[1] === Flows.Image && path[0] === Paths.Flows) {
                 this.renderLoaderImage()
+                this.emit('DOWNLOAD_IMAGE')
                 return
             }
             if (Object.values(Flows).includes(path[1] as Flows) || path[0] === Paths.All || path[0] === Paths.Feed) {
@@ -31,6 +32,9 @@ export class FeedView extends EventEmitter {
         })
         this.feedModel.on('LOADED', () => {
             this.renderArticles()
+        })
+        this.feedModel.on('IMAGE_LOADED', () => {
+            this.updateImage()
         })
     }
 
@@ -51,11 +55,12 @@ export class FeedView extends EventEmitter {
         const template = document.createElement('div') as HTMLDivElement
         template.innerHTML = `
 <input type="file" class="hidden" accept="image/*,.png,.jpg,.gif,.web," id="file">
-<button class="bg-red-400 p-2 rounded">Загрузить фото</button>`
+<button class="bg-red-400 p-2 rounded">Загрузить фото</button>
+<img class="max-h-20 border border-2 rounded-xl border-emerald-800" alt="avatar" src="${require('@/assets/icons/ico-user.svg')}">`
         const file = template.querySelector('#file') as HTMLInputElement
-        file.addEventListener('change', (ev) => {
+        file.addEventListener('change', () => {
             if (file.files?.length === 1) {
-                if (file.files[0].size < 1024 * 1024) this.emit<File>('LOAD_IMAGE', file.files[0])
+                if (file.files[0].size < 1024 * 1024) this.emit<File>('UPLOAD_IMAGE', file.files[0])
             }
         })
         template.querySelector('button')?.addEventListener('click', () => {
@@ -68,5 +73,9 @@ export class FeedView extends EventEmitter {
         this.mainPageContainer.innerHTML = ''
         this.mainPageContainer.innerText = `Страница ${this.pageModel.path.join('')}:
         статьи: ${JSON.stringify(this.feedModel.articles)}`
+    }
+
+    private updateImage() {
+        this.mainPageContainer.querySelector('img')?.setAttribute('src', this.feedModel.image)
     }
 }

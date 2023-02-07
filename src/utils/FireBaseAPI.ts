@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { getStorage, ref } from 'firebase/storage'
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { getFirestore, serverTimestamp, setDoc, doc, collection, getDocs } from 'firebase/firestore'
 import {
     createUserWithEmailAndPassword,
@@ -15,10 +15,10 @@ import type { User, Auth } from 'firebase/auth'
 import type { Firestore } from 'firebase/firestore'
 import type { FirebaseStorage } from 'firebase/storage'
 
-export { serverTimestamp, setDoc, doc, collection, getDocs, ref }
+export { serverTimestamp, setDoc, doc, collection, getDocs, ref, uploadBytes, getDownloadURL }
 import EventEmitter from 'events'
 
-export type { User, Auth, Firestore }
+export type { User, Auth, Firestore, FirebaseStorage }
 
 export type FirebaseEvents = 'CHANGE_AUTH'
 export type FireBaseAPIInstance = InstanceType<typeof FireBaseAPI>

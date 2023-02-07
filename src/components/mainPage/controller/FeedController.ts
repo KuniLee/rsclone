@@ -1,7 +1,17 @@
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { FeedViewInstance } from '@/components/mainPage/views/FeedView'
 import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
-import { FireBaseAPIInstance, Firestore, Auth, collection, getDocs } from '@/utils/FireBaseAPI'
+import {
+    FireBaseAPIInstance,
+    Firestore,
+    Auth,
+    collection,
+    getDocs,
+    FirebaseStorage,
+    ref,
+    uploadBytes,
+    getDownloadURL,
+} from '@/utils/FireBaseAPI'
 import { Article } from 'types/types'
 
 export class FeedController {
@@ -10,6 +20,7 @@ export class FeedController {
     private feedModel: FeedModelInstance
     private readonly db: Firestore
     private readonly auth: Auth
+    private storage: FirebaseStorage
 
     constructor(
         view: FeedViewInstance,
@@ -21,6 +32,7 @@ export class FeedController {
         this.view = view
         this.db = api.db
         this.auth = api.auth
+        this.storage = api.storage
         this.api.on('CHANGE_AUTH', (user) => {
             console.log('смена: ', user)
         })
@@ -28,8 +40,11 @@ export class FeedController {
             console.log(this.pageModel.path[0])
             this.feedModel.setArticles(await this.loadArticles())
         })
-        this.view.on<File>('LOAD_IMAGE', (file) => {
+        this.view.on<File>('UPLOAD_IMAGE', async (file) => {
             this.loadImage(file)
+        })
+        this.view.on('DOWNLOAD_IMAGE', async () => {
+            await this.downloadImage()
         })
     }
 
@@ -45,6 +60,19 @@ export class FeedController {
     }
 
     private loadImage(file: File) {
-        console.log(file)
+        const imageRef = ref(this.storage, `images/avatar`)
+        uploadBytes(imageRef, file).then((snapshot) => {
+            console.log(snapshot)
+            this.downloadImage()
+        })
+    }
+
+    private async downloadImage() {
+        try {
+            const url = await getDownloadURL(ref(this.storage, 'images/avatar'))
+            this.feedModel.setImage(url)
+        } catch (e) {
+            console.log(e)
+        }
     }
 }
