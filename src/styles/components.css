@@ -12,6 +12,18 @@
   height: 24px;
 }
 
+.ico_user-light {
+  background: url(../assets/icons/ico-user1.svg) center no-repeat;
+  background-size: contain;
+  width: 24px;
+  height: 24px;
+}
+
+.ico_search-light {
+  background: url(../assets/icons/ico-search1.svg) center no-repeat;
+  background-size: contain;
+}
+
 .ico_settings {
   background: url(../assets/icons/ico-settings.svg) center no-repeat;
   background-size: contain;
@@ -35,19 +47,17 @@
 
 .drop-down-menu {
   position: absolute;
-  right: calc(100% - 90%);
+  right: calc(100% - 95%);
   color: #303b44;
   background-color: #ffffff;
   box-shadow: 0 0 12px rgb(0 0 0 / 16%);
-  border-radius: 4px;
 }
 
-@media (max-width:640px) {
+@media (max-width:768px) {
   .drop-down-menu {
+    height: 100vh;
     top: 0;
     right: 0;
-    width: 70%;
-    height: 100vh;
   }
 }
 
@@ -62,4 +72,15 @@
 
 .input-radio:checked+.input-radio-fake {
   border: 5px solid #548eaa;
+}
+
+.sidebar {
+  z-index: 10;
+  position: absolute;
+  display: block;
+  height: 100vh;
+  top: 0;
+  width: 72%;
+  max-width: 300px;
+  padding: 0 16px;
 }

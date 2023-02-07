@@ -9,7 +9,6 @@ export class DropdownMenu {
     constructor(model: PageModel) {
         this.model = model
         this.dropdownMenu = document.createElement('div')
-        this.dropdownMenu.className = 'drop-down-menu'
     }
 
     renderNotAuth() {

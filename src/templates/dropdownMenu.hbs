@@ -1,11 +1,14 @@
-<div class="p-[20px] flex gap-[15px] border-solid border-b-[1px] border-color-border-light flex-wrap">
-  <a href="/login"
-    class="text-color-button border-solid border-[1px] border-color-button px-[10px] py-[3px] rounded block">{{buttons.Auth}}</a>
-  <a href="/register"
-    class="bg-color-button text-color-light px-[10px] py-[3px] rounded block transition hover:bg-color-dropdown-menu-btn-hover">{{buttons.Registration}}</a>
+<div class="bg-color-popup-bg fixed top-0 bottom-0 left-0 right-0 md:hidden"></div>
+<div class="z-2 drop-down-menu">
+  <div class="p-5 flex gap-3.5 border-solid border-b border-color-border-light flex-wrap">
+    <a href="/login"
+      class="text-color-button border-solid border border-color-button px-2.5 py-0.5 rounded block">{{buttons.Auth}}</a>
+    <a href="/register"
+      class="bg-color-button text-color-light px-2.5 py-0.5 rounded block transition hover:bg-color-dropdown-menu-link-hover">{{buttons.Registration}}</a>
+  </div>
+  <button
+    class="pl-5 py-3.5  hover:bg-color-dropdown-menu-btn-hover w-full my-3 transition flex gap-2 items-center settings">
+    <span class="ico ico_settings"></span>
+    <span class="text-color-text-light">{{buttons.Settings}}</span>
+  </button>
 </div>
-<button
-  class="pl-[20px] py-[15px]  hover:bg-[#edf5f9] w-full my-[12px] transition flex gap-[8px] items-center settings">
-  <span class="ico ico_settings"></span>
-  <span class="text-color-text-light">{{buttons.Settings}}</span>
-</button>
