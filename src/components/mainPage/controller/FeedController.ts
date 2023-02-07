@@ -28,6 +28,9 @@ export class FeedController {
             console.log(this.pageModel.path[0])
             this.feedModel.setArticles(await this.loadArticles())
         })
+        this.view.on<File>('LOAD_IMAGE', (file) => {
+            this.loadImage(file)
+        })
     }
 
     private async loadArticles() {
@@ -39,5 +42,9 @@ export class FeedController {
             articles.push({ ...article, id: doc.id })
         })
         return articles
+    }
+
+    private loadImage(file: File) {
+        console.log(file)
     }
 }

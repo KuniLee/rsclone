@@ -3,7 +3,7 @@ import { Flows, Paths } from 'types/enums'
 import { PageModelInstance } from '../model/PageModel'
 import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
 
-type FeedViewEventsName = 'LOAD_ARTICLES'
+type FeedViewEventsName = 'LOAD_ARTICLES' | 'LOAD_IMAGE'
 
 export type FeedViewInstance = InstanceType<typeof FeedView>
 
@@ -19,6 +19,11 @@ export class FeedView extends EventEmitter {
         this.mainPageContainer = document.querySelector('main') as HTMLElement
         this.pageModel.on('CHANGE_PAGE', () => {
             const path = this.pageModel.path
+            // это временно
+            if (path[1] === Flows.Image && path[0] === Paths.Flows) {
+                this.renderLoaderImage()
+                return
+            }
             if (Object.values(Flows).includes(path[1] as Flows) || path[0] === Paths.All || path[0] === Paths.Feed) {
                 this.showPreloader()
                 this.emit('LOAD_ARTICLES')
@@ -39,6 +44,24 @@ export class FeedView extends EventEmitter {
 
     private showPreloader() {
         this.mainPageContainer.innerText = 'Загружается лента...'
+    }
+
+    private renderLoaderImage() {
+        this.mainPageContainer.innerHTML = ''
+        const template = document.createElement('div') as HTMLDivElement
+        template.innerHTML = `
+<input type="file" class="hidden" accept="image/*,.png,.jpg,.gif,.web," id="file">
+<button class="bg-red-400 p-2 rounded">Загрузить фото</button>`
+        const file = template.querySelector('#file') as HTMLInputElement
+        file.addEventListener('change', (ev) => {
+            if (file.files?.length === 1) {
+                if (file.files[0].size < 1024 * 1024) this.emit<File>('LOAD_IMAGE', file.files[0])
+            }
+        })
+        template.querySelector('button')?.addEventListener('click', () => {
+            file.click()
+        })
+        this.mainPageContainer.append(template)
     }
 
     private renderArticles() {
