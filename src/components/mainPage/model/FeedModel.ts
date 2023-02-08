@@ -1,11 +1,13 @@
 import EventEmitter from 'events'
 import { Article } from 'types/types'
 
-type FeedModelEventsName = 'LOADED'
+type FeedModelEventsName = 'LOADED' | 'IMAGE_LOADED'
 export type FeedModelInstance = InstanceType<typeof FeedModel>
 
 export class FeedModel extends EventEmitter {
     public articles: Array<Article> = []
+    image = ''
+
     constructor() {
         super()
     }
@@ -21,5 +23,10 @@ export class FeedModel extends EventEmitter {
     setArticles(articles: Array<Article>) {
         this.articles = articles
         this.emit('LOADED')
+    }
+
+    setImage(url: string) {
+        this.image = url
+        this.emit('IMAGE_LOADED')
     }
 }

@@ -10,6 +10,7 @@ const flowsNames: Record<keyof typeof Flows, language> = {
     All: { ru: 'Все потоки', en: 'All streams' },
     Develop: { ru: 'Разработка', en: 'Development' },
     Admin: { ru: 'Администрирование', en: 'Admin' },
+    Image: { ru: 'Загрузка', en: 'аывфаыа' },
 }
 
 const buttons: Record<string, language> = {
