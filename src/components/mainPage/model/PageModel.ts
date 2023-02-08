@@ -1,6 +1,6 @@
 import EventEmitter from 'events'
 import { Flows, Paths, Sandbox } from 'types/enums'
-import { URLParams } from 'types/interfaces'
+import { rootModel, URLParams } from 'types/interfaces'
 import { ParsedQuery } from 'query-string'
 
 type PageModelEventsName = 'CHANGE_PAGE' | '404'
@@ -8,11 +8,18 @@ export type PageModelInstance = InstanceType<typeof PageModel>
 
 export class PageModel extends EventEmitter {
     public path: Array<string> = []
-    public lang: 'ru' | 'en' = 'ru'
-    public search: ParsedQuery<string> = {}
+    public lang: rootModel['lang'] = 'ru'
+    public search: ParsedQuery = {}
 
     constructor() {
         super()
+        this.loadSettings()
+    }
+
+    //метод для загрузки настроек из LS
+    private loadSettings() {
+        const lang = localStorage.lang
+        if (['ru', 'en'].includes(lang)) this.lang = lang
     }
 
     on<T>(event: PageModelEventsName, callback: (arg: T) => void) {
