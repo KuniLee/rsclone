@@ -38,6 +38,16 @@ export class SettingsView extends EventEmitter {
         const pageWrapper = document.createElement('div')
         pageWrapper.className = 'sm:container mx-auto'
         pageWrapper.innerHTML = profileTemp({ words: getWords(Dictionary.ProfileSettings, this.model.lang) })
+        this.addListeners(pageWrapper)
         this.mainPageContainer.append(pageWrapper)
+    }
+    private addListeners(pageWrapper: HTMLDivElement) {
+        const file = pageWrapper.querySelector('input[type=file]') as HTMLInputElement
+        file.addEventListener('change', () => {
+            if (file.files?.length === 1) {
+                console.log(file.files[0])
+                //if (file.files[0].size < 1024 * 1024) this.emit<File>('UPLOAD_IMAGE', file.files[0])
+            }
+        })
     }
 }
