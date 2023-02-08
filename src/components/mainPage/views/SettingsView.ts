@@ -18,7 +18,7 @@ export class SettingsView extends EventEmitter {
         super()
         this.mainPageContainer = document.querySelector('main') as HTMLElement
         this.model.on('SIGN_IN', () => {
-            if (this.model.user) this.renderPage()
+            this.renderPage()
         })
         this.model.on('CHANGE_PAGE', () => {
             this.renderPage()
@@ -36,6 +36,10 @@ export class SettingsView extends EventEmitter {
     private renderPage() {
         const path = this.model.path
         if (!(path[0] === Paths.Settings && path[1] === SettingsPaths.Profile)) return
+        if (this.model.user) {
+            this.showAuthFail()
+            return
+        }
         this.mainPageContainer.innerHTML = ''
         const pageWrapper = document.createElement('div')
         pageWrapper.className = 'sm:container mx-auto'
@@ -103,5 +107,9 @@ export class SettingsView extends EventEmitter {
         const ctx = canvas.getContext('2d')
         ctx?.drawImage(img, 0, 0, width, height)
         console.log(canvas.toDataURL('image/png'))
+    }
+
+    private showAuthFail() {
+        this.mainPageContainer.innerText = 'fail'
     }
 }
