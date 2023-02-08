@@ -1,5 +1,5 @@
 import EventEmitter from 'events'
-import { Flows, Paths, Sandbox } from 'types/enums'
+import { Flows, Paths, Sandbox, SettingsPaths } from 'types/enums'
 import { rootModel, URLParams } from 'types/interfaces'
 import { ParsedQuery } from 'query-string'
 
@@ -59,6 +59,10 @@ export class PageModel extends EventEmitter {
                 break
             case Paths.Search:
                 this.goToSearch()
+                break
+            case Paths.Settings:
+                if (Object.values(SettingsPaths).includes(this.path[1] as SettingsPaths)) this.emit('CHANGE_PAGE')
+                else this.goTo404()
                 break
             default:
                 this.goTo404()

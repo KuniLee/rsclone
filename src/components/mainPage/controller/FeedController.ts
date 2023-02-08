@@ -11,6 +11,9 @@ import {
     ref,
     uploadBytes,
     getDownloadURL,
+    getDoc,
+    doc,
+    setDoc,
 } from '@/utils/FireBaseAPI'
 import { Article } from 'types/types'
 

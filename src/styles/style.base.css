@@ -5,6 +5,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    background-color: #f0f0f0;
 }
 
 .main {
@@ -13,10 +14,6 @@ body {
 
 .footer {
     background-color: #303b44;
-}
-
-.main {
-    background-color: #f0f0f0;
 }
 
 h1 {

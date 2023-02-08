@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
-import { getFirestore, serverTimestamp, setDoc, doc, collection, getDocs } from 'firebase/firestore'
+import { getFirestore, serverTimestamp, setDoc, doc, collection, getDocs, getDoc } from 'firebase/firestore'
 import {
     createUserWithEmailAndPassword,
     getAuth,
@@ -15,7 +15,7 @@ import type { User, Auth } from 'firebase/auth'
 import type { Firestore } from 'firebase/firestore'
 import type { FirebaseStorage } from 'firebase/storage'
 
-export { serverTimestamp, setDoc, doc, collection, getDocs, ref, uploadBytes, getDownloadURL }
+export { serverTimestamp, setDoc, doc, collection, getDocs, getDoc, ref, uploadBytes, getDownloadURL }
 import EventEmitter from 'events'
 
 export type { User, Auth, Firestore, FirebaseStorage }

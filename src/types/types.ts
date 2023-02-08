@@ -1,3 +1,5 @@
+import type { StorageReference } from 'firebase/storage'
+
 export type FirebaseConfigType = {
     storageBucket: string
     apiKey: string
@@ -20,4 +22,5 @@ export type Article = {
     id: string
     title: string
     userId: string
+    images: StorageReference
 }
