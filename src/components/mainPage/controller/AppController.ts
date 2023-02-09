@@ -1,7 +1,6 @@
 import { RouterInstance } from '@/utils/Rooter'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { MainViewInstance } from '@/components/mainPage/views/MainView'
-import { URLParams } from 'types/interfaces'
 
 export class AppController {
     private router: RouterInstance

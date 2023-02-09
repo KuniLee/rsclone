@@ -16,7 +16,6 @@
     {{/if}}
   </div>
 </div>
-<div class="bg-color-popup-bg fixed top-0 bottom-0 left-0 right-0 hidden sidebar-bg"></div>
 <div class="m-auto bg-color-light md:container md:block hidden header__flows">
   {{#if flows}}
   <div class="flex place-content-between gap-y-8 py-3 items-center">
@@ -24,10 +23,10 @@
       {{#each flows}}
       {{#if (eq this.link '/flows/all')}}
       <a href="{{this.link}}"
-        class="hover:text-color-link-hover transition text-color-text-dark flow-link">{{this.name}}</a>
+        class="hover:text-color-link-hover transition text-color-text-dark nav__link">{{this.name}}</a>
       {{else}}
       <a href="{{this.link}}"
-        class="hover:text-color-link-hover transition text-color-text-light flow-link">{{this.name}}</a>
+        class="hover:text-color-link-hover transition text-color-text-light nav__link">{{this.name}}</a>
       {{/if}}
       {{/each}}
     </nav>

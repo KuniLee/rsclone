@@ -6,6 +6,7 @@ import { Flows, Paths } from 'types/enums'
 import dictionary from '@/utils/dictionary'
 import { DropdownMenu } from '@/utils/dropdownMenu'
 import footerTemplate from '@/templates/footer.hbs'
+import { rootModel } from 'types/interfaces'
 
 type ItemViewEventsName = 'GOTO'
 
@@ -46,7 +47,7 @@ export class MainView extends EventEmitter {
     private addListeners() {
         const navEl = this.headerEl.querySelector('.nav')
         const headerFlowsEl = this.headerEl.querySelector('.header__flows')
-        const sideBarBgEl = this.headerEl.querySelector('.sidebar-bg')
+        const bgEl = this.createBg()
 
         if (navEl) {
             navEl.addEventListener('click', (ev) => {
@@ -65,20 +66,15 @@ export class MainView extends EventEmitter {
             if (ev.target instanceof HTMLElement) {
                 this.toggleDropdownMenu(ev.target)
                 this.togglePopupSettings(ev.target)
-                if (headerFlowsEl && sideBarBgEl) {
-                    this.toggleSidebar(ev.target, headerFlowsEl, sideBarBgEl)
+                if (headerFlowsEl) {
+                    this.toggleSidebar(ev.target, headerFlowsEl, bgEl)
                 }
             }
         })
 
         window.addEventListener('resize', () => {
-            if (
-                sideBarBgEl &&
-                headerFlowsEl &&
-                window.innerWidth > 768 &&
-                headerFlowsEl.classList.contains('sidebar')
-            ) {
-                this.closeSidebar(headerFlowsEl, sideBarBgEl)
+            if (headerFlowsEl && window.innerWidth > 768 && headerFlowsEl.classList.contains('sidebar')) {
+                this.closeSidebar(headerFlowsEl, bgEl)
             }
         })
     }
@@ -90,10 +86,29 @@ export class MainView extends EventEmitter {
     private togglePopupSettings(element: HTMLElement) {
         const settingsBtn = this.headerEl.querySelector('.settings')
         const popupSettings = document.querySelector('.popup-settings')
+        const saveSettingsBtn = document.querySelector('.btn-save')
         if (settingsBtn) {
             settingsBtn.addEventListener('click', () => {
                 document.body.appendChild(this.popupSettings.render())
+                Array.from(document.getElementsByName('lang')).forEach((input) => {
+                    if (input instanceof HTMLInputElement && this.model.lang === input.id) {
+                        input.checked = true
+                    }
+                })
             })
+
+            if (saveSettingsBtn) {
+                saveSettingsBtn.addEventListener('click', (ev) => {
+                    ev.preventDefault()
+                    const selectedLangInput = Array.from(document.getElementsByName('lang')).find(
+                        (input) => input instanceof HTMLInputElement && input.checked
+                    )
+                    if (selectedLangInput) {
+                        localStorage.lang = selectedLangInput.id as rootModel['lang']
+                        location.reload()
+                    }
+                })
+            }
         }
         if (popupSettings) {
             if (
@@ -105,46 +120,46 @@ export class MainView extends EventEmitter {
         }
     }
 
-    private openSidebar(headerFlows: Element, sideBarBg: Element) {
+    private openSidebar(headerFlows: Element, sidebarBg: HTMLElement) {
         headerFlows.classList.add('sidebar')
         headerFlows.classList.remove('hidden')
-        sideBarBg.classList.remove('hidden')
+        this.headerEl.appendChild(sidebarBg)
     }
 
-    private closeSidebar(headerFlows: Element, sideBarBg: Element) {
+    private closeSidebar(headerFlows: Element, sidebarBg: HTMLElement) {
         headerFlows.classList.remove('sidebar')
         headerFlows.classList.add('hidden')
-        sideBarBg.classList.add('hidden')
+        this.headerEl.removeChild(sidebarBg)
     }
 
-    private toggleSidebar(element: HTMLElement, headerFlows: Element, sideBarBg: Element) {
-        if (element.closest('.burger')) {
-            this.openSidebar(headerFlows, sideBarBg)
+    private toggleSidebar(element: HTMLElement, headerFlows: Element, bgEl: HTMLElement) {
+        if (element.classList.contains('burger')) {
+            this.openSidebar(headerFlows, bgEl)
         }
         if (
             headerFlows.classList.contains('sidebar') &&
-            (element.classList.contains('flow-link') || element.classList.contains('sidebar-bg')) &&
-            !element.closest('.burger')
+            (element.classList.contains('nav__link') || element.classList.contains('bg'))
         ) {
-            this.closeSidebar(headerFlows, sideBarBg)
+            this.closeSidebar(headerFlows, bgEl)
         }
     }
 
     private toggleDropdownMenu(element: HTMLElement) {
         const userIconLight = this.headerEl.querySelector('.ico_user-light')
         const userIcon = this.headerEl.querySelector('.ico_user')
+        const dropdownMenu = this.dropdownMenu.renderNotAuth()
         if (element.classList.contains('ico_user') || element.classList.contains('ico_user-light')) {
             element.classList.toggle('active')
             if (element.classList.contains('active')) {
-                this.headerEl.appendChild(this.dropdownMenu.renderNotAuth())
+                this.headerEl.append(dropdownMenu)
             } else {
-                this.headerEl.removeChild(this.dropdownMenu.renderNotAuth())
+                this.headerEl.removeChild(dropdownMenu)
             }
         }
         if (!element.closest('.drop-down-menu') && !element.classList.contains('ico_user')) {
             if (userIcon && userIcon.classList.contains('active')) {
                 userIcon.classList.remove('active')
-                this.headerEl.removeChild(this.dropdownMenu.renderNotAuth())
+                this.headerEl.removeChild(dropdownMenu)
             }
         }
         if (
@@ -154,7 +169,7 @@ export class MainView extends EventEmitter {
         ) {
             if (userIconLight && userIconLight.classList.contains('active')) {
                 userIconLight.classList.remove('active')
-                this.headerEl.removeChild(this.dropdownMenu.renderNotAuth())
+                this.headerEl.removeChild(dropdownMenu)
             }
         }
     }
@@ -187,7 +202,13 @@ export class MainView extends EventEmitter {
         return footer
     }
 
+    private createBg() {
+        const bg = document.createElement('div')
+        bg.className = 'bg-color-popup-bg fixed top-0 bottom-0 left-0 right-0 bg'
+        return bg
+    }
+
     private show() {
-        document.body.append(this.headerEl, this.mainPageContainer, this.footerEl)
+        document.body.replaceChildren(this.headerEl, this.mainPageContainer, this.footerEl)
     }
 }

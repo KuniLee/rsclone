@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app'
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { getFirestore, serverTimestamp, setDoc, doc, collection, getDocs } from 'firebase/firestore'
 import {
     createUserWithEmailAndPassword,
@@ -12,11 +13,12 @@ import {
 import type { FirebaseApp } from 'firebase/app'
 import type { User, Auth } from 'firebase/auth'
 import type { Firestore } from 'firebase/firestore'
+import type { FirebaseStorage } from 'firebase/storage'
 
-export { serverTimestamp, setDoc, doc, collection, getDocs }
+export { serverTimestamp, setDoc, doc, collection, getDocs, ref, uploadBytes, getDownloadURL }
 import EventEmitter from 'events'
 
-export type { User, Auth, Firestore }
+export type { User, Auth, Firestore, FirebaseStorage }
 
 export type FirebaseEvents = 'CHANGE_AUTH'
 export type FireBaseAPIInstance = InstanceType<typeof FireBaseAPI>
@@ -25,6 +27,7 @@ export class FireBaseAPI extends EventEmitter {
     public app: FirebaseApp
     public db: Firestore
     public auth: Auth
+    public storage: FirebaseStorage
 
     constructor() {
         super()
@@ -39,6 +42,7 @@ export class FireBaseAPI extends EventEmitter {
         }
         this.app = initializeApp(config)
         this.db = getFirestore(this.app)
+        this.storage = getStorage(this.app)
         this.auth = getAuth()
         onAuthStateChanged(this.auth, (user) => {
             if (user) this.emit<User>('CHANGE_AUTH', user)
