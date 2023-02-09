@@ -7,8 +7,9 @@ import dictionary from '@/utils/dictionary'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { Sortable } from '@shopify/draggable'
 import { SortableEventNames } from '@shopify/draggable'
+import { parsedArticle } from 'types/types'
 
-type ItemViewEventsName = 'GOTO'
+type ItemViewEventsName = 'GOTO' | 'ARTICLE_PARSED'
 
 export type EditorViewInstance = InstanceType<typeof EditorView>
 
@@ -40,6 +41,9 @@ export class EditorView extends EventEmitter {
         })
         document.querySelectorAll('.textElement')?.forEach((el) => {
             this.addTextElementListeners(el as HTMLElement)
+        })
+        document.querySelector('.toSettings')?.addEventListener('click', (e) => {
+            this.parseArticle()
         })
         const editor = document.querySelector('.textEditor') as HTMLElement
         const sortable = new Sortable<SortableEventNames | 'drag:stopped'>(editor, {
@@ -249,11 +253,47 @@ export class EditorView extends EventEmitter {
         }
     }
 
-    emit<T>(event: ItemViewEventsName, arg?: T) {
-        return super.emit(event, arg)
+    parseArticle() {
+        const header = document.querySelector('.articleHeader')
+        const obj: parsedArticle = {}
+        if (header) {
+            if (header.textContent) {
+                obj.blocks = [
+                    {
+                        options: {
+                            size: 'h1',
+                        },
+                        type: 'heading',
+                        value: header.textContent,
+                    },
+                ]
+            }
+        }
+        document.querySelectorAll('.editorElement')?.forEach((el) => {
+            if (el.classList.contains('textElement')) {
+                const textField = el.querySelector('.editable')
+                if (textField) {
+                    if (textField.textContent) {
+                        obj.blocks?.push({
+                            type: 'text',
+                            value: textField.textContent,
+                        })
+                    } else {
+                        obj.blocks?.push({
+                            type: 'delimiter',
+                        })
+                    }
+                }
+            }
+        })
+        this.emit('ARTICLE_PARSED', undefined, obj)
     }
 
-    on<T>(event: ItemViewEventsName, callback: (arg: T) => void) {
+    emit<T>(event: ItemViewEventsName, arg?: T, parsedArticle?: parsedArticle) {
+        return super.emit(event, arg, parsedArticle)
+    }
+
+    on<T>(event: ItemViewEventsName, callback: (arg: T, parsedArticle: parsedArticle) => void) {
         return super.on(event, callback)
     }
 }
