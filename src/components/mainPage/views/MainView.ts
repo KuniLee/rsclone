@@ -191,7 +191,9 @@ export class MainView extends EventEmitter {
         flows.unshift({ name: dictionary.buttons.Feed[this.model.lang], link: Paths.Feed })
         flows.push({ name: dictionary.buttons.Sandbox[this.model.lang], link: Paths.Sandbox + '/new' })
         const logo = dictionary.logo.Logo[this.model.lang]
-        header.innerHTML = headerTemplate({ flows, logo })
+        let currentPath = location.pathname
+        if (currentPath === Flows.All) currentPath = Paths.Flows + currentPath
+        header.innerHTML = headerTemplate({ flows, logo, currentPath })
         return header
     }
 

@@ -21,7 +21,7 @@
   <div class="flex place-content-between gap-y-8 py-3 items-center">
     <nav class="flex gap-4 flex-col nav md:flex-row">
       {{#each flows}}
-      {{#if (eq this.link '/flows/all')}}
+      {{#if (eq this.link ../currentPath)}}
       <a href="{{this.link}}"
         class="hover:text-color-link-hover transition text-color-text-dark nav__link">{{this.name}}</a>
       {{else}}
