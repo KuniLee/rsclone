@@ -11,6 +11,9 @@ import {
     ref,
     uploadBytes,
     getDownloadURL,
+    getDoc,
+    doc,
+    setDoc,
 } from '@/utils/FireBaseAPI'
 import { Article } from 'types/types'
 
@@ -33,9 +36,6 @@ export class FeedController {
         this.db = api.db
         this.auth = api.auth
         this.storage = api.storage
-        this.api.on('CHANGE_AUTH', (user) => {
-            console.log('смена: ', user)
-        })
         this.view.on('LOAD_ARTICLES', async () => {
             console.log(this.pageModel.path[0])
             this.feedModel.setArticles(await this.loadArticles())
