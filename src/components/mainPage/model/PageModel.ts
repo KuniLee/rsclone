@@ -1,15 +1,17 @@
 import EventEmitter from 'events'
-import { Flows, Paths, Sandbox } from 'types/enums'
+import { Flows, Paths, Sandbox, SettingsPaths } from 'types/enums'
 import { rootModel, URLParams } from 'types/interfaces'
 import { ParsedQuery } from 'query-string'
+import { UserData } from 'types/types'
 
-type PageModelEventsName = 'CHANGE_PAGE' | '404'
+type PageModelEventsName = 'CHANGE_PAGE' | '404' | 'SIGN_IN' | 'SIGN_OUT'
 export type PageModelInstance = InstanceType<typeof PageModel>
 
 export class PageModel extends EventEmitter {
     public path: Array<string> = []
     public lang: rootModel['lang'] = 'ru'
     public search: ParsedQuery = {}
+    public user: UserData | null = null
 
     constructor() {
         super()
@@ -58,6 +60,10 @@ export class PageModel extends EventEmitter {
                 break
             case Paths.Search:
                 this.goToSearch()
+                break
+            case Paths.Settings:
+                if (Object.values(SettingsPaths).includes(this.path[1] as SettingsPaths)) this.emit('CHANGE_PAGE')
+                else this.goTo404()
                 break
             default:
                 this.goTo404()
@@ -113,5 +119,15 @@ export class PageModel extends EventEmitter {
     private goToSearch() {
         console.log('страница search')
         this.emit('CHANGE_PAGE')
+    }
+
+    changeAuth(userData: UserData | undefined) {
+        if (userData) {
+            this.user = userData
+            this.emit('SIGN_IN')
+        } else {
+            this.user = null
+            this.emit('SIGN_OUT')
+        }
     }
 }
