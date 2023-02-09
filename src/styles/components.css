@@ -84,3 +84,7 @@
   max-width: 300px;
   padding: 0 16px;
 }
+
+.article_hab:not(:last-child)::after{
+  content: ', ';
+}

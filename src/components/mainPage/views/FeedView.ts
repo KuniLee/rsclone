@@ -2,6 +2,8 @@ import EventEmitter from 'events'
 import { Flows, Paths } from 'types/enums'
 import { PageModelInstance } from '../model/PageModel'
 import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
+import articleTemplate from '@/templates/atricle.hbs'
+import Dictionary from '@/utils/dictionary'
 
 type FeedViewEventsName = 'LOAD_ARTICLES' | 'DOWNLOAD_IMAGE' | 'UPLOAD_IMAGE'
 
@@ -21,12 +23,13 @@ export class FeedView extends EventEmitter {
             const path = this.pageModel.path
             if (Object.values(Flows).includes(path[1] as Flows) || path[0] === Paths.All || path[0] === Paths.Feed) {
                 this.renderPage()
+                this.renderArticles()
                 this.emit('LOAD_ARTICLES')
             }
         })
-        this.feedModel.on('LOADED', () => {
-            this.renderArticles()
-        })
+        // this.feedModel.on('LOADED', () => {
+        //     this.renderArticles()
+        // })
     }
 
     emit<T>(event: FeedViewEventsName, arg?: T) {
@@ -38,13 +41,24 @@ export class FeedView extends EventEmitter {
     }
 
     private renderPage() {
-        this.mainPageContainer.innerHTML = '<div class="container mx-auto bg-emerald-800"></div>'
+        this.mainPageContainer.innerHTML = `<div class="container mx-auto flex gap-4">
+<div class="w-full feed"></div><aside class="hidden lg:block min-w-[300px] bg-color-light">Асайд</aside>
+</div>`
     }
 
     private renderArticles() {
-        console.log(123)
-        //this.mainPageContainer.innerHTML = ''
-        // this.mainPageContainer.innerText = `Страница ${this.pageModel.path.join('')}:
-        // статьи: ${JSON.stringify(this.feedModel.articles)}`
+        const wrap = this.mainPageContainer.querySelector('.feed') as HTMLDivElement
+        const temp = document.createElement('template')
+        temp.innerHTML = articleTemplate({
+            avatar: require('@/assets/icons/avatar.svg'),
+            habs: [
+                'Блог компании OTUS',
+                'Высокая производительность',
+                'Программирование',
+                'Java',
+                'Администрирование баз данных',
+            ],
+        })
+        wrap.append(temp.content)
     }
 }

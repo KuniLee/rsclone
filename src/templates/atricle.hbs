@@ -1,0 +1,25 @@
+<article class="p-4 bg-color-light">
+  <div class="mb-1 flex items-center gap-1">
+    <div class="avatar h-8 w-8 rounded overflow-hidden"><img class="h-full w-full object-cover" src="https://habrastorage.org/r/w32/getpro/habr/avatars/2dd/db7/c29/2dddb7c29c9146a05d102ecb48385c8f.jpg" alt=""></div>
+    <span class="text-sm font-medium">User</span>
+    <span class="text-sm">был долго назад</span>
+  </div>
+  <a href="#">
+    <h1 class="text-xxl font-medium">Архитектурные шаблоны взаимодействия с базами данных</h1>
+  </a>
+  <div class="flex mb-4 flex-wrap gap-0.5 text-color-popup-text">
+    {{#each habs}}
+      <a href="#" class="article_hab hover:opacity-75 text-sm">{{this}}</a>
+    {{/each}}
+  </div>
+  <img class="w-full mb-4"
+      src="https://habrastorage.org/getpro/habr/upload_files/659/b50/397/659b50397844bf6be57199f15069ad50.png" alt="">
+  <p>В первой статье мы рассмотрели шаблоны проектирования, применимые в программировании приложений.
+    Однако сейчас сложно представить серьезное бизнес-приложение без базы данных. Большие объемы данных
+    требуют хранения и обработки. И то насколько оптимально построена связь между уровнем прикладного кода
+    и уровнем БД во многом зависит быстродействие системы в целом. Поэтому важно правильно построить
+    взаимодействие с СУБД. В этой статье мы рассмотрим шаблоны взаимодействия с базами данных. Правильно
+    выбранный шаблон взаимодействия позволит избежать многих проблем при разработке и получить качественное
+    приложение.</p>
+  <button class="py-2 px-5 mt-6 text-sm text-sky-900 focus:outline-none bg-white rounded-lg border border-sky-700 hover:border-sky-400 hover:bg-sky-200 hover:border-sky-100 focus:z-10 focus:ring-4 focus:ring-sky-200">Читать далее</button>
+</article>
