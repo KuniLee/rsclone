@@ -110,6 +110,7 @@ export class EditorView extends EventEmitter {
                     }
                 }
             }
+            this.checkArticle()
         })
         el.addEventListener('keydown', (e) => {
             if (e.key === 'Backspace') {
@@ -196,6 +197,39 @@ export class EditorView extends EventEmitter {
                 lastChildInputField.focus()
             }
         }
+    }
+    checkArticle() {
+        const checkHeaderResult = this.checkHeader()
+        const checkArticleFieldsResult = this.checkArticleFields()
+        const toSettingsButton = document.querySelector('.toSettings') as HTMLButtonElement
+        if (toSettingsButton) {
+            toSettingsButton.disabled = !(checkHeaderResult && checkArticleFieldsResult && toSettingsButton)
+        }
+    }
+
+    checkHeader() {
+        const headerField = document.querySelector('.articleHeader')
+        if (headerField) {
+            if (headerField.textContent) {
+                if (headerField.textContent.length > 5) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    checkArticleFields() {
+        let charactersCount = 0
+        const textElements = document.querySelectorAll('.textElement')?.forEach((el) => {
+            const editableField = el.querySelector('.editable')
+            if (editableField) {
+                if (editableField.textContent) {
+                    charactersCount += editableField.textContent.length
+                }
+            }
+        })
+        return charactersCount >= 10
     }
 
     hidePlaceholder() {
