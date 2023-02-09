@@ -19,22 +19,13 @@ export class FeedView extends EventEmitter {
         this.mainPageContainer = document.querySelector('main') as HTMLElement
         this.pageModel.on('CHANGE_PAGE', () => {
             const path = this.pageModel.path
-            // это временно
-            if (path[1] === Flows.Image && path[0] === Paths.Flows) {
-                this.renderLoaderImage()
-                this.emit('DOWNLOAD_IMAGE')
-                return
-            }
             if (Object.values(Flows).includes(path[1] as Flows) || path[0] === Paths.All || path[0] === Paths.Feed) {
-                this.showPreloader()
+                this.renderPage()
                 this.emit('LOAD_ARTICLES')
             }
         })
         this.feedModel.on('LOADED', () => {
             this.renderArticles()
-        })
-        this.feedModel.on('IMAGE_LOADED', () => {
-            this.updateImage()
         })
     }
 
@@ -46,36 +37,14 @@ export class FeedView extends EventEmitter {
         return super.on(event, callback)
     }
 
-    private showPreloader() {
-        this.mainPageContainer.innerText = 'Загружается лента...'
-    }
-
-    private renderLoaderImage() {
-        this.mainPageContainer.innerHTML = ''
-        const template = document.createElement('div') as HTMLDivElement
-        template.innerHTML = `
-<input type="file" class="hidden" accept="image/*,.png,.jpg,.gif,.web," id="file">
-<button class="bg-red-400 p-2 rounded">Загрузить фото</button>
-<img class="max-h-20 border border-2 rounded-xl border-emerald-800" alt="avatar" src="${require('@/assets/icons/ico-user.svg')}">`
-        const file = template.querySelector('#file') as HTMLInputElement
-        file.addEventListener('change', () => {
-            if (file.files?.length === 1) {
-                if (file.files[0].size < 1024 * 1024) this.emit<File>('UPLOAD_IMAGE', file.files[0])
-            }
-        })
-        template.querySelector('button')?.addEventListener('click', () => {
-            file.click()
-        })
-        this.mainPageContainer.append(template)
+    private renderPage() {
+        this.mainPageContainer.innerHTML = '<div class="container mx-auto bg-emerald-800"></div>'
     }
 
     private renderArticles() {
-        this.mainPageContainer.innerHTML = ''
-        this.mainPageContainer.innerText = `Страница ${this.pageModel.path.join('')}:
-        статьи: ${JSON.stringify(this.feedModel.articles)}`
-    }
-
-    private updateImage() {
-        this.mainPageContainer.querySelector('img')?.setAttribute('src', this.feedModel.image)
+        console.log(123)
+        //this.mainPageContainer.innerHTML = ''
+        // this.mainPageContainer.innerText = `Страница ${this.pageModel.path.join('')}:
+        // статьи: ${JSON.stringify(this.feedModel.articles)}`
     }
 }

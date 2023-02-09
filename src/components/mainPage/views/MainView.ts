@@ -13,10 +13,10 @@ type ItemViewEventsName = 'GOTO'
 export type MainViewInstance = InstanceType<typeof MainView>
 
 export class MainView extends EventEmitter {
-    private model: PageModel
-    private headerEl: HTMLElement
-    private footerEl: HTMLElement
-    private mainPageContainer: HTMLElement
+    private readonly model: PageModel
+    private readonly headerEl: HTMLElement
+    private readonly footerEl: HTMLElement
+    private readonly mainPageContainer: HTMLElement
     private dropdownMenu: DropdownMenu
     private popupSettings: PopupSettings
 
@@ -28,7 +28,7 @@ export class MainView extends EventEmitter {
         this.headerEl = this.renderHeader()
         this.footerEl = this.renderFooter()
         this.mainPageContainer = document.createElement('main')
-        this.mainPageContainer.classList.add('main')
+        this.mainPageContainer.classList.add('main', 'sm:mt-3', 'mb-10')
         this.show()
         this.addListeners()
         this.model.on('404', () => {
@@ -183,7 +183,7 @@ export class MainView extends EventEmitter {
 
     private renderHeader() {
         const header = document.createElement('header')
-        header.className = 'border-solid border-b border-color-border-header sticky top-0 header'
+        header.className = 'bg-color-light border-solid border-b border-color-border-header sticky top-0 header'
         const flows = Object.keys(Flows).map((el) => ({
             name: dictionary.flowsNames[el as keyof typeof Flows][this.model.lang],
             link: Paths.Flows + Flows[el as keyof typeof Flows],
