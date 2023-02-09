@@ -2,7 +2,8 @@ import { RouterInstance } from '@/utils/Rooter'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { MainViewInstance } from '@/components/mainPage/views/MainView'
 import { SettingsViewInstance } from '@/components/mainPage/views/SettingsView'
-import { FireBaseAPI, Auth, User } from '@/utils/FireBaseAPI'
+import { FireBaseAPI, Auth, User, getDoc, doc, Firestore } from '@/utils/FireBaseAPI'
+import { UserData } from 'types/types'
 
 export class AppController {
     private router: RouterInstance
@@ -10,6 +11,7 @@ export class AppController {
     private view: MainViewInstance
     private settingsView: SettingsViewInstance
     private auth: Auth
+    private db: Firestore
 
     constructor(
         view: { mainView: MainViewInstance; settingsView: SettingsViewInstance },
@@ -21,6 +23,7 @@ export class AppController {
         this.view = view.mainView
         this.settingsView = view.settingsView
         this.auth = api.auth
+        this.db = api.db
         this.router = router
         this.view.on<string>('GOTO', (arg) => {
             model.changePage({
@@ -31,8 +34,20 @@ export class AppController {
         router.on('ROUTE', () => {
             model.changePage(this.router.getParams())
         })
-        api.on<User>('CHANGE_AUTH', (user) => {
-            this.model.changeAuth(user)
+
+        api.on<User>('CHANGE_AUTH', async (user) => {
+            const userData = await this.getUserData(user)
+            this.model.changeAuth(userData)
         })
+    }
+
+    private async getUserData({ uid }: User) {
+        try {
+            const result = await getDoc(doc(this.db, `users/${uid}`))
+            const data = await result.data()
+            return { ...data, uid } as UserData
+        } catch (e) {
+            console.log(e)
+        }
     }
 }

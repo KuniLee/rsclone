@@ -2,7 +2,7 @@ import EventEmitter from 'events'
 import { Flows, Paths, Sandbox, SettingsPaths } from 'types/enums'
 import { rootModel, URLParams } from 'types/interfaces'
 import { ParsedQuery } from 'query-string'
-import { User } from '@/utils/FireBaseAPI'
+import { UserData } from 'types/types'
 
 type PageModelEventsName = 'CHANGE_PAGE' | '404' | 'SIGN_IN' | 'SIGN_OUT'
 export type PageModelInstance = InstanceType<typeof PageModel>
@@ -11,7 +11,7 @@ export class PageModel extends EventEmitter {
     public path: Array<string> = []
     public lang: rootModel['lang'] = 'ru'
     public search: ParsedQuery = {}
-    public user: User | null = null
+    public user: UserData | null = null
 
     constructor() {
         super()
@@ -122,9 +122,9 @@ export class PageModel extends EventEmitter {
         this.emit('CHANGE_PAGE')
     }
 
-    changeAuth(user: User) {
-        if (user) {
-            this.user = user
+    changeAuth(userData: UserData | undefined) {
+        if (userData) {
+            this.user = userData
             this.emit('SIGN_IN')
         } else {
             this.user = null

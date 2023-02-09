@@ -8,6 +8,6 @@ declare module '*.hbs' {
 }
 
 declare module '*.svg' {
-    const content: (Object) => string
+    const content: string
     export default content
 }

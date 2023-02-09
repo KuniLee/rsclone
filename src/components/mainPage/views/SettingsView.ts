@@ -4,8 +4,7 @@ import { PageModelInstance } from '../model/PageModel'
 import profileTemp from '@/templates/profile.hbs'
 import Dictionary, { getWords } from '@/utils/dictionary'
 import emptyAvatar from '@/assets/icons/avatar.svg'
-
-console.log(emptyAvatar)
+import { UserData } from 'types/types'
 
 type SettingsViewEventsName = 'LOAD_ARTICLES' | 'UPLOAD_IMAGE'
 
@@ -13,6 +12,7 @@ export type SettingsViewInstance = InstanceType<typeof SettingsView>
 
 export class SettingsView extends EventEmitter {
     private mainPageContainer: HTMLElement
+    private user: UserData | null = null
 
     constructor(private model: PageModelInstance) {
         super()
@@ -36,16 +36,18 @@ export class SettingsView extends EventEmitter {
     private renderPage() {
         const path = this.model.path
         if (!(path[0] === Paths.Settings && path[1] === SettingsPaths.Profile)) return
-        if (this.model.user) {
+        if (!this.model.user) {
             this.showAuthFail()
             return
         }
+        this.setUserProps(this.model.user)
         this.mainPageContainer.innerHTML = ''
         const pageWrapper = document.createElement('div')
         pageWrapper.className = 'sm:container mx-auto'
         pageWrapper.innerHTML = profileTemp({
             words: getWords(Dictionary.ProfileSettings, this.model.lang),
-            avatar: emptyAvatar,
+            user: this.user?.properties,
+            emptyAvatar,
         })
         this.addListeners(pageWrapper)
         this.mainPageContainer.append(pageWrapper)
@@ -53,11 +55,37 @@ export class SettingsView extends EventEmitter {
 
     private addListeners(pageWrapper: HTMLDivElement) {
         const file = pageWrapper.querySelector('input[type=file]') as HTMLInputElement
+        const btnImage = pageWrapper.querySelector('.btnImage') as HTMLLabelElement
+        const saveBnt = pageWrapper.querySelector('button[type=submit]') as HTMLLabelElement
+        const nameInput = pageWrapper.querySelector('.name-input') as HTMLInputElement
+        const aboutInput = pageWrapper.querySelector('.about-input') as HTMLInputElement
+        nameInput.addEventListener('input', (ev) => {
+            let value = nameInput.value
+            if (value.length > 40) value = value.slice(0, 39)
+            if (this.user) this.user.properties.fullName = value
+        })
+        aboutInput.addEventListener('input', (ev) => {
+            let value = aboutInput.value
+            if (value.length > 40) value = value.slice(0, 49)
+            if (this.user) this.user.properties.about = value
+        })
+        saveBnt.onclick = (ev) => {
+            console.log('fff')
+        }
         file.addEventListener('change', () => {
             if (file.files?.length === 1) {
-                if (this.checkTheImage(file.files[0])) this.showPreview(file.files[0])
-                else this.showErrorMsg()
+                if (this.checkTheImage(file.files[0])) {
+                    this.showPreview(file.files[0])
+                    btnImage.textContent = Dictionary.buttons.Remove[this.model.lang]
+                } else this.showErrorMsg()
             }
+        })
+        btnImage.addEventListener('click', (ev) => {
+            if (this.user?.properties.avatar) {
+                ev.preventDefault()
+                this.removeAvatar()
+                btnImage.textContent = Dictionary.buttons.Upload[this.model.lang]
+            } else file.click()
         })
     }
 
@@ -70,19 +98,19 @@ export class SettingsView extends EventEmitter {
     }
 
     private showPreview(file: File) {
-        const avatarContainer = this.mainPageContainer.querySelector('.user-avatar') as HTMLDivElement
-        const img = document.createElement('img') as HTMLImageElement
+        const img = document.createElement('img')
+        img.className = 'w-full h-full object-cover'
+        img.onload = () => {
+            this.resizeImg(img)
+        }
         const reader = new FileReader()
         reader.onload = (e) => {
             img.src = <string>e.target?.result
         }
-        img.onload = () => {
-            this.resizeImg(img)
-        }
         reader.readAsDataURL(file)
-        avatarContainer.innerHTML = ''
-        avatarContainer.append(img)
-        return img
+        const imageWrapper = this.mainPageContainer.querySelector('.user-avatar') as HTMLDivElement
+        imageWrapper.innerHTML = ''
+        imageWrapper.append(img)
     }
 
     private resizeImg(img: HTMLImageElement) {
@@ -106,10 +134,20 @@ export class SettingsView extends EventEmitter {
         canvas.height = height
         const ctx = canvas.getContext('2d')
         ctx?.drawImage(img, 0, 0, width, height)
-        console.log(canvas.toDataURL('image/png'))
+        if (this.user) this.user.properties.avatar = canvas.toDataURL('image/png')
     }
 
     private showAuthFail() {
         this.mainPageContainer.innerText = 'fail'
+    }
+
+    private setUserProps(user: UserData) {
+        this.user = user
+    }
+
+    private removeAvatar() {
+        if (this.user) this.user.properties.avatar = undefined
+        const imageWrapper = this.mainPageContainer.querySelector('.user-avatar') as HTMLDivElement
+        imageWrapper.innerHTML = `<img class="w-full h-full object-cover" src="${emptyAvatar}" alt="user-avatar">`
     }
 }
