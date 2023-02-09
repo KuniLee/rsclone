@@ -32,6 +32,8 @@ module.exports = {
                 'color-popup-bg': 'rgba(0,0,0,.2)',
                 'color-gray-light': '#eeeeee',
                 'color-gray-separator': '#d3d7db',
+                'color-button-send': '#7aa600',
+                'color-button-send-hover': '#4c7816',
             },
         },
         fontFamily: {

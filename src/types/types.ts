@@ -21,3 +21,16 @@ export type Article = {
     title: string
     userId: string
 }
+
+export type blocksType = {
+    options?: {
+        size?: string
+        lang?: string
+    }
+    type: 'heading' | 'code' | 'delimiter' | 'text'
+    value?: string
+}
+
+export type parsedArticle = {
+    blocks?: Array<blocksType>
+}

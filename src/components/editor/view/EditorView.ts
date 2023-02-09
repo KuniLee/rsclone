@@ -45,6 +45,12 @@ export class EditorView extends EventEmitter {
         document.querySelector('.toSettings')?.addEventListener('click', (e) => {
             this.parseArticle()
         })
+        document.querySelector('.isTranslate')?.addEventListener('change', () => {
+            const translateBlock = document.querySelector('.translate-info')
+            if (translateBlock) {
+                translateBlock.classList.toggle('hidden')
+            }
+        })
         const editor = document.querySelector('.textEditor') as HTMLElement
         const sortable = new Sortable<SortableEventNames | 'drag:stopped'>(editor, {
             draggable: '.textElement',
