@@ -16,7 +16,6 @@ export class PageModel extends EventEmitter {
         this.loadSettings()
     }
 
-    //метод для загрузки настроек из LS
     private loadSettings() {
         const lang = localStorage.lang
         if (['ru', 'en'].includes(lang)) this.lang = lang
