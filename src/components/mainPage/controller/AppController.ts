@@ -2,7 +2,7 @@ import { RouterInstance } from '@/utils/Rooter'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { MainViewInstance } from '@/components/mainPage/views/MainView'
 import { SettingsViewInstance } from '@/components/mainPage/views/SettingsView'
-import { FireBaseAPI, Auth, User, getDoc, doc, Firestore } from '@/utils/FireBaseAPI'
+import { FireBaseAPI, Auth, User, getDoc, doc, Firestore, updateDoc } from '@/utils/FireBaseAPI'
 import { UserData } from 'types/types'
 
 export class AppController {
@@ -31,6 +31,9 @@ export class AppController {
                 search: this.router.getParsedSearch(arg),
             })
         })
+        this.settingsView.on<UserData>('SAVE_SETTINGS', (userdata) => {
+            this.uploadUserData(userdata)
+        })
         router.on('ROUTE', () => {
             model.changePage(this.router.getParams())
         })
@@ -46,6 +49,16 @@ export class AppController {
             const result = await getDoc(doc(this.db, `users/${uid}`))
             const data = await result.data()
             return { ...data, uid } as UserData
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    private async uploadUserData(userData: UserData) {
+        const newData = { ...userData }
+        Reflect.deleteProperty(newData, 'uid')
+        try {
+            await updateDoc(doc(this.db, `users/${userData.uid}`), newData)
         } catch (e) {
             console.log(e)
         }

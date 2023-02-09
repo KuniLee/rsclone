@@ -5,15 +5,15 @@
       <div class="lg:row-span-2 lg:col-start-5 md:col-span-3 col-span-6">
         <span class="mt-4 mb-1 font-semibold">{{words.Avatar}}</span>
         <div class="user-avatar overflow-hidden h-16 w-16 md:float-none float-right rounded border flex items-center justify-center">
-          <img class="w-full h-full object-cover" src="{{user.avatar}}" alt="user-avatar">
+          <img class="w-full h-full object-cover" src="{{#if user.avatar}}{{user.avatar}}{{else}}{{emptyAvatar}}{{/if}}" alt="user-avatar">
         </div>
         <div class="">
           <p class="text-sm my-1 text-color-border-dark">{{{words.AvatarSize}}}</p>
           <div
               class="">
             <div class="flex">
-              <label class="btnImage px-2 py-1 border border-b-color-border-dark rounded bg-gray-100 cursor-pointer"><input class="hidden" type="file"
-                  accept="image/*">{{#if user.avatar}}{{words.Remove}}{{else}}{{words.Upload}}{{/if}}</label>
+              <input class="hidden" type="file" accept="image/*">
+              <span class="btnImage px-2 py-1 border border-b-color-border-dark rounded bg-gray-100 cursor-pointer">{{#if user.avatar}}{{words.Remove}}{{else}}{{words.Upload}}{{/if}}</span>
             </div>
           </div>
         </div>
@@ -21,15 +21,15 @@
         <div class="lg:row-start-1 lg:col-span-3 col-span-6 md:col-span-4">
           <div class="mt-4 mb-2"><label class="flex justify-between mb-1">
             <span class="font-semibold">{{words.RealName}}</span>
-            <span class="font-semibold">40</span></label>
-            <input maxlength="40" value="{{user.fullName}}" type="text" id="first_name" class="name-input bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "></div>
+            <span class="font-semibold">{{sub 40 user.fullName.length}}</span></label>
+            <input autocomplete="off" maxlength="40" value="{{user.fullName}}" type="text" id="first_name" class="name-input bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "></div>
           <p class="text-sm my-1 text-color-border-dark">{{words.RealNameAbout}}</p>
         </div>
         <div class="lg:row-start-2 col-span-6 lg:col-span-3 md:col-span-4">
           <div class="mt-4 mb-2"><label class="flex justify-between mb-1">
             <span class="font-semibold">{{words.DescYour}}</span>
-            <span class="font-semibold">50</span></label>
-            <input  maxlength="50" value="{{user.about}}" type="text" id="about" class="about-input bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "></div>
+            <span class="font-semibold">{{sub 50 user.about.length}}</span></label>
+            <input autocomplete="off" maxlength="50" value="{{user.about}}" type="text" id="about" class="about-input bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "></div>
           <p class="text-sm my-1 text-color-border-dark">{{words.DescYourAbout}}</p>
         </div>
       </div>

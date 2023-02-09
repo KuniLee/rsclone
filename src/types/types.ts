@@ -34,6 +34,6 @@ export type UserData = {
 
 export type UserProps = {
     fullName: string
-    avatar: string
+    avatar: string | null
     about: string
 }

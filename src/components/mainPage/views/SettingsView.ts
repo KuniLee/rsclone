@@ -4,9 +4,9 @@ import { PageModelInstance } from '../model/PageModel'
 import profileTemp from '@/templates/profile.hbs'
 import Dictionary, { getWords } from '@/utils/dictionary'
 import emptyAvatar from '@/assets/icons/avatar.svg'
-import { UserData } from 'types/types'
+import { UserData, UserProps } from 'types/types'
 
-type SettingsViewEventsName = 'LOAD_ARTICLES' | 'UPLOAD_IMAGE'
+type SettingsViewEventsName = 'LOAD_ARTICLES' | 'SAVE_SETTINGS'
 
 export type SettingsViewInstance = InstanceType<typeof SettingsView>
 
@@ -55,22 +55,18 @@ export class SettingsView extends EventEmitter {
 
     private addListeners(pageWrapper: HTMLDivElement) {
         const file = pageWrapper.querySelector('input[type=file]') as HTMLInputElement
-        const btnImage = pageWrapper.querySelector('.btnImage') as HTMLLabelElement
+        const btnImage = pageWrapper.querySelector('.btnImage') as HTMLSpanElement
         const saveBnt = pageWrapper.querySelector('button[type=submit]') as HTMLLabelElement
         const nameInput = pageWrapper.querySelector('.name-input') as HTMLInputElement
         const aboutInput = pageWrapper.querySelector('.about-input') as HTMLInputElement
-        nameInput.addEventListener('input', (ev) => {
-            let value = nameInput.value
-            if (value.length > 40) value = value.slice(0, 39)
-            if (this.user) this.user.properties.fullName = value
+        nameInput.addEventListener('input', () => {
+            this.onInput(nameInput, 40, 'fullName')
         })
         aboutInput.addEventListener('input', (ev) => {
-            let value = aboutInput.value
-            if (value.length > 40) value = value.slice(0, 49)
-            if (this.user) this.user.properties.about = value
+            this.onInput(aboutInput, 50, 'about')
         })
-        saveBnt.onclick = (ev) => {
-            console.log('fff')
+        saveBnt.onclick = () => {
+            if (this.user) this.emit<UserData>('SAVE_SETTINGS', this.user)
         }
         file.addEventListener('change', () => {
             if (file.files?.length === 1) {
@@ -87,6 +83,14 @@ export class SettingsView extends EventEmitter {
                 btnImage.textContent = Dictionary.buttons.Upload[this.model.lang]
             } else file.click()
         })
+    }
+
+    private onInput(inputEl: HTMLInputElement, length: number, param: keyof UserProps) {
+        let value = inputEl.value
+        if (value.length > length) value = value.slice(0, length - 1)
+        if (this.user) this.user.properties[param] = value
+        const counter = inputEl.previousElementSibling as HTMLElement
+        if (counter?.lastChild) counter.lastChild.textContent = String(length - value.length)
     }
 
     private showErrorMsg() {
@@ -146,7 +150,7 @@ export class SettingsView extends EventEmitter {
     }
 
     private removeAvatar() {
-        if (this.user) this.user.properties.avatar = undefined
+        if (this.user) this.user.properties.avatar = null
         const imageWrapper = this.mainPageContainer.querySelector('.user-avatar') as HTMLDivElement
         imageWrapper.innerHTML = `<img class="w-full h-full object-cover" src="${emptyAvatar}" alt="user-avatar">`
     }
