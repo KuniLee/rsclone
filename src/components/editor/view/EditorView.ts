@@ -42,14 +42,18 @@ export class EditorView extends EventEmitter {
         document.querySelectorAll('.textElement')?.forEach((el) => {
             this.addTextElementListeners(el as HTMLElement)
         })
-        document.querySelector('.toSettings')?.addEventListener('click', (e) => {
-            this.parseArticle()
-        })
         document.querySelector('.isTranslate')?.addEventListener('change', () => {
             const translateBlock = document.querySelector('.translate-info')
             if (translateBlock) {
                 translateBlock.classList.toggle('hidden')
             }
+        })
+        document.querySelector('.toSettings')?.addEventListener('click', (e) => {
+            this.toggleEditorView()
+        })
+        document.querySelector('.backToEditor')?.addEventListener('click', (e) => {
+            e.preventDefault()
+            this.toggleEditorView()
         })
         const editor = document.querySelector('.textEditor') as HTMLElement
         const sortable = new Sortable<SortableEventNames | 'drag:stopped'>(editor, {
@@ -63,6 +67,15 @@ export class EditorView extends EventEmitter {
         sortable.on('drag:stopped', () => {
             this.hidePlaceholder()
         })
+    }
+
+    toggleEditorView() {
+        const editor = document.querySelector('.mainEditor')
+        const settings = document.querySelector('.editorSettings')
+        if (editor && settings) {
+            editor.classList.toggle('hidden')
+            settings.classList.toggle('hidden')
+        }
     }
 
     addGlobalEventListener() {

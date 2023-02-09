@@ -1,6 +1,6 @@
 <div class="max-w-[1200px] mx-auto flex justify-between mt-[12px] mb-[12px]">
   <div class="w-[780px] min-h-[640px] bg-color-light flex flex-col pt-[20px]">
-    <div class="flex flex-col relative flex-grow px-[20px] hidden">
+    <div class="mainEditor flex flex-col relative flex-grow px-[20px] hidden">
       <div class="flex">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-[10px]">
           <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -35,11 +35,11 @@
           </div>
         </div>
       </div>
-      <div class="before:content-[''] before:w-full before:h-[1px] before:bg-color-gray-separator before:absolute before:left-0">
+      <div class="mb-4 before:content-[''] before:w-full before:h-[1px] before:bg-color-gray-separator before:absolute before:left-0">
         <button class="toSettings mt-[16px] border-color-button text-color-button border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-btn-hover hover:border-color-btn-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white" disabled>Далее к настройкам</button>
       </div>
     </div>
-    <div class="px-[16px] relative">
+    <div class="editorSettings px-[16px] relative">
       <h2 class="border-b border-color-gray-separator text-xl font-medium pb-[24px] mb-[12px]">Настройка публикации</h2>
       <form action="#">
         <div class="flex mb-4">
@@ -148,7 +148,7 @@
           </div>
         </div>
         <div class="before:content-[''] before:w-full before:h-[1px] before:bg-color-gray-separator before:absolute before:left-0 mb-4 flex justify-between">
-          <button class="toSettings mt-[16px] border-color-button text-color-button border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-btn-hover hover:border-color-btn-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white">Назад к публикации</button>
+          <button class="backToEditor mt-[16px] border-color-button text-color-button border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-btn-hover hover:border-color-btn-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white">Назад к публикации</button>
           <button class="toSettings mt-[16px] border-color-button-send text-white bg-color-button-send text-color border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-button-send-hover hover:border-color-button-send-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white" disabled>Опубликовать</button>
         </div>
       </form>
