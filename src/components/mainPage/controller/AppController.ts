@@ -25,15 +25,9 @@ export class AppController {
         this.auth = api.auth
         this.db = api.db
         this.router = router
-        this.view.on<string>('GOTO', (arg) => {
-            model.changePage({
-                path: this.router.getPathArray(arg),
-                search: this.router.getParsedSearch(arg),
-            })
-        })
-        this.settingsView.on<UserData>('SAVE_SETTINGS', (userdata) => {
-            this.uploadUserData(userdata)
-        })
+        this.view.on<string>('GOTO', this.goTo.bind(this))
+        this.settingsView.on<string>('GOTO', this.goTo.bind(this))
+        this.settingsView.on<UserData>('SAVE_SETTINGS', this.uploadUserData.bind(this))
         router.on('ROUTE', () => {
             model.changePage(this.router.getParams())
         })
@@ -41,6 +35,13 @@ export class AppController {
         api.on<User>('CHANGE_AUTH', async (user) => {
             const userData = await this.getUserData(user)
             this.model.changeAuth(userData)
+        })
+    }
+
+    private goTo(path: string) {
+        this.model.changePage({
+            path: this.router.getPathArray(path),
+            search: this.router.getParsedSearch(path),
         })
     }
 

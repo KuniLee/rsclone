@@ -30,6 +30,12 @@ const popupSettings: Record<string, language> = {
     Save: { ru: 'Сохранить настройки', en: 'Save preferences' },
 }
 
+const errorPage: Record<string, language> = {
+    AuthFail: { ru: 'Ошибка авторизации', en: 'Authorization failed' },
+    PleaseLogin: { ru: 'Для просмотра этой страницы необходимо авторизоваться', en: 'Please login to see this page' },
+    Button: { ru: 'Вернуться на главную', en: 'Back to the main page' },
+}
+
 const ProfileSettings: Record<string, language> = {
     Settings: { ru: 'Настройки', en: 'Settings' },
     Avatar: {
@@ -63,4 +69,4 @@ export function getWords(wordObj: Record<string, language>, lang: keyof language
     return result
 }
 
-export default { flowsNames, buttons, popupSettings, logo, ProfileSettings }
+export default { flowsNames, buttons, popupSettings, logo, ProfileSettings, errorPage }

@@ -1,12 +1,13 @@
 import EventEmitter from 'events'
 import { Paths, SettingsPaths } from 'types/enums'
 import { PageModelInstance } from '../model/PageModel'
+import authErrorPage from '@/templates/authError.hbs'
 import profileTemp from '@/templates/profile.hbs'
 import Dictionary, { getWords } from '@/utils/dictionary'
 import emptyAvatar from '@/assets/icons/avatar.svg'
 import { UserData, UserProps } from 'types/types'
 
-type SettingsViewEventsName = 'LOAD_ARTICLES' | 'SAVE_SETTINGS'
+type SettingsViewEventsName = 'LOAD_ARTICLES' | 'SAVE_SETTINGS' | 'GOTO'
 
 export type SettingsViewInstance = InstanceType<typeof SettingsView>
 
@@ -142,7 +143,15 @@ export class SettingsView extends EventEmitter {
     }
 
     private showAuthFail() {
-        this.mainPageContainer.innerText = 'fail'
+        this.mainPageContainer.innerHTML = ''
+        const pageWrapper = document.createElement('div')
+        pageWrapper.className = 'sm:container mx-auto'
+        pageWrapper.innerHTML = authErrorPage({ words: getWords(Dictionary.errorPage, this.model.lang) })
+        const mainPageBtn = pageWrapper.querySelector('button') as HTMLButtonElement
+        mainPageBtn.onclick = () => {
+            this.emit<string>('GOTO', location.origin)
+        }
+        this.mainPageContainer.append(pageWrapper)
     }
 
     private setUserProps(user: UserData) {
