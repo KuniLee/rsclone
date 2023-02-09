@@ -183,7 +183,7 @@ export class MainView extends EventEmitter {
 
     private renderHeader() {
         const header = document.createElement('header')
-        header.className = 'border-solid border-b border-color-border-header sticky top-0 header'
+        header.className = 'border-solid border-b border-color-border-header sticky top-0 header bg-color-light z-10'
         const flows = Object.keys(Flows).map((el) => ({
             name: dictionary.flowsNames[el as keyof typeof Flows][this.model.lang],
             link: Paths.Flows + Flows[el as keyof typeof Flows],
