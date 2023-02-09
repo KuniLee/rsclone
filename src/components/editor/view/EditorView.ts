@@ -36,12 +36,26 @@ export class EditorView extends EventEmitter {
             main.innerHTML = textEditor({})
         }
         this.addGlobalEventListener()
-        document.querySelectorAll('.editable')?.forEach((el) => {
-            this.addTextInputListeners(el as HTMLElement)
-        })
-        document.querySelectorAll('.textElement')?.forEach((el) => {
-            this.addTextElementListeners(el as HTMLElement)
-        })
+        const editor = document.querySelector('.textEditor') as HTMLElement
+        const previewEditor = document.querySelector('.textPreviewEditor') as HTMLElement
+        if (editor) {
+            editor.querySelectorAll('.editable')?.forEach((el) => {
+                this.addTextInputListeners(el as HTMLElement, editor)
+            })
+            editor.querySelectorAll('.textElement')?.forEach((el) => {
+                this.addTextElementListeners(el as HTMLElement, editor)
+            })
+            this.addDrag(editor)
+        }
+        if (previewEditor) {
+            previewEditor.querySelectorAll('.editable')?.forEach((el) => {
+                this.addTextInputListeners(el as HTMLElement, previewEditor)
+            })
+            previewEditor.querySelectorAll('.textElement')?.forEach((el) => {
+                this.addTextElementListeners(el as HTMLElement, previewEditor)
+            })
+            this.addDrag(previewEditor)
+        }
         document.querySelector('.isTranslate')?.addEventListener('change', () => {
             const translateBlock = document.querySelector('.translate-info')
             if (translateBlock) {
@@ -81,8 +95,10 @@ export class EditorView extends EventEmitter {
                 }
             }
         })
-        const editor = document.querySelector('.textEditor') as HTMLElement
-        const sortable = new Sortable<SortableEventNames | 'drag:stopped'>(editor, {
+    }
+
+    addDrag(list: HTMLElement) {
+        const sortable = new Sortable<SortableEventNames | 'drag:stopped'>(list, {
             draggable: '.textElement',
             delay: {
                 mouse: 100,
@@ -91,7 +107,7 @@ export class EditorView extends EventEmitter {
             },
         })
         sortable.on('drag:stopped', () => {
-            this.hidePlaceholder()
+            this.hidePlaceholder(list)
         })
     }
 
@@ -120,12 +136,11 @@ export class EditorView extends EventEmitter {
         }
     }
 
-    addTextInputListeners(el: HTMLElement) {
-        const editor = document.querySelector('.textEditor') as HTMLElement
+    addTextInputListeners(el: HTMLElement, editor: HTMLElement) {
         el.addEventListener('keypress', (e) => {
             e.preventDefault()
             const event = e as KeyboardEvent
-            const item = document.querySelector('.focused')
+            const item = editor.querySelector('.focused')
             if (event.key !== 'Enter' && item) {
                 const eventD = new KeyboardEvent('input', {
                     key: event.key,
@@ -133,7 +148,7 @@ export class EditorView extends EventEmitter {
                 el.dispatchEvent(eventD)
             }
             if (event.key === 'Enter') {
-                this.addNewField()
+                this.addNewField(editor)
             }
         })
         el.addEventListener('input', (e) => {
@@ -159,18 +174,18 @@ export class EditorView extends EventEmitter {
                     }
                 }
             }
-            this.checkArticle()
+            if (editor.classList.contains('textEditor')) {
+                this.checkArticle()
+            }
         })
         el.addEventListener('keydown', (e) => {
             if (e.key === 'Backspace') {
                 const target = el as HTMLElement
                 const value = target.textContent
                 const parent = target.parentElement
-                const listOfElements = document.querySelectorAll('.textElement')
-                console.log('test')
+                const listOfElements = editor.querySelectorAll('.textElement')
                 if (value === '' && parent && parent.classList.contains('textElement') && listOfElements.length !== 1) {
-                    console.log('1')
-                    this.deleteElement(parent)
+                    this.deleteElement(parent, editor)
                 }
             }
         })
@@ -190,8 +205,7 @@ export class EditorView extends EventEmitter {
         })
     }
 
-    addTextElementListeners(textElement: HTMLElement) {
-        const editor = document.querySelector('.textEditor') as HTMLElement
+    addTextElementListeners(textElement: HTMLElement, editor: HTMLElement) {
         textElement.addEventListener('click', (e) => {
             const el = e.target as HTMLElement
             document.querySelectorAll('.open')?.forEach((el) => {
@@ -199,6 +213,7 @@ export class EditorView extends EventEmitter {
                 ;(el as HTMLElement).hidden = true
             })
             if (el.closest('.options__open-btn')) {
+                e.preventDefault()
                 const dropMenu = textElement.querySelector('.options__drop-menu') as HTMLElement
                 if (dropMenu) {
                     dropMenu.hidden = false
@@ -207,35 +222,37 @@ export class EditorView extends EventEmitter {
                 }
             }
         })
-        textElement.querySelector('.delete-btn')?.addEventListener('click', () => {
-            if (document.querySelectorAll('.textElement')?.length !== 1) {
-                this.deleteElement(textElement)
+        textElement.querySelector('.delete-btn')?.addEventListener('click', (e) => {
+            e.preventDefault()
+            if (editor.querySelectorAll('.textElement')?.length !== 1) {
+                this.deleteElement(textElement, editor)
             }
         })
     }
-    addNewField() {
-        const el = document.querySelector('.focused') as HTMLElement
+    addNewField(editor: HTMLElement) {
+        const el = editor.querySelector('.focused') as HTMLElement
         if (el) {
             const template = document.createElement('template')
             template.innerHTML = newField({})
             el.after(template.content)
-            const newElem = document.querySelector('.new') as HTMLElement
-            console.log(newElem)
+            const newElem = editor.querySelector('.new') as HTMLElement
             if (newElem) {
+                if (editor.classList.contains('textPreviewEditor')) {
+                    newElem.dataset.isEmpty = 'Введите текст'
+                }
                 const newElemField = newElem.querySelector('.editable') as HTMLElement
                 if (newElemField) {
                     newElem.classList.remove('new')
-                    this.addTextInputListeners(newElemField)
-                    this.addTextElementListeners(newElem)
+                    this.addTextInputListeners(newElemField, editor)
+                    this.addTextElementListeners(newElem, editor)
                     newElemField.focus()
                 }
             }
         }
-        this.hidePlaceholder()
+        this.hidePlaceholder(editor)
     }
-    deleteElement(element: HTMLElement) {
+    deleteElement(element: HTMLElement, editor: HTMLElement) {
         element.remove()
-        const editor = document.querySelector('.textEditor') as HTMLElement
         if (editor) {
             const lastChild = editor.lastElementChild as HTMLElement
             const lastChildInputField = lastChild.querySelector('.editable') as HTMLElement
@@ -281,8 +298,8 @@ export class EditorView extends EventEmitter {
         return charactersCount >= 10
     }
 
-    hidePlaceholder() {
-        const elements = document.querySelectorAll('.textElement')
+    hidePlaceholder(editor: HTMLElement) {
+        const elements = editor.querySelectorAll('.textElement')
         for (let i = 0; i < elements.length; i++) {
             console.log(elements.length)
             if (elements.length - 1 !== i) {

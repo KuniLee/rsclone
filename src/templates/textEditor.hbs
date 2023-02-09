@@ -139,7 +139,23 @@
             </div>
           </div>
           <div class="text-[#eee] border border-color-gray-separator relative">
-            <p>Test</p>
+            <div class="textPreviewEditor relative flex-grow text-black">
+              <div class="textElement editorElement before:content-[attr(data-is-empty)] w-full before:absolute before:text-[#c0c0c0] before:pointer-events-none text-xl flex items-center" data-is-empty="Введите текст">
+                <p contenteditable="true" class="editable outline-0 whitespace-pre-wrap flex-grow w-full"></p>
+                <div class="options cursor-pointer">
+                  <button class="options__open-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                    </svg>
+                  </button>
+                  <div class="options__drop-menu absolute w-[220px] shadow right-0 bg-color-light z-10" hidden>
+                    <div class="py-[5px]">
+                      <button class="delete-btn py-[10px] hover:bg-[rgba] w-full text-[13px] hover:bg-color-gray-light transition">Удалить</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           <p class="text-[#777] text-[12px] mb-[9px]">Рекомендуем не менее 100 и не более 2000 символов, максимально допустимое количество - 3000 символов</p>
         </div>
