@@ -105,7 +105,7 @@
         </div>
         <div class="mb-4">
           <h3 class="text-m mb-4 font-semibold">Уровень сложности</h3>
-          <div class="flex">
+          <div class="flex text-[14px]">
             <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity" value="no" checked>Не указан</label>
             <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity" value="easy">Простой</label>
             <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity" value="medium">Средний</label>
@@ -115,8 +115,10 @@
         <div class="mb-4">
           <h2 class="text-2xl mb-4 font-semibold">Отображение в ленте</h2>
           <div class="text-[#eee] border border-color-gray-separator relative">
-            <div class="w-full pb-[56.4103%]"></div>
-            <div class="w-[90%] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center flex-col items-center">
+            <div class="w-full pb-[56.4103%]">
+              <img class="preview-image absolute w-full h-full object-cover hidden" src="" alt="">
+            </div>
+            <div class="load-image-preview-text w-[90%] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center flex-col items-center">
               <div>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#929ca5" class="w-6 h-6">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -130,7 +132,7 @@
               </div>
               <div>
                 <label class="border inline-block border-[#c9c9c9] rounded-[3px] bg-[#f4f4f4] text-[#464646] text-[12px] h-[30px] leading-[30px] px-[12px] cursor-pointer">
-                  <input type="file" accept="image/png, image/jpg, image/jpeg, image/gif" style="display: none;">
+                  <input class="image-preview" type="file" accept="image/png, image/jpg, image/jpeg, image/gif" style="display: none;">
                   <span>Загрузить обложку</span>
                 </label>
               </div>

@@ -55,6 +55,32 @@ export class EditorView extends EventEmitter {
             e.preventDefault()
             this.toggleEditorView()
         })
+        document.querySelector('.image-preview')?.addEventListener('change', (e) => {
+            const target = e.target as HTMLInputElement
+            if (target) {
+                if (target.files) {
+                    if (!target.files.length) {
+                        return
+                    } else {
+                        const fileReader = new FileReader()
+                        fileReader.onload = () => {
+                            const previewImage = document.querySelector('.preview-image') as HTMLImageElement
+                            if (previewImage) {
+                                if (typeof fileReader.result === 'string') {
+                                    previewImage.src = fileReader.result
+                                    previewImage.classList.remove('hidden')
+                                    const textPreview = document.querySelector('.load-image-preview-text')
+                                    if (textPreview) {
+                                        textPreview.classList.add('hidden')
+                                    }
+                                }
+                            }
+                        }
+                        fileReader.readAsDataURL(target.files[0])
+                    }
+                }
+            }
+        })
         const editor = document.querySelector('.textEditor') as HTMLElement
         const sortable = new Sortable<SortableEventNames | 'drag:stopped'>(editor, {
             draggable: '.textElement',
