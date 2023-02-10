@@ -442,19 +442,40 @@ export class EditorView extends EventEmitter {
         const translateLink = document.querySelector('.translate__link') as HTMLInputElement
         if (hubsInput && keywordsInput && translateAuthor && buttonTextInput && translateCheckbox && translateLink) {
             const checkHubsResult = this.checkValue(hubsInput.value, new RegExp('[A-zА-я]{5,}'))
+            checkHubsResult
+                ? hubsInput.classList.remove('border-[#ff8d85]')
+                : hubsInput.classList.add('border-[#ff8d85]')
             const checkKeywordsResult = this.checkValue(keywordsInput.value, new RegExp('[A-zА-я]{5,}'))
+            checkKeywordsResult
+                ? keywordsInput.classList.remove('border-[#ff8d85]')
+                : keywordsInput.classList.add('border-[#ff8d85]')
             const checkButtonTextResult = this.checkValue(buttonTextInput.value, new RegExp('[A-zА-я]{2,}'))
+            checkButtonTextResult
+                ? buttonTextInput.classList.remove('border-[#ff8d85]')
+                : buttonTextInput.classList.add('border-[#ff8d85]')
             let checkTranslateAuthor = true
             let checkTranslateLink = true
             const checkPreviewBlock = this.checkPreviewEditor()
+            const previewError = document.querySelector('.previewEditorError')
+            if (previewError) {
+                checkPreviewBlock
+                    ? previewError.classList.remove('text-[#ff8d85]')
+                    : previewError.classList.add('text-[#ff8d85]')
+            }
             if (translateCheckbox.checked) {
                 checkTranslateAuthor = this.checkValue(translateAuthor.value, new RegExp('[A-z]{5,}'))
+                checkTranslateAuthor
+                    ? translateAuthor.classList.remove('border-[#ff8d85]')
+                    : translateAuthor.classList.add('border-[#ff8d85]')
                 checkTranslateLink = this.checkValue(
                     translateLink.value,
                     new RegExp(
                         '^https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$'
                     )
                 )
+                checkTranslateLink
+                    ? translateLink.classList.remove('border-[#ff8d85]')
+                    : translateLink.classList.add('border-[#ff8d85]')
             }
             const button = document.querySelector('.submitArticle') as HTMLButtonElement
             if (button) {
@@ -468,9 +489,11 @@ export class EditorView extends EventEmitter {
                 ) {
                     if (button) {
                         button.disabled = false
+                        return true
                     }
                 } else {
                     button.disabled = true
+                    return false
                 }
             }
         }
