@@ -23,16 +23,16 @@ export class MainView extends EventEmitter {
         this.model = model
         this.mainPageContainer = document.createElement('main')
         this.mainPageContainer.classList.add('main', 'sm:mt-3', 'mb-10')
-        this.footerEl = this.renderFooter()
-        this.renderPage()
+        this.footerEl = this.createFooter()
+        this.buildPage()
         this.model.on('404', () => {
             this.show404page()
         })
         this.model.on('SIGN_IN', () => {
-            this.renderPage()
+            this.buildPage()
         })
         this.model.on('SIGN_OUT', () => {
-            this.renderPage()
+            this.buildPage()
         })
     }
 
@@ -44,17 +44,21 @@ export class MainView extends EventEmitter {
         return super.on(event, callback)
     }
 
-    private renderPage() {
-        const dropdownMenuEl = new DropdownMenu(this.model)
-        const popupSettingsEl = new PopupSettings(this.model)
-        const headerEl = this.renderHeader()
-        this.show(headerEl)
+    private buildPage() {
+        const dropdownMenu = new DropdownMenu(this.model)
+        const popupSettings = new PopupSettings(this.model)
+        const headerEl = this.createHeader()
+        let dropdownMenuEl = dropdownMenu.renderUserSignOut()
+        if (this.model.user) {
+            dropdownMenuEl = dropdownMenu.renderUserSignIn()
+        }
+        const popupSettingsEl = popupSettings.render()
+        this.render(headerEl)
         document.body.onclick = null
-        console.log(this.model.user)
         this.addListeners(headerEl, dropdownMenuEl, popupSettingsEl)
     }
 
-    private addListeners(header: HTMLElement, dropDownMenu: DropdownMenu, popupSettings: PopupSettings) {
+    private addListeners(header: HTMLElement, dropDownMenu: HTMLElement, popupSettings: HTMLElement) {
         const navEl = header.querySelector('.nav')
         const headerFlowsEl = header.querySelector('.header__flows')
         const bgEl = this.createBg()
@@ -75,7 +79,7 @@ export class MainView extends EventEmitter {
         document.body.onclick = (ev) => {
             if (ev.target instanceof HTMLElement) {
                 this.toggleDropdownMenu(ev.target, header, dropDownMenu)
-                this.togglePopupSettings(ev.target, header, popupSettings)
+                this.togglePopupSettings(ev.target, header, popupSettings, bgEl)
                 if (headerFlowsEl) {
                     this.toggleSidebar(ev.target, headerFlowsEl, bgEl, header)
                 }
@@ -93,14 +97,19 @@ export class MainView extends EventEmitter {
         this.mainPageContainer.innerText = '404'
     }
 
-    private togglePopupSettings(element: HTMLElement, header: HTMLElement, popupSettings: PopupSettings) {
+    private togglePopupSettings(
+        element: HTMLElement,
+        header: HTMLElement,
+        popupSettings: HTMLElement,
+        bg: HTMLElement
+    ) {
         const visualSettings = header.querySelector('.visual-settings')
         const popupSettingsEl = document.querySelector('.popup-settings')
         const saveSettingsBtn = document.querySelector('.btn-save')
         if (visualSettings) {
             visualSettings.addEventListener('click', () => {
-                document.body.appendChild(popupSettings.render())
-                Array.from(document.getElementsByName('visual-settings')).forEach((input) => {
+                header.append(bg, popupSettings)
+                Array.from(document.getElementsByName('lang')).forEach((input) => {
                     if (input instanceof HTMLInputElement && this.model.lang === input.id) {
                         input.checked = true
                     }
@@ -109,7 +118,7 @@ export class MainView extends EventEmitter {
             if (saveSettingsBtn) {
                 saveSettingsBtn.addEventListener('click', (ev) => {
                     ev.preventDefault()
-                    const selectedLangInput = Array.from(document.getElementsByName('visual-settings')).find(
+                    const selectedLangInput = Array.from(document.getElementsByName('lang')).find(
                         (input) => input instanceof HTMLInputElement && input.checked
                     )
                     if (selectedLangInput) {
@@ -125,7 +134,8 @@ export class MainView extends EventEmitter {
                 !element.closest('.visual-settings') &&
                 (!element.closest('.popup-settings') || element.classList.contains('ico_close'))
             ) {
-                document.body.removeChild(popupSettings.render())
+                header.removeChild(popupSettings)
+                header.removeChild(bg)
             }
         }
     }
@@ -154,28 +164,36 @@ export class MainView extends EventEmitter {
         }
     }
 
-    private toggleDropdownMenu(element: HTMLElement, header: HTMLElement, dropDownMenu: DropdownMenu) {
-        const userIcon = header.querySelector('.user')
-        let dropdownMenuEl = dropDownMenu.renderUserSignOut()
-        if (this.model.user) {
-            dropdownMenuEl = dropDownMenu.renderUserSignIn()
-        }
-        const exit = dropdownMenuEl.querySelector('.exit')
+    private toggleDropdownMenu(element: HTMLElement, header: HTMLElement, dropdownMenu: HTMLElement) {
+        const userIconLight = header.querySelector('.ico_user-light')
+        const userIcon = header.querySelectorAll('.user')
+        const exit = dropdownMenu.querySelector('.exit')
         if (element.classList.contains('user')) {
             element.classList.toggle('active')
             if (element.classList.contains('active')) {
-                header.append(dropdownMenuEl)
+                header.append(dropdownMenu)
             } else {
-                header.removeChild(dropdownMenuEl)
+                header.removeChild(dropdownMenu)
             }
         }
         if (!element.closest('.drop-down-menu') && !element.classList.contains('user')) {
-            if (userIcon && userIcon.classList.contains('active')) {
-                userIcon.classList.remove('active')
-                header.removeChild(dropdownMenuEl)
+            userIcon.forEach((userIcon) => {
+                if (userIcon && userIcon.classList.contains('active')) {
+                    userIcon.classList.remove('active')
+                    header.removeChild(dropdownMenu)
+                }
+            })
+        }
+        if (
+            !element.closest('.drop-down-menu') &&
+            !element.classList.contains('ico_user-light') &&
+            !element.classList.contains('ico_close')
+        ) {
+            if (userIconLight && userIconLight.classList.contains('active')) {
+                userIconLight.classList.remove('active')
+                header.removeChild(dropdownMenu)
             }
         }
-
         if (exit) {
             exit.addEventListener('click', (ev) => {
                 ev.preventDefault()
@@ -191,7 +209,7 @@ export class MainView extends EventEmitter {
         })
     }
 
-    private renderHeader() {
+    private createHeader() {
         const header = document.createElement('header')
         header.className = 'bg-color-light border-solid border-b border-color-border-header sticky top-0 header z-10'
         const flows = Object.keys(Flows).map((el) => ({
@@ -211,7 +229,7 @@ export class MainView extends EventEmitter {
         return header
     }
 
-    private renderFooter() {
+    private createFooter() {
         const footer = document.createElement('footer')
         footer.classList.add('footer')
         footer.innerHTML = footerTemplate({})
@@ -224,7 +242,7 @@ export class MainView extends EventEmitter {
         return bg
     }
 
-    private show(header: HTMLElement) {
+    private render(header: HTMLElement) {
         document.body.replaceChildren(header, this.mainPageContainer, this.footerEl)
     }
 }
