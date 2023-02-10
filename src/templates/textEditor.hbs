@@ -72,7 +72,7 @@
           <div>
             <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Язык публикации</h3>
             <div>
-              <input class="w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" placeholder="Выберите хабы">
+              <input class="hubs-input w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" placeholder="Выберите хабы">
             </div>
             <p class="text-gray-500 text-[12px] mt-[9px]">Выберите от 1 до 5 хабов по теме публикации</p>
           </div>
@@ -81,7 +81,7 @@
           <div>
             <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Ключевые слова</h3>
             <div>
-              <input class="w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" placeholder="Выберите хабы">
+              <input class="keywords-input w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" placeholder="Выберите хабы">
             </div>
             <p class="text-gray-500 text-[12px] mb-4 mt-[9px]">Введите сюда от 1 до 10 ключевых слов, отделяя их запятыми</p>
           </div>
@@ -93,12 +93,12 @@
           <div class="translate-info hidden">
             <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Автор оригинала</h3>
             <div>
-              <input class="w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" name="translate-author">
+              <input class="translate__author w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" name="translate-author">
             </div>
             <p class="text-gray-500 text-[12px] mb-4 mt-[9px]">Например: Tim O'Reily</p>
             <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Ссылка на оригинальную публикацию</h3>
             <div>
-              <input class="w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" name="translate-link">
+              <input class="translate__link w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" name="translate-link">
             </div>
             <p class="text-gray-500 text-[12px] mb-4 mt-[9px]">Например: http://www.oreillynet.com/pub/a/oreilly/tim/news/2005/09/30/what-is-web-20.html?page=1</p>
           </div>
@@ -162,12 +162,12 @@
         <div class="mb-4">
           <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Текст кнопки «Читать далее»</h3>
           <div>
-            <input class="w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" placeholder="Выберите хабы" value="Читать далее">
+            <input class="buttonTextInput w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" placeholder="Выберите хабы" value="Читать далее">
           </div>
         </div>
         <div class="before:content-[''] before:w-full before:h-[1px] before:bg-color-gray-separator before:absolute before:left-0 mb-4 flex justify-between">
           <button class="backToEditor mt-[16px] border-color-button text-color-button border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-btn-hover hover:border-color-btn-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white">Назад к публикации</button>
-          <button class="toSettings mt-[16px] border-color-button-send text-white bg-color-button-send text-color border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-button-send-hover hover:border-color-button-send-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white" disabled>Опубликовать</button>
+          <button class="submitArticle mt-[16px] border-color-button-send text-white bg-color-button-send text-color border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-button-send-hover hover:border-color-button-send-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white" disabled>Опубликовать</button>
         </div>
       </form>
     </div>

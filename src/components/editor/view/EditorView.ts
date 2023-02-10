@@ -2,8 +2,7 @@ import EventEmitter from 'events'
 import type { EditorModel } from '../model/EditorModel'
 import textEditor from '@/templates/textEditor.hbs'
 import newField from '@/templates/textEditorNewField.hbs'
-import { Flows, Paths, Sandbox } from 'types/enums'
-import dictionary from '@/utils/dictionary'
+import { Paths, Sandbox } from 'types/enums'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { Sortable } from '@shopify/draggable'
 import { SortableEventNames } from '@shopify/draggable'
@@ -56,6 +55,29 @@ export class EditorView extends EventEmitter {
             previewEditor.querySelectorAll('.textElement')?.forEach((el) => {
                 this.addTextElementListeners(el as HTMLElement, previewEditor)
             })
+            const hubsInput = document.querySelector('.hubs-input') as HTMLInputElement
+            const keywordsInput = document.querySelector('.keywords-input') as HTMLInputElement
+            const translateAuthor = document.querySelector('.translate__author') as HTMLInputElement
+            const buttonText = document.querySelector('.buttonTextInput') as HTMLInputElement
+            const translateCheckbox = document.querySelector('.isTranslate-checkbox') as HTMLInputElement
+            const translateLink = document.querySelector('.translate__link') as HTMLInputElement
+            if (translateCheckbox) {
+                translateCheckbox.addEventListener('change', () => {
+                    this.checkSettings()
+                })
+            }
+            const array = [hubsInput, keywordsInput, translateAuthor, translateCheckbox, translateLink, buttonText].map(
+                (el) => {
+                    if (el) {
+                        const element = el as HTMLElement
+                        element.addEventListener('input', () => {
+                            if (hubsInput && keywordsInput && translateAuthor && translateCheckbox && translateLink) {
+                                this.checkSettings()
+                            }
+                        })
+                    }
+                }
+            )
             this.addDrag(previewEditor)
         }
         document.querySelector('.isTranslate')?.addEventListener('change', () => {
@@ -64,7 +86,7 @@ export class EditorView extends EventEmitter {
                 translateBlock.classList.toggle('hidden')
             }
         })
-        document.querySelector('.toSettings')?.addEventListener('click', (e) => {
+        document.querySelector('.toSettings')?.addEventListener('click', () => {
             if (previewEditor && editor) {
                 this.preparePreviewBlock(editor, previewEditor)
                 if (previewEditor.children.length > 1) {
@@ -137,7 +159,7 @@ export class EditorView extends EventEmitter {
     addGlobalEventListener() {
         if (!this.isGlobalListener) {
             this.isGlobalListener = true
-            document.addEventListener('click', (e) => {
+            document.addEventListener('click', () => {
                 const modalOptionsList = document.querySelectorAll('.options__drop-menu')
                 modalOptionsList.forEach((el) => {
                     const element = el as HTMLElement
@@ -191,6 +213,9 @@ export class EditorView extends EventEmitter {
             if (editor.classList.contains('textEditor')) {
                 this.checkArticle()
             }
+            if (editor.classList.contains('textPreviewEditor')) {
+                this.checkSettings()
+            }
         })
         el.addEventListener('keydown', (e) => {
             if (e.key === 'Backspace') {
@@ -203,14 +228,14 @@ export class EditorView extends EventEmitter {
                 }
             }
         })
-        el.addEventListener('focus', (e) => {
+        el.addEventListener('focus', () => {
             const target = el as HTMLElement
             const parent = target.parentElement
             if (parent) {
                 parent.classList.add('focused')
             }
         })
-        el.addEventListener('blur', (e) => {
+        el.addEventListener('blur', () => {
             const target = el as HTMLElement
             const parent = target.parentElement
             if (parent) {
@@ -305,7 +330,7 @@ export class EditorView extends EventEmitter {
 
     checkArticleFields() {
         let charactersCount = 0
-        const textElements = document.querySelectorAll('.textElement')?.forEach((el) => {
+        document.querySelectorAll('.textElement')?.forEach((el) => {
             const editableField = el.querySelector('.editable')
             if (editableField) {
                 if (editableField.textContent) {
@@ -372,7 +397,7 @@ export class EditorView extends EventEmitter {
         }
     }
 
-    parseArticle(editor: HTMLElement) {
+    parseArticle(editor: HTMLElement): parsedArticle {
         const header = editor.querySelector('.articleHeader')
         const obj: parsedArticle = {}
         if (header) {
@@ -406,6 +431,74 @@ export class EditorView extends EventEmitter {
             }
         })
         return obj
+    }
+
+    checkSettings() {
+        const hubsInput = document.querySelector('.hubs-input') as HTMLInputElement
+        const keywordsInput = document.querySelector('.keywords-input') as HTMLInputElement
+        const translateAuthor = document.querySelector('.translate__author') as HTMLInputElement
+        const buttonTextInput = document.querySelector('.buttonTextInput') as HTMLInputElement
+        const translateCheckbox = document.querySelector('.isTranslate-checkbox') as HTMLInputElement
+        const translateLink = document.querySelector('.translate__link') as HTMLInputElement
+        if (hubsInput && keywordsInput && translateAuthor && buttonTextInput && translateCheckbox && translateLink) {
+            const checkHubsResult = this.checkValue(hubsInput.value, new RegExp('[A-zА-я]{5,}'))
+            const checkKeywordsResult = this.checkValue(keywordsInput.value, new RegExp('[A-zА-я]{5,}'))
+            const checkButtonTextResult = this.checkValue(buttonTextInput.value, new RegExp('[A-zА-я]{2,}'))
+            let checkTranslateAuthor = true
+            let checkTranslateLink = true
+            const checkPreviewBlock = this.checkPreviewEditor()
+            if (translateCheckbox.checked) {
+                checkTranslateAuthor = this.checkValue(translateAuthor.value, new RegExp('[A-z]{5,}'))
+                checkTranslateLink = this.checkValue(
+                    translateLink.value,
+                    new RegExp(
+                        '^https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$'
+                    )
+                )
+            }
+            const button = document.querySelector('.submitArticle') as HTMLButtonElement
+            if (button) {
+                if (
+                    checkHubsResult &&
+                    checkKeywordsResult &&
+                    checkTranslateLink &&
+                    checkTranslateAuthor &&
+                    checkButtonTextResult &&
+                    checkPreviewBlock
+                ) {
+                    if (button) {
+                        button.disabled = false
+                    }
+                } else {
+                    button.disabled = true
+                }
+            }
+        }
+    }
+
+    checkValue(value: string, regExp: RegExp): boolean {
+        if (value) {
+            const result = value.match(regExp)
+            if (result) {
+                return true
+            }
+        }
+        return false
+    }
+
+    checkPreviewEditor() {
+        const editor = document.querySelector('.textPreviewEditor')
+        if (editor) {
+            let count = 0
+            editor.querySelectorAll('.editable')?.forEach((el) => {
+                if (el) {
+                    if (el.textContent) {
+                        count += el.textContent.length
+                    }
+                }
+            })
+            return count > 40 && count < 3000
+        }
     }
 
     emit<T>(event: ItemViewEventsName, arg?: T, parsedArticle?: parsedArticle) {
