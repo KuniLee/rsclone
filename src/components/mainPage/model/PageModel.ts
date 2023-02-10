@@ -121,7 +121,7 @@ export class PageModel extends EventEmitter {
         this.emit('CHANGE_PAGE')
     }
 
-    changeAuth(userData: UserData | undefined) {
+    changeAuth(userData?: UserData) {
         if (userData) {
             this.user = userData
             console.log('in')

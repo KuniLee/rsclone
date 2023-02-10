@@ -33,8 +33,8 @@ export class AppController {
         })
 
         api.on<User>('CHANGE_AUTH', async (user) => {
-            const userData = await this.getUserData(user)
-            this.model.changeAuth(userData)
+            if (user) this.model.changeAuth(await this.getUserData(user))
+            else this.model.changeAuth()
         })
     }
 

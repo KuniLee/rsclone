@@ -45,7 +45,7 @@ export class FireBaseAPI extends EventEmitter {
         this.storage = getStorage(this.app)
         this.auth = getAuth()
         onAuthStateChanged(this.auth, (user) => {
-            if (user) this.emit<User>('CHANGE_AUTH', user)
+            this.emit<User | null>('CHANGE_AUTH', user)
         })
     }
 
@@ -88,8 +88,7 @@ export class FireBaseAPI extends EventEmitter {
     }
 
     async signOut() {
-        const auth = getAuth()
-        signOut(auth)
+        signOut(this.auth)
             .then(() => {
                 return true
             })
