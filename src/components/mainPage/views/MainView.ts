@@ -9,7 +9,7 @@ import { DropdownMenu } from '@/utils/dropdownMenu'
 import footerTemplate from '@/templates/footer.hbs'
 import { rootModel } from 'types/interfaces'
 
-type ItemViewEventsName = 'GOTO'
+type ItemViewEventsName = 'GOTO' | 'SIGN_OUT'
 
 export type MainViewInstance = InstanceType<typeof MainView>
 
@@ -179,7 +179,7 @@ export class MainView extends EventEmitter {
         if (exit) {
             exit.addEventListener('click', (ev) => {
                 ev.preventDefault()
-                this.model.emit('SIGN_OUT')
+                this.emit('SIGN_OUT')
             })
         }
     }
