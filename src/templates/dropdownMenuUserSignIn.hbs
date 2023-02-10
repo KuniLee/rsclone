@@ -1,0 +1,23 @@
+<div class="bg-color-popup-bg fixed top-0 bottom-0 left-0 right-0 md:hidden"></div>
+<div class="z-2 drop-down-menu">
+  <div class="p-5 flex gap-3.5 border-solid border-b border-color-border-light flex-wrap items-center">
+    <div class="w-9 h-9 rounded-sm overflow-hidden"><img class="object-contain w-full h-full" src="{{userAvatar}}"
+        alt="User Avatar" /></div>
+    <span>@{{userName}}</span>
+  </div>
+  <a href="/settings/profile"
+    class="pl-5 py-3.5  hover:bg-color-dropdown-menu-btn-hover w-full my-3 transition flex gap-2 items-center">
+    <span class="ico ico_settings"></span>
+    <span class="text-color-text-light">{{buttons.Settings}}</span>
+  </a>
+  <button
+    class="pl-5 py-3.5 hover:bg-color-dropdown-menu-btn-hover w-full my-3 transition flex gap-2 items-center visual-settings">
+    <span class="ico ico_visual-settings"></span>
+    <span class="text-color-text-light">{{buttons.VisualSettings}}</span>
+  </button>
+  <button
+    class="pl-5 py-3.5  hover:bg-color-dropdown-menu-btn-hover w-full my-3 transition flex gap-2 items-center exit">
+    <span class="ico ico_exit"></span>
+    <span class="text-color-text-light">{{buttons.Exit}}</span>
+  </button>
+</div>

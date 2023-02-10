@@ -19,12 +19,6 @@ export class FeedView extends EventEmitter {
         this.mainPageContainer = document.querySelector('main') as HTMLElement
         this.pageModel.on('CHANGE_PAGE', () => {
             const path = this.pageModel.path
-            // это временно
-            if (path[1] === Flows.Image && path[0] === Paths.Flows) {
-                this.renderLoaderImage()
-                this.emit('DOWNLOAD_IMAGE')
-                return
-            }
             if (Object.values(Flows).includes(path[1] as Flows) || path[0] === Paths.All || path[0] === Paths.Feed) {
                 this.showPreloader()
                 this.emit('LOAD_ARTICLES')

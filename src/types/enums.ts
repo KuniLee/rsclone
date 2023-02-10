@@ -22,7 +22,6 @@ export enum Flows {
     All = '/all',
     Develop = '/develop',
     Admin = '/admin',
-    Image = '/images',
 }
 
 export enum SettingsPaths {

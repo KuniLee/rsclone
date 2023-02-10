@@ -124,9 +124,11 @@ export class PageModel extends EventEmitter {
     changeAuth(userData: UserData | undefined) {
         if (userData) {
             this.user = userData
+            console.log('in')
             this.emit('SIGN_IN')
         } else {
             this.user = null
+            console.log('out')
             this.emit('SIGN_OUT')
         }
     }

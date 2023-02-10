@@ -5,11 +5,28 @@
   height: 24px;
 }
 
+.ico_user:hover {
+  filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
+}
+
 .ico_search {
   background: url(../assets/icons/ico-search.svg) center no-repeat;
   background-size: contain;
   width: 24px;
   height: 24px;
+}
+
+.ico_search:hover {
+  filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
+}
+
+.ico_search-light {
+  background: url(../assets/icons/ico-search1.svg) center no-repeat;
+  background-size: contain;
+}
+
+.ico_search-light:hover {
+  filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
 }
 
 .ico_user-light {
@@ -19,13 +36,67 @@
   height: 24px;
 }
 
-.ico_search-light {
-  background: url(../assets/icons/ico-search1.svg) center no-repeat;
+.ico_user-light:hover {
+  filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
+}
+
+.ico_bell {
+  background: url(../assets/icons/ico-bell.svg) center no-repeat;
   background-size: contain;
+  width: 24px;
+  height: 24px;
+}
+
+.ico_bell:hover {
+  filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
+}
+
+.ico_bell-light {
+  background: url(../assets/icons/ico-bell1.svg) center no-repeat;
+  background-size: contain;
+}
+
+.ico_bell-light:hover {
+  filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
+}
+
+
+.ico_pen {
+  background: url(../assets/icons/ico-pen.svg) center no-repeat;
+  background-size: contain;
+  width: 24px;
+  height: 24px;
+}
+
+.ico_pen-light {
+  background: url(../assets/icons/ico-pen1.svg) center no-repeat;
+  background-size: contain;
+}
+
+.ico_pen-light:hover {
+  filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
+}
+
+.ico_pen:hover {
+  filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
 }
 
 .ico_settings {
   background: url(../assets/icons/ico-settings.svg) center no-repeat;
+  background-size: contain;
+  width: 20px;
+  height: 20px;
+}
+
+.ico_exit {
+  background: url(../assets/icons/ico-exit.svg) center no-repeat;
+  background-size: contain;
+  width: 20px;
+  height: 20px;
+}
+
+.ico_visual-settings {
+  background: url(../assets/icons/ico-visual-settings.svg) center no-repeat;
   background-size: contain;
   width: 20px;
   height: 20px;
@@ -51,6 +122,7 @@
   color: #303b44;
   background-color: #ffffff;
   box-shadow: 0 0 12px rgb(0 0 0 / 16%);
+  min-width: 300px;
 }
 
 @media (max-width:768px) {
