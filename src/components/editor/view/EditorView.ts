@@ -335,11 +335,18 @@ export class EditorView extends EventEmitter {
 
     preparePreviewBlock(editor: HTMLElement, previewEditor: HTMLElement) {
         if (previewEditor.children.length === 1) {
+            let count = 0
             editor.querySelectorAll('.editorElement')?.forEach((el) => {
                 if (el.classList.contains('textElement')) {
                     const textField = el.querySelector('.editable')
-                    if (textField) {
+                    if (textField && count < 3000) {
                         if (textField.textContent) {
+                            console.log(count + textField.textContent.length)
+                            if (count + textField.textContent.length > 3000) {
+                                return
+                            } else {
+                                count += textField.textContent.length
+                            }
                             this.addNewField(previewEditor, textField.textContent)
                         } else {
                             this.addNewField(previewEditor)
@@ -365,8 +372,8 @@ export class EditorView extends EventEmitter {
         }
     }
 
-    parseArticle() {
-        const header = document.querySelector('.articleHeader')
+    parseArticle(editor: HTMLElement) {
+        const header = editor.querySelector('.articleHeader')
         const obj: parsedArticle = {}
         if (header) {
             if (header.textContent) {
@@ -398,7 +405,7 @@ export class EditorView extends EventEmitter {
                 }
             }
         })
-        this.emit('ARTICLE_PARSED', undefined, obj)
+        return obj
     }
 
     emit<T>(event: ItemViewEventsName, arg?: T, parsedArticle?: parsedArticle) {
