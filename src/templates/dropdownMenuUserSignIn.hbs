@@ -1,8 +1,13 @@
 <div class="bg-color-popup-bg fixed top-0 bottom-0 left-0 right-0 md:hidden"></div>
 <div class="z-2 drop-down-menu">
   <div class="p-5 flex gap-3.5 border-solid border-b border-color-border-light flex-wrap items-center">
-    <div class="w-9 h-9 rounded-sm overflow-hidden"><img class="object-contain w-full h-full" src="{{userAvatar}}"
-        alt="User Avatar" /></div>
+    <div class="w-9 h-9 rounded-sm overflow-hidden">
+      {{#if userAvatar}}
+      <img class="object-contain w-full h-full user" src="{{userAvatar}}" alt="user-avatar" />{{else}}
+      <img class="object-cover w-full h-full rounded border-2 user" src="{{emptyAvatar}}" alt="user-avatar" />
+      {{/if}}
+    </div>
+
     <span>@{{userName}}</span>
   </div>
   <a href="/settings/profile"

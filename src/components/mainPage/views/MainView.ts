@@ -8,6 +8,7 @@ import dictionary from '@/utils/dictionary'
 import { DropdownMenu } from '@/utils/dropdownMenu'
 import footerTemplate from '@/templates/footer.hbs'
 import { rootModel } from 'types/interfaces'
+import emptyAvatar from '@/assets/icons/avatar.svg'
 
 type ItemViewEventsName = 'GOTO' | 'SIGN_OUT'
 
@@ -44,7 +45,7 @@ export class MainView extends EventEmitter {
         return super.on(event, callback)
     }
 
-    private buildPage() {
+    buildPage() {
         const dropdownMenu = new DropdownMenu(this.model)
         const popupSettings = new PopupSettings(this.model)
         const headerEl = this.createHeader()
@@ -223,7 +224,7 @@ export class MainView extends EventEmitter {
         if (currentPath === Flows.All) currentPath = Paths.Flows + currentPath
         if (this.model.user) {
             const userAvatar = this.model.user.properties.avatar
-            header.innerHTML = headerUserSignInTemplate({ flows, logo, currentPath, userAvatar })
+            header.innerHTML = headerUserSignInTemplate({ flows, logo, currentPath, userAvatar, emptyAvatar })
         } else {
             header.innerHTML = headerUserSignOutTemplate({ flows, logo, currentPath })
         }

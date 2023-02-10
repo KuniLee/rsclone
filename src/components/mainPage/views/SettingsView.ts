@@ -1,3 +1,4 @@
+import { MainViewInstance } from '@/components/mainPage/views/MainView'
 import EventEmitter from 'events'
 import { Paths, SettingsPaths } from 'types/enums'
 import { PageModelInstance } from '../model/PageModel'
@@ -14,8 +15,9 @@ export type SettingsViewInstance = InstanceType<typeof SettingsView>
 export class SettingsView extends EventEmitter {
     private mainPageContainer: HTMLElement
     private user: UserData | null = null
+    private mainView: MainViewInstance
 
-    constructor(private model: PageModelInstance) {
+    constructor(private model: PageModelInstance, mainView: MainViewInstance) {
         super()
         this.mainPageContainer = document.querySelector('main') as HTMLElement
         this.model.on('SIGN_IN', () => {
@@ -24,6 +26,7 @@ export class SettingsView extends EventEmitter {
         this.model.on('CHANGE_PAGE', () => {
             this.renderPage()
         })
+        this.mainView = mainView
     }
 
     emit<T>(event: SettingsViewEventsName, arg?: T) {
@@ -67,7 +70,10 @@ export class SettingsView extends EventEmitter {
             this.onInput(aboutInput, 50, 'about')
         })
         saveBnt.onclick = () => {
-            if (this.user) this.emit<UserData>('SAVE_SETTINGS', this.user)
+            if (this.user) {
+                this.emit<UserData>('SAVE_SETTINGS', this.user)
+                this.mainView.buildPage()
+            }
         }
         file.addEventListener('change', () => {
             if (file.files?.length === 1) {
