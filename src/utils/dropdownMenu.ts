@@ -29,7 +29,7 @@ export class DropdownMenu {
                 return { ...acc, [key]: dictionary.buttons[key][this.model.lang] }
             }, {})
         if (this.model.user) {
-            const userName = this.model.user.properties.fullName
+            const userName = this.model.user.displayName
             const userAvatar = this.model.user.properties.avatar
             this.dropdownMenu.innerHTML = dropDownUserSignInTemplate({ buttons, userName, userAvatar })
         }

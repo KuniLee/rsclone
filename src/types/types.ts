@@ -29,6 +29,7 @@ export type UserData = {
     uid: string
     createdAt: { seconds: number; nanoseconds: number }
     email: string
+    displayName: string
     properties: Partial<UserProps>
 }
 
