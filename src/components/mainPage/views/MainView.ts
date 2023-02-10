@@ -198,6 +198,7 @@ export class MainView extends EventEmitter {
             exit.addEventListener('click', (ev) => {
                 ev.preventDefault()
                 this.emit('SIGN_OUT')
+                location.reload()
             })
         }
     }
