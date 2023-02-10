@@ -156,3 +156,8 @@
   max-width: 300px;
   padding: 0 16px;
 }
+
+.drop-down-menu__btn:hover>span {
+  transition: all 0.3s ease-in-out;
+  filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
+}
