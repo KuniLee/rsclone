@@ -99,9 +99,11 @@ export class EditorView extends EventEmitter {
                     }
                 }
             }
-            document.querySelector('.submitArticle')?.addEventListener('click', (e) => {
+            const submitButton = document.querySelector('.submitArticle') as HTMLButtonElement
+            submitButton?.addEventListener('click', (e) => {
                 e.preventDefault()
                 if (hubsInput && keywordsInput && buttonText && translateCheckbox && translateLink && translateAuthor) {
+                    submitButton.disabled = true
                     const parseMainEditorResult = this.parseArticle(editor)
                     const parsedPreviewResult = this.parseArticle(previewEditor)
                     const translateCheckbox = document.querySelector('.isTranslate-checkbox') as HTMLInputElement
@@ -129,7 +131,7 @@ export class EditorView extends EventEmitter {
                         translateLink: translateLink.value,
                         isTranslate: translateCheckbox.checked,
                     }
-                    console.log(result)
+                    this.emit('ARTICLE_PARSED', undefined, result)
                 }
             })
             this.toggleEditorView()
@@ -560,11 +562,11 @@ export class EditorView extends EventEmitter {
         }
     }
 
-    emit<T>(event: ItemViewEventsName, arg?: T) {
-        return super.emit(event, arg)
+    emit<T>(event: ItemViewEventsName, arg?: T, articleData?: NewArticleData) {
+        return super.emit(event, arg, articleData)
     }
 
-    on<T>(event: ItemViewEventsName, callback: (arg: T) => void) {
+    on<T>(event: ItemViewEventsName, callback: (arg: T, articleData: NewArticleData) => void) {
         return super.on(event, callback)
     }
 }
