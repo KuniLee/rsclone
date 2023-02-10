@@ -17,12 +17,14 @@ export class EditorView extends EventEmitter {
     private editorModel: EditorModel
     private pageModel: PageModelInstance
     private isGlobalListener: boolean
+    private previewEditorBuilded: boolean
 
     constructor(editorModel: EditorModel, pageModel: PageModelInstance) {
         super()
         this.editorModel = editorModel
         this.pageModel = pageModel
         this.isGlobalListener = false
+        this.previewEditorBuilded = false
         this.pageModel.on('CHANGE_PAGE', () => {
             if (this.pageModel.path[0] === Paths.Sandbox && this.pageModel.path[1] === Sandbox.New) {
                 this.buildPage()
@@ -63,6 +65,18 @@ export class EditorView extends EventEmitter {
             }
         })
         document.querySelector('.toSettings')?.addEventListener('click', (e) => {
+            if (previewEditor && editor) {
+                this.preparePreviewBlock(editor, previewEditor)
+                if (previewEditor.children.length > 1) {
+                    if (previewEditor.firstElementChild) {
+                        if (!this.previewEditorBuilded) {
+                            this.previewEditorBuilded = true
+                            previewEditor.firstElementChild.remove()
+                            this.addEmptyValueToEnd(previewEditor)
+                        }
+                    }
+                }
+            }
             this.toggleEditorView()
         })
         document.querySelector('.backToEditor')?.addEventListener('click', (e) => {
@@ -229,8 +243,9 @@ export class EditorView extends EventEmitter {
             }
         })
     }
-    addNewField(editor: HTMLElement) {
-        const el = editor.querySelector('.focused') as HTMLElement
+    addNewField(editor: HTMLElement, value?: string) {
+        let el: Element | null = editor.querySelector('.focused') as HTMLElement
+        el = el ? el : editor.lastElementChild
         if (el) {
             const template = document.createElement('template')
             template.innerHTML = newField({})
@@ -243,6 +258,9 @@ export class EditorView extends EventEmitter {
                 const newElemField = newElem.querySelector('.editable') as HTMLElement
                 if (newElemField) {
                     newElem.classList.remove('new')
+                    if (value) {
+                        newElemField.textContent = value
+                    }
                     this.addTextInputListeners(newElemField, editor)
                     this.addTextElementListeners(newElem, editor)
                     newElemField.focus()
@@ -310,6 +328,38 @@ export class EditorView extends EventEmitter {
                     if (elem.textContent?.length === 0) {
                         elements[i].classList.remove('before:hidden')
                     }
+                }
+            }
+        }
+    }
+
+    preparePreviewBlock(editor: HTMLElement, previewEditor: HTMLElement) {
+        if (previewEditor.children.length === 1) {
+            editor.querySelectorAll('.editorElement')?.forEach((el) => {
+                if (el.classList.contains('textElement')) {
+                    const textField = el.querySelector('.editable')
+                    if (textField) {
+                        if (textField.textContent) {
+                            this.addNewField(previewEditor, textField.textContent)
+                        } else {
+                            this.addNewField(previewEditor)
+                        }
+                    }
+                } else {
+                    return
+                }
+            })
+        }
+    }
+
+    addEmptyValueToEnd(editor: HTMLElement) {
+        const lastChild = editor.lastElementChild
+        if (lastChild) {
+            const lastChildField = lastChild.querySelector('.editable')
+            if (lastChildField) {
+                const value = lastChildField.textContent
+                if (value) {
+                    this.addNewField(editor)
                 }
             }
         }
