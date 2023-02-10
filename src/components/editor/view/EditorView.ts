@@ -6,7 +6,7 @@ import { Paths, Sandbox } from 'types/enums'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { Sortable } from '@shopify/draggable'
 import { SortableEventNames } from '@shopify/draggable'
-import { parsedArticle } from 'types/types'
+import { NewArticleData, ParsedArticle, ParsedPreviewArticle } from 'types/types'
 
 type ItemViewEventsName = 'GOTO' | 'ARTICLE_PARSED'
 
@@ -48,6 +48,12 @@ export class EditorView extends EventEmitter {
             })
             this.addDrag(editor)
         }
+        const hubsInput = document.querySelector('.hubs-input') as HTMLInputElement
+        const keywordsInput = document.querySelector('.keywords-input') as HTMLInputElement
+        const translateAuthor = document.querySelector('.translate__author') as HTMLInputElement
+        const buttonText = document.querySelector('.buttonTextInput') as HTMLInputElement
+        const translateCheckbox = document.querySelector('.isTranslate-checkbox') as HTMLInputElement
+        const translateLink = document.querySelector('.translate__link') as HTMLInputElement
         if (previewEditor) {
             previewEditor.querySelectorAll('.editable')?.forEach((el) => {
                 this.addTextInputListeners(el as HTMLElement, previewEditor)
@@ -55,12 +61,6 @@ export class EditorView extends EventEmitter {
             previewEditor.querySelectorAll('.textElement')?.forEach((el) => {
                 this.addTextElementListeners(el as HTMLElement, previewEditor)
             })
-            const hubsInput = document.querySelector('.hubs-input') as HTMLInputElement
-            const keywordsInput = document.querySelector('.keywords-input') as HTMLInputElement
-            const translateAuthor = document.querySelector('.translate__author') as HTMLInputElement
-            const buttonText = document.querySelector('.buttonTextInput') as HTMLInputElement
-            const translateCheckbox = document.querySelector('.isTranslate-checkbox') as HTMLInputElement
-            const translateLink = document.querySelector('.translate__link') as HTMLInputElement
             if (translateCheckbox) {
                 translateCheckbox.addEventListener('change', () => {
                     this.checkSettings()
@@ -99,6 +99,39 @@ export class EditorView extends EventEmitter {
                     }
                 }
             }
+            document.querySelector('.submitArticle')?.addEventListener('click', (e) => {
+                e.preventDefault()
+                if (hubsInput && keywordsInput && buttonText && translateCheckbox && translateLink && translateAuthor) {
+                    const parseMainEditorResult = this.parseArticle(editor)
+                    const parsedPreviewResult = this.parseArticle(previewEditor)
+                    const translateCheckbox = document.querySelector('.isTranslate-checkbox') as HTMLInputElement
+                    const parsedHubs = hubsInput.value ? hubsInput.value.split(', ') : []
+                    const parsedKeywords = keywordsInput.value ? keywordsInput.value.split(', ') : []
+                    const lang = (document.querySelector("input[name='lang']:checked") as HTMLInputElement)?.value
+                    const image = document.querySelector('.preview-image') as HTMLImageElement
+                    const imageSrc = image ? image.getAttribute('src') : ''
+                    const imageSrcResult = imageSrc ?? ''
+                    const textButtonValue = buttonText.value
+                    const preview: ParsedPreviewArticle = {
+                        image: imageSrcResult,
+                        nextBtnText: textButtonValue,
+                        previewBlocks: parsedPreviewResult.blocks,
+                    }
+                    const result: NewArticleData = {
+                        blocks: parseMainEditorResult.blocks,
+                        title: parseMainEditorResult.blocks[0].value,
+                        habs: parsedHubs,
+                        keywords: parsedKeywords,
+                        lang: lang,
+                        preview: preview,
+                        userId: '',
+                        translateAuthor: translateAuthor.value,
+                        translateLink: translateLink.value,
+                        isTranslate: translateCheckbox.checked,
+                    }
+                    console.log(result)
+                }
+            })
             this.toggleEditorView()
         })
         document.querySelector('.backToEditor')?.addEventListener('click', (e) => {
@@ -397,9 +430,11 @@ export class EditorView extends EventEmitter {
         }
     }
 
-    parseArticle(editor: HTMLElement): parsedArticle {
+    parseArticle(editor: HTMLElement): ParsedArticle {
         const header = editor.querySelector('.articleHeader')
-        const obj: parsedArticle = {}
+        const obj: ParsedArticle = {
+            blocks: [],
+        }
         if (header) {
             if (header.textContent) {
                 obj.blocks = [
@@ -413,18 +448,19 @@ export class EditorView extends EventEmitter {
                 ]
             }
         }
-        document.querySelectorAll('.editorElement')?.forEach((el) => {
+        editor.querySelectorAll('.editorElement')?.forEach((el) => {
             if (el.classList.contains('textElement')) {
                 const textField = el.querySelector('.editable')
                 if (textField) {
                     if (textField.textContent) {
-                        obj.blocks?.push({
+                        obj.blocks.push({
                             type: 'text',
                             value: textField.textContent,
                         })
                     } else {
-                        obj.blocks?.push({
+                        obj.blocks.push({
                             type: 'delimiter',
+                            value: '',
                         })
                     }
                 }
@@ -524,11 +560,11 @@ export class EditorView extends EventEmitter {
         }
     }
 
-    emit<T>(event: ItemViewEventsName, arg?: T, parsedArticle?: parsedArticle) {
-        return super.emit(event, arg, parsedArticle)
+    emit<T>(event: ItemViewEventsName, arg?: T) {
+        return super.emit(event, arg)
     }
 
-    on<T>(event: ItemViewEventsName, callback: (arg: T, parsedArticle: parsedArticle) => void) {
+    on<T>(event: ItemViewEventsName, callback: (arg: T) => void) {
         return super.on(event, callback)
     }
 }
