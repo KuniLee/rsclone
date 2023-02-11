@@ -63,7 +63,7 @@ export class SettingsView extends EventEmitter {
         nameInput.addEventListener('input', () => {
             this.onInput(nameInput, 40, 'fullName')
         })
-        aboutInput.addEventListener('input', (ev) => {
+        aboutInput.addEventListener('input', () => {
             this.onInput(aboutInput, 50, 'about')
         })
         saveBnt.onclick = () => {
@@ -104,7 +104,7 @@ export class SettingsView extends EventEmitter {
 
     private showPreview(file: File) {
         const img = document.createElement('img')
-        img.className = 'w-full h-full object-cover'
+        img.className = 'w-full h-full object-contain'
         img.onload = () => {
             this.resizeImg(img)
         }
@@ -161,6 +161,6 @@ export class SettingsView extends EventEmitter {
     private removeAvatar() {
         if (this.user) this.user.properties.avatar = null
         const imageWrapper = this.mainPageContainer.querySelector('.user-avatar') as HTMLDivElement
-        imageWrapper.innerHTML = `<img class="w-full h-full object-cover" src="${emptyAvatar}" alt="user-avatar">`
+        imageWrapper.innerHTML = `<img class="w-full h-full object-contain" src="${emptyAvatar}" alt="user-avatar">`
     }
 }

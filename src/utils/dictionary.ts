@@ -10,7 +10,6 @@ const flowsNames: Record<keyof typeof Flows, language> = {
     All: { ru: 'Все потоки', en: 'All streams' },
     Develop: { ru: 'Разработка', en: 'Development' },
     Admin: { ru: 'Администрирование', en: 'Admin' },
-    Image: { ru: 'Загрузка', en: 'аывфаыа' },
 }
 
 const buttons: Record<string, language> = {
@@ -18,7 +17,9 @@ const buttons: Record<string, language> = {
     Auth: { ru: 'Вход', en: 'Sign in' },
     Registration: { ru: 'Регистрация', en: 'Registration' },
     Sandbox: { ru: 'Написать статью', en: 'Write article' },
-    Settings: { ru: 'Настройки', en: 'Settings' },
+    VisualSettings: { ru: 'Язык', en: 'Language' },
+    Settings: { ru: 'Настройки профиля', en: 'Profile settings' },
+    Exit: { ru: 'Выход', en: 'Log out' },
     Save: { ru: 'Cохранить изменения', en: 'Save changes' },
     Upload: { ru: 'Загрузить', en: 'Upload' },
     Remove: { ru: 'Удалить', en: 'Remove' },

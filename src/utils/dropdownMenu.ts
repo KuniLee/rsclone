@@ -1,6 +1,8 @@
 import { PageModel } from '@/components/mainPage/model/PageModel'
-import dropDownTemplate from '../templates/dropdownMenu.hbs'
+import dropDownUserSignOutTemplate from '../templates/dropdownMenuUserSignOut.hbs'
+import dropDownUserSignInTemplate from '../templates/dropdownMenuUserSignIn.hbs'
 import dictionary from '@/utils/dictionary'
+import emptyAvatar from '@/assets/icons/avatar.svg'
 
 export class DropdownMenu {
     private dropdownMenu: HTMLElement
@@ -11,13 +13,28 @@ export class DropdownMenu {
         this.dropdownMenu = document.createElement('div')
     }
 
-    renderNotAuth() {
+    renderUserSignOut() {
         const buttons = Object.keys(dictionary.buttons)
             .slice(1)
             .reduce((acc, key) => {
                 return { ...acc, [key]: dictionary.buttons[key][this.model.lang] }
             }, {})
-        this.dropdownMenu.innerHTML = dropDownTemplate({ buttons })
+        this.dropdownMenu.innerHTML = dropDownUserSignOutTemplate({ buttons })
+        return this.dropdownMenu
+    }
+
+    renderUserSignIn() {
+        const buttons = Object.keys(dictionary.buttons)
+            .slice(1)
+            .reduce((acc, key) => {
+                return { ...acc, [key]: dictionary.buttons[key][this.model.lang] }
+            }, {})
+        if (this.model.user) {
+            const userName = this.model.user.displayName
+            const userAvatar = this.model.user.properties.avatar
+            this.dropdownMenu.innerHTML = dropDownUserSignInTemplate({ buttons, userName, userAvatar, emptyAvatar })
+        }
+
         return this.dropdownMenu
     }
 }

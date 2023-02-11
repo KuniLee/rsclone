@@ -31,10 +31,12 @@ export class AppController {
         router.on('ROUTE', () => {
             model.changePage(this.router.getParams())
         })
-
         api.on<User>('CHANGE_AUTH', async (user) => {
-            const userData = await this.getUserData(user)
-            this.model.changeAuth(userData)
+            if (user) this.model.changeAuth(await this.getUserData(user))
+            else this.model.changeAuth()
+        })
+        this.view.on('SIGN_OUT', () => {
+            api.signOut()
         })
     }
 
@@ -60,6 +62,7 @@ export class AppController {
         Reflect.deleteProperty(newData, 'uid')
         try {
             await updateDoc(doc(this.db, `users/${userData.uid}`), newData)
+            this.model.changeAuth(userData)
         } catch (e) {
             console.log(e)
         }

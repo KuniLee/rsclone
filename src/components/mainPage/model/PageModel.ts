@@ -11,14 +11,17 @@ export class PageModel extends EventEmitter {
     public path: Array<string> = []
     public lang: rootModel['lang'] = 'ru'
     public search: ParsedQuery = {}
-    public user: UserData | null = null
+    private _user: UserData | null = null
 
     constructor() {
         super()
         this.loadSettings()
     }
 
-    //метод для загрузки настроек из LS
+    get user() {
+        return JSON.parse(JSON.stringify(this._user))
+    }
+
     private loadSettings() {
         const lang = localStorage.lang
         if (['ru', 'en'].includes(lang)) this.lang = lang
@@ -54,6 +57,7 @@ export class PageModel extends EventEmitter {
                 this.goToSandbox()
                 break
             case Paths.Feed:
+                console.log(this._user)
                 this.goToFeed()
                 break
             case Paths.Auth:
@@ -122,12 +126,12 @@ export class PageModel extends EventEmitter {
         this.emit('CHANGE_PAGE')
     }
 
-    changeAuth(userData: UserData | undefined) {
+    changeAuth(userData?: UserData) {
         if (userData) {
-            this.user = userData
+            this._user = userData
             this.emit('SIGN_IN')
         } else {
-            this.user = null
+            this._user = null
             this.emit('SIGN_OUT')
         }
     }
