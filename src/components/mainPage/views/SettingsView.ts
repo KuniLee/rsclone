@@ -104,7 +104,7 @@ export class SettingsView extends EventEmitter {
 
     private showPreview(file: File) {
         const img = document.createElement('img')
-        img.className = 'w-full h-full object-cover'
+        img.className = 'w-full h-full object-contain'
         img.onload = () => {
             this.resizeImg(img)
         }

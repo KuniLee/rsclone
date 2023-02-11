@@ -62,6 +62,7 @@ export class AppController {
         Reflect.deleteProperty(newData, 'uid')
         try {
             await updateDoc(doc(this.db, `users/${userData.uid}`), newData)
+            this.model.changeAuth(userData)
         } catch (e) {
             console.log(e)
         }
