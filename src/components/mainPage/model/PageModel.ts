@@ -1,22 +1,27 @@
 import EventEmitter from 'events'
-import { Flows, Paths, Sandbox } from 'types/enums'
+import { Flows, Paths, Sandbox, SettingsPaths } from 'types/enums'
 import { rootModel, URLParams } from 'types/interfaces'
 import { ParsedQuery } from 'query-string'
+import { UserData } from 'types/types'
 
-type PageModelEventsName = 'CHANGE_PAGE' | '404'
+type PageModelEventsName = 'CHANGE_PAGE' | '404' | 'SIGN_IN' | 'SIGN_OUT'
 export type PageModelInstance = InstanceType<typeof PageModel>
 
 export class PageModel extends EventEmitter {
     public path: Array<string> = []
     public lang: rootModel['lang'] = 'ru'
     public search: ParsedQuery = {}
+    private _user: UserData | null = null
 
     constructor() {
         super()
         this.loadSettings()
     }
 
-    //метод для загрузки настроек из LS
+    get user() {
+        return JSON.parse(JSON.stringify(this._user))
+    }
+
     private loadSettings() {
         const lang = localStorage.lang
         if (['ru', 'en'].includes(lang)) this.lang = lang
@@ -52,6 +57,7 @@ export class PageModel extends EventEmitter {
                 this.goToSandbox()
                 break
             case Paths.Feed:
+                console.log(this._user)
                 this.goToFeed()
                 break
             case Paths.Auth:
@@ -59,6 +65,10 @@ export class PageModel extends EventEmitter {
                 break
             case Paths.Search:
                 this.goToSearch()
+                break
+            case Paths.Settings:
+                if (Object.values(SettingsPaths).includes(this.path[1] as SettingsPaths)) this.emit('CHANGE_PAGE')
+                else this.goTo404()
                 break
             default:
                 this.goTo404()
@@ -114,5 +124,15 @@ export class PageModel extends EventEmitter {
     private goToSearch() {
         console.log('страница search')
         this.emit('CHANGE_PAGE')
+    }
+
+    changeAuth(userData?: UserData) {
+        if (userData) {
+            this._user = userData
+            this.emit('SIGN_IN')
+        } else {
+            this._user = null
+            this.emit('SIGN_OUT')
+        }
     }
 }

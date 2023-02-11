@@ -2,6 +2,8 @@ import EventEmitter from 'events'
 import { Flows, Paths } from 'types/enums'
 import { PageModelInstance } from '../model/PageModel'
 import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
+import articleTemplate from '@/templates/atricle.hbs'
+import Dictionary from '@/utils/dictionary'
 
 type FeedViewEventsName = 'LOAD_ARTICLES' | 'DOWNLOAD_IMAGE' | 'UPLOAD_IMAGE'
 
@@ -19,23 +21,15 @@ export class FeedView extends EventEmitter {
         this.mainPageContainer = document.querySelector('main') as HTMLElement
         this.pageModel.on('CHANGE_PAGE', () => {
             const path = this.pageModel.path
-            // это временно
-            if (path[1] === Flows.Image && path[0] === Paths.Flows) {
-                this.renderLoaderImage()
-                this.emit('DOWNLOAD_IMAGE')
-                return
-            }
             if (Object.values(Flows).includes(path[1] as Flows) || path[0] === Paths.All || path[0] === Paths.Feed) {
-                this.showPreloader()
+                this.renderPage()
+                this.renderArticles()
                 this.emit('LOAD_ARTICLES')
             }
         })
-        this.feedModel.on('LOADED', () => {
-            this.renderArticles()
-        })
-        this.feedModel.on('IMAGE_LOADED', () => {
-            this.updateImage()
-        })
+        // this.feedModel.on('LOADED', () => {
+        //     this.renderArticles()
+        // })
     }
 
     emit<T>(event: FeedViewEventsName, arg?: T) {
@@ -46,36 +40,25 @@ export class FeedView extends EventEmitter {
         return super.on(event, callback)
     }
 
-    private showPreloader() {
-        this.mainPageContainer.innerText = 'Загружается лента...'
-    }
-
-    private renderLoaderImage() {
-        this.mainPageContainer.innerHTML = ''
-        const template = document.createElement('div') as HTMLDivElement
-        template.innerHTML = `
-<input type="file" class="hidden" accept="image/*,.png,.jpg,.gif,.web," id="file">
-<button class="bg-red-400 p-2 rounded">Загрузить фото</button>
-<img class="max-h-20 border border-2 rounded-xl border-emerald-800" alt="avatar" src="${require('@/assets/icons/ico-user.svg')}">`
-        const file = template.querySelector('#file') as HTMLInputElement
-        file.addEventListener('change', () => {
-            if (file.files?.length === 1) {
-                if (file.files[0].size < 1024 * 1024) this.emit<File>('UPLOAD_IMAGE', file.files[0])
-            }
-        })
-        template.querySelector('button')?.addEventListener('click', () => {
-            file.click()
-        })
-        this.mainPageContainer.append(template)
+    private renderPage() {
+        this.mainPageContainer.innerHTML = `<div class="container mx-auto flex gap-4">
+<div class="w-full feed"></div><aside class="hidden lg:block min-w-[300px] bg-color-light">Асайд</aside>
+</div>`
     }
 
     private renderArticles() {
-        this.mainPageContainer.innerHTML = ''
-        this.mainPageContainer.innerText = `Страница ${this.pageModel.path.join('')}:
-        статьи: ${JSON.stringify(this.feedModel.articles)}`
-    }
-
-    private updateImage() {
-        this.mainPageContainer.querySelector('img')?.setAttribute('src', this.feedModel.image)
+        const wrap = this.mainPageContainer.querySelector('.feed') as HTMLDivElement
+        const temp = document.createElement('template')
+        temp.innerHTML = articleTemplate({
+            avatar: require('@/assets/icons/avatar.svg'),
+            habs: [
+                'Блог компании OTUS',
+                'Высокая производительность',
+                'Программирование',
+                'Java',
+                'Администрирование баз данных',
+            ],
+        })
+        wrap.append(temp.content)
     }
 }

@@ -9,6 +9,7 @@ export enum Paths {
     All = '/all',
     Flows = '/flows',
     Auth = '/login',
+    Settings = '/settings',
     Registration = '/register',
     Search = '/search',
 }
@@ -21,5 +22,8 @@ export enum Flows {
     All = '/all',
     Develop = '/develop',
     Admin = '/admin',
-    Image = '/images',
+}
+
+export enum SettingsPaths {
+    Profile = '/profile',
 }
