@@ -161,6 +161,6 @@ export class SettingsView extends EventEmitter {
     private removeAvatar() {
         if (this.user) this.user.properties.avatar = null
         const imageWrapper = this.mainPageContainer.querySelector('.user-avatar') as HTMLDivElement
-        imageWrapper.innerHTML = `<img class="w-full h-full object-cover" src="${emptyAvatar}" alt="user-avatar">`
+        imageWrapper.innerHTML = `<img class="w-full h-full object-contain" src="${emptyAvatar}" alt="user-avatar">`
     }
 }

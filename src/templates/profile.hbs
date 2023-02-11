@@ -5,7 +5,7 @@
       <div class="lg:row-span-2 lg:col-start-5 md:col-span-3 col-span-6">
         <span class="mt-4 mb-1 font-semibold">{{words.Avatar}}</span>
         <div class="user-avatar overflow-hidden h-16 w-16 md:float-none float-right rounded border flex items-center justify-center">
-          <img class="w-full h-full object-cover" src="{{#if user.avatar}}{{user.avatar}}{{else}}{{emptyAvatar}}{{/if}}" alt="user-avatar">
+          <img class="w-full h-full object-contain" src="{{#if user.avatar}}{{user.avatar}}{{else}}{{emptyAvatar}}{{/if}}" alt="user-avatar">
         </div>
         <div class="">
           <p class="text-sm my-1 text-color-border-dark">{{{words.AvatarSize}}}</p>
