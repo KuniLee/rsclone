@@ -62,6 +62,12 @@ const ProfileSettings: Record<string, language> = {
     Remove: { ru: 'Удалить', en: 'Remove' },
 }
 
+const ProfilePage: Record<string, language> = {
+    Information: { ru: 'Информация', en: 'Information' },
+    Registered: { ru: 'Зарегистрирован', en: 'Registered' },
+    Posts: { ru: 'Публикации', en: 'Posts' },
+}
+
 export function getWords(wordObj: Record<string, language>, lang: keyof language) {
     const result: Record<string, string> = {}
     for (const wordObjKey in wordObj) {
@@ -70,4 +76,4 @@ export function getWords(wordObj: Record<string, language>, lang: keyof language
     return result
 }
 
-export default { flowsNames, buttons, popupSettings, logo, ProfileSettings, errorPage }
+export default { flowsNames, buttons, popupSettings, logo, ProfileSettings, errorPage, ProfilePage }

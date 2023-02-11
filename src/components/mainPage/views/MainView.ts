@@ -185,7 +185,11 @@ export class MainView extends EventEmitter {
                 header.removeChild(dropdownMenu)
             }
         }
-        if (!element.closest('.drop-down-menu') && !element.classList.contains('user')) {
+        if (
+            (!element.closest('.drop-down-menu') && !element.classList.contains('user')) ||
+            element.classList.contains('user-avatar') ||
+            element.classList.contains('user-name')
+        ) {
             userIcon.forEach((userIcon) => {
                 if (userIcon && userIcon.classList.contains('active')) {
                     userIcon.classList.remove('active')
@@ -194,9 +198,11 @@ export class MainView extends EventEmitter {
             })
         }
         if (
-            !element.closest('.drop-down-menu') &&
-            !element.classList.contains('ico_user-light') &&
-            !element.classList.contains('ico_close')
+            (!element.closest('.drop-down-menu') &&
+                !element.classList.contains('ico_user-light') &&
+                !element.classList.contains('ico_close')) ||
+            element.classList.contains('user-avatar') ||
+            element.classList.contains('user-name')
         ) {
             if (userIconLight && userIconLight.classList.contains('active')) {
                 userIconLight.classList.remove('active')
