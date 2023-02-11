@@ -27,7 +27,3 @@ export enum Flows {
 export enum SettingsPaths {
     Profile = '/profile',
 }
-
-export enum SettingsPaths {
-    Profile = '/profile',
-}
