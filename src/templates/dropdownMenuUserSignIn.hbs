@@ -2,13 +2,13 @@
 <div class="z-2 drop-down-menu">
   <div class="p-5 flex gap-3.5 border-solid border-b border-color-border-light flex-wrap items-center">
     <div class="w-9 h-9 rounded-sm overflow-hidden">
-      {{#if userAvatar}}
-      <img class="object-contain w-full h-full user" src="{{userAvatar}}" alt="user-avatar" />{{else}}
-      <img class="object-cover w-full h-full rounded border-2 user" src="{{emptyAvatar}}" alt="user-avatar" />
-      {{/if}}
-    </div>
-
-    <span>@{{userName}}</span>
+      <a href="/users/{{userName}}">
+        {{#if userAvatar}}
+        <img class="object-contain w-full h-full user" src="{{userAvatar}}" alt="user-avatar" />{{else}}
+        <img class="object-cover w-full h-full rounded border-2 user" src="{{emptyAvatar}}" alt="user-avatar" />
+        {{/if}}
+    </div></a>
+    <a href="/users/{{userName}}" class="text-color-button"><span>@{{userName}}</span></a>
   </div>
   <a href="/settings/profile"
     class="pl-5 py-3.5  hover:bg-color-dropdown-menu-btn-hover w-full my-3 transition flex gap-2 items-center drop-down-menu__btn">
