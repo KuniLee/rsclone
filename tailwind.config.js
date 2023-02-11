@@ -27,9 +27,13 @@ module.exports = {
                 'color-dropdown-menu-link-hover': '#76a5bb',
                 'color-dropdown-menu-btn-hover': '#edf5f9',
                 'color-popup-btn-hover': '#39728e',
+                'color-button-disabled': '#929292',
                 'color-popup-text': '#838a92',
                 'color-popup-bg': 'rgba(0,0,0,.2)',
                 'color-gray-light': '#eeeeee',
+                'color-gray-separator': '#d3d7db',
+                'color-button-send': '#7aa600',
+                'color-button-send-hover': '#4c7816',
             },
         },
         fontFamily: {

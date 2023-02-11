@@ -69,3 +69,23 @@ h1 {
     top: calc(50% - 1px);
     left: 0;
 }
+
+.editor__radio-label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 18px;
+    font-size: 13px;
+    height: 40px;
+    border-radius: 3px;
+    border: 2px solid transparent;
+    margin: -1px;
+    cursor: pointer;
+    transition: border-color 0.2s ease-out;
+}
+
+.editor__type-radio:checked + label {
+    border-color: #77a8d0;
+    color: #4d80aa;
+    transition: border-color 0.2s ease-out;
+}

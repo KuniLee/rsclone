@@ -28,4 +28,4 @@ const settingsView = new SettingsView(pageModel)
 
 const feedController = new FeedController(feedView, { feedModel, pageModel }, api)
 const appController = new AppController({ mainView, settingsView }, pageModel, router, api)
-const editorController = new EditorController(editorView, pageModel, editorModel, router)
+const editorController = new EditorController(editorView, pageModel, editorModel, router, api)
