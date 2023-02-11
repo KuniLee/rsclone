@@ -5,6 +5,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    background-color: #f0f0f0;
 }
 
 .main {
@@ -15,10 +16,6 @@ body {
     background-color: #303b44;
 }
 
-.main {
-    background-color: #f0f0f0;
-}
-
 h1 {
     @apply text-2xl;
     @apply mb-1;
@@ -27,6 +24,7 @@ h1 {
 .ico {
     cursor: pointer;
     display: inline-block;
+    transition: all 0.1s ease-in-out;
 }
 
 .burger {

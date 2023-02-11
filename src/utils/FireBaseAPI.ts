@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
-import { getFirestore, serverTimestamp, setDoc, doc, collection, getDocs } from 'firebase/firestore'
+import { getFirestore, serverTimestamp, setDoc, doc, collection, getDocs, getDoc, updateDoc } from 'firebase/firestore'
 import {
     createUserWithEmailAndPassword,
     getAuth,
@@ -15,7 +15,7 @@ import type { User, Auth } from 'firebase/auth'
 import type { Firestore } from 'firebase/firestore'
 import type { FirebaseStorage } from 'firebase/storage'
 
-export { serverTimestamp, setDoc, doc, collection, getDocs, ref, uploadBytes, getDownloadURL }
+export { serverTimestamp, setDoc, doc, collection, getDocs, getDoc, ref, uploadBytes, getDownloadURL, updateDoc }
 import EventEmitter from 'events'
 
 export type { User, Auth, Firestore, FirebaseStorage }
@@ -45,7 +45,7 @@ export class FireBaseAPI extends EventEmitter {
         this.storage = getStorage(this.app)
         this.auth = getAuth()
         onAuthStateChanged(this.auth, (user) => {
-            if (user) this.emit<User>('CHANGE_AUTH', user)
+            this.emit<User | null>('CHANGE_AUTH', user)
         })
     }
 
@@ -88,8 +88,7 @@ export class FireBaseAPI extends EventEmitter {
     }
 
     async signOut() {
-        const auth = getAuth()
-        signOut(auth)
+        signOut(this.auth)
             .then(() => {
                 return true
             })

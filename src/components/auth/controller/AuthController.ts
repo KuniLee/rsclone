@@ -62,6 +62,11 @@ export class AuthController {
             email: user.email,
             displayName: user.displayName,
             createdAt: serverTimestamp(),
+            properties: {
+                about: '',
+                fullName: '',
+                avatar: '',
+            },
         }
         return await setDoc(doc(this.db, 'users', user.uid), data)
     }

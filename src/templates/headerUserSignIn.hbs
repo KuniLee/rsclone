@@ -11,7 +11,15 @@
     {{#if flows}}
     <div class="gap-5 header__menu md:hidden flex ml-auto items-center">
       <a href="/search" class="h-6"><span class="ico ico_search ico_search-light"></span></a>
-      <span class="ico ico_user-light user"></span>
+      <span class="ico ico_bell ico_bell-light"></span>
+      <a href="/sandbox/new" class="flex items-center"><span class="ico ico_pen ico_pen-light"></span></a>
+      <div class="w-8 h-8 rounded-sm overflow-hidden cursor-pointer">
+        {{#if userAvatar}}
+        <img class="object-contain w-full h-full user" src="{{userAvatar}}" alt="user-avatar" />{{else}}
+        <img class="object-cover w-full h-full rounded border-2 user bg-color-light " src="{{emptyAvatar}}"
+          alt="user-avatar" />
+        {{/if}}
+      </div>
     </div>
     {{/if}}
   </div>
@@ -32,7 +40,14 @@
     </nav>
     <div class="md:flex gap-5 header__menu hidden items-center">
       <a href="/search" class="flex items-center"><span class="ico ico_search"></span></a>
-      <span class="ico ico_user user"></span>
+      <span class="ico ico_bell"></span>
+      <a href="/sandbox/new" class="flex items-center"><span class="ico ico_pen"></span></a>
+      <div class="w-8 h-8 rounded-sm overflow-hidden cursor-pointer">
+        {{#if userAvatar}}
+        <img class="object-contain w-full h-full user" src="{{userAvatar}}" alt="user-avatar" />{{else}}
+        <img class="object-cover w-full h-full rounded border-2 user" src="{{emptyAvatar}}" alt="user-avatar" />
+        {{/if}}
+      </div>
     </div>
     {{/if}}
   </div>
