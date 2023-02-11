@@ -1,7 +1,7 @@
 <div class="max-w-[1200px] mx-auto flex justify-between mt-[12px] mb-[12px]">
   <div class="w-[780px] min-h-[640px] bg-color-light flex flex-col pt-[20px]">
-    <div class="mainEditor flex flex-col relative flex-grow px-[20px]">
-      <div class="flex">
+    <div class="mainEditor flex flex-col relative flex-grow">
+      <div class="flex px-[25px]">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-[10px]">
           <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
@@ -16,10 +16,15 @@
             <li>3</li>
           </ul>
         </div>
-        <div class="before:content-[attr(data-is-empty)] before:absolute before:text-[#c0c0c0] before:pointer-events-none text-4xl mb-4" data-is-empty="Заголовок">
+        <div class="before:content-[attr(data-is-empty)] before:absolute before:text-[#c0c0c0] before:pointer-events-none text-4xl mb-4 px-[25px]" data-is-empty="Заголовок">
           <h1 contenteditable="true" class="articleHeader editable outline-0 whitespace-pre-wrap text-4xl"></h1>
         </div>
-        <div class="textElement editorElement before:content-[attr(data-is-empty)] w-full before:absolute before:text-[#c0c0c0] before:pointer-events-none text-xl flex items-center" data-is-empty="Нажмите '/' для вызова меню">
+        <div class="textElement editorElement before:content-[attr(data-is-empty)] w-full before:absolute before:text-[#c0c0c0] before:pointer-events-none text-xl flex items-center px-[25px]" data-is-empty="Нажмите '/' для вызова меню">
+          <div class="drag absolute left-0 cursor-grab hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          </div>
           <p contenteditable="true" class="editable outline-0 whitespace-pre-wrap flex-grow w-full max-w-[96.6%]"></p>
           <div class="options cursor-pointer">
             <button class="options__open-btn">

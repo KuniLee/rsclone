@@ -172,9 +172,9 @@ export class EditorView extends EventEmitter {
         const sortable = new Sortable<SortableEventNames | 'drag:stopped'>(list, {
             draggable: '.textElement',
             delay: {
-                mouse: 100,
-                drag: 100,
-                touch: 100,
+                mouse: 0,
+                drag: 0,
+                touch: 0,
             },
             plugins: [Plugins.SortAnimation],
             swapAnimation: {
@@ -183,8 +183,18 @@ export class EditorView extends EventEmitter {
                 easingFunction: 'ease-in-out',
             },
         })
+        sortable.on('drag:start', (event) => {
+            const target = event.source
+            if (target) {
+                console.log(target)
+                if (!target.querySelector('.startDrag')) {
+                    event.cancel()
+                }
+            }
+        })
         sortable.on('drag:stopped', () => {
             this.hidePlaceholder(list)
+            this.removeStartDragClass()
         })
     }
 
@@ -215,31 +225,16 @@ export class EditorView extends EventEmitter {
 
     addTextInputListeners(el: HTMLElement, editor: HTMLElement) {
         el.addEventListener('keypress', (e) => {
-            e.preventDefault()
             const event = e as KeyboardEvent
             const item = editor.querySelector('.focused')
-            if (event.key !== 'Enter' && item) {
-                const eventD = new KeyboardEvent('input', {
-                    key: event.key,
-                })
-                el.dispatchEvent(eventD)
-            }
             if (event.key === 'Enter') {
+                e.preventDefault()
                 this.addNewField(editor)
             }
         })
         el.addEventListener('input', (e) => {
-            e.preventDefault()
             const event = e as KeyboardEvent
             const target = el as HTMLElement
-            if (event.key !== undefined) {
-                target.textContent += event.key
-                const sel = window.getSelection()
-                if (sel) {
-                    sel.selectAllChildren(el)
-                    sel.collapseToEnd()
-                }
-            }
             const value = target.textContent
             const parent = el.parentNode as HTMLElement
             if (parent) {
@@ -257,6 +252,7 @@ export class EditorView extends EventEmitter {
             if (editor.classList.contains('textPreviewEditor')) {
                 this.checkSettings()
             }
+            this.changeDragIconState(el)
         })
         el.addEventListener('keydown', (e) => {
             if (e.key === 'Backspace') {
@@ -266,12 +262,21 @@ export class EditorView extends EventEmitter {
                 const listOfElements = editor.querySelectorAll('.textElement')
                 if (value === '' && parent && parent.classList.contains('textElement') && listOfElements.length !== 1) {
                     this.deleteElement(parent, editor)
+                    e.preventDefault()
                 }
             }
         })
         el.addEventListener('focus', () => {
             const target = el as HTMLElement
             const parent = target.parentElement
+            const range = document.createRange()
+            const selection = window.getSelection()
+            range.selectNodeContents(target)
+            range.collapse(false)
+            if (selection) {
+                selection.removeAllRanges()
+                selection.addRange(range)
+            }
             if (parent) {
                 parent.classList.add('focused')
             }
@@ -286,6 +291,14 @@ export class EditorView extends EventEmitter {
     }
 
     addTextElementListeners(textElement: HTMLElement, editor: HTMLElement) {
+        textElement.addEventListener('pointerdown', (e) => {
+            const target = e.target as HTMLElement
+            const closest = target.closest('.drag')
+            if (closest) {
+                closest.classList.add('cursor-grabbing')
+                target.classList.add('startDrag')
+            }
+        })
         textElement.addEventListener('click', (e) => {
             const el = e.target as HTMLElement
             document.querySelectorAll('.open')?.forEach((el) => {
@@ -565,6 +578,25 @@ export class EditorView extends EventEmitter {
                 }
             })
             return count > 40 && count < 3000
+        }
+    }
+
+    removeStartDragClass() {
+        document.querySelectorAll('.startDrag')?.forEach((el) => {
+            el.classList.remove('startDrag')
+        })
+        document.querySelectorAll('.drag')?.forEach((el) => {
+            el.classList.remove('cursor-grabbing')
+        })
+    }
+
+    changeDragIconState(el: HTMLElement) {
+        const value = el.textContent
+        const parent = el.parentElement
+        if (value) {
+            parent?.querySelector('.drag')?.classList.remove('hidden')
+        } else {
+            parent?.querySelector('.drag')?.classList.add('hidden')
         }
     }
 
