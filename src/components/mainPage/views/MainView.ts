@@ -64,6 +64,14 @@ export class MainView extends EventEmitter {
         const headerFlowsEl = header.querySelector('.header__flows')
         const bgEl = this.createBg()
 
+        header.addEventListener('click', (ev) => {
+            const el = (ev.target as HTMLElement).parentElement
+            if (el instanceof HTMLAnchorElement) {
+                ev.preventDefault()
+                this.emit<string>('GOTO', el.href)
+            }
+        })
+
         if (navEl) {
             navEl.addEventListener('click', (ev) => {
                 if (ev.target instanceof HTMLAnchorElement) {
