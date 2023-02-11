@@ -4,7 +4,7 @@ import textEditor from '@/templates/textEditor.hbs'
 import newField from '@/templates/textEditorNewField.hbs'
 import { Paths, Sandbox } from 'types/enums'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
-import { Sortable } from '@shopify/draggable'
+import { Plugins, Sortable } from '@shopify/draggable'
 import { SortableEventNames } from '@shopify/draggable'
 import { NewArticleData, ParsedArticle, ParsedPreviewArticle } from 'types/types'
 
@@ -175,6 +175,12 @@ export class EditorView extends EventEmitter {
                 mouse: 100,
                 drag: 100,
                 touch: 100,
+            },
+            plugins: [Plugins.SortAnimation],
+            swapAnimation: {
+                duration: 200,
+                horizontal: false,
+                easingFunction: 'ease-in-out',
             },
         })
         sortable.on('drag:stopped', () => {
