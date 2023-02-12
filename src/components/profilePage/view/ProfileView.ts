@@ -10,7 +10,7 @@ import emptyAvatar from '@/assets/icons/avatar.svg'
 export type ProfileViewInstance = InstanceType<typeof ProfileView>
 
 export class ProfileView extends EventEmitter {
-    private mainPageContainer: HTMLElement
+    private mainPageContainer: HTMLElement | undefined
     private pageModel: PageModelInstance
     private profileModel: ProfileModelInstance
     private user: UserData | null = null
@@ -19,11 +19,7 @@ export class ProfileView extends EventEmitter {
         super()
         this.pageModel = models.pageModel
         this.profileModel = models.profileModel
-        this.mainPageContainer = document.querySelector('main') as HTMLElement
         this.pageModel.on('CHANGE_PAGE', () => {
-            this.renderPage()
-        })
-        this.pageModel.on('SIGN_IN', () => {
             this.renderPage()
         })
     }
@@ -37,6 +33,7 @@ export class ProfileView extends EventEmitter {
             )
         )
             return
+        this.mainPageContainer = document.querySelector('main') as HTMLElement
         this.mainPageContainer.innerHTML = ''
         this.user = this.pageModel.user
         const registeredDate = this.convertTimeStampToDate({
