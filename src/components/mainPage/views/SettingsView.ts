@@ -12,15 +12,12 @@ type SettingsViewEventsName = 'LOAD_ARTICLES' | 'SAVE_SETTINGS' | 'GOTO'
 export type SettingsViewInstance = InstanceType<typeof SettingsView>
 
 export class SettingsView extends EventEmitter {
-    private mainPageContainer: HTMLElement
+    private mainPageContainer: HTMLElement | undefined
     private user: UserData | null = null
 
     constructor(private model: PageModelInstance) {
         super()
         this.mainPageContainer = document.querySelector('main') as HTMLElement
-        this.model.on('SIGN_IN', () => {
-            this.renderPage()
-        })
         this.model.on('CHANGE_PAGE', () => {
             this.renderPage()
         })
@@ -35,6 +32,7 @@ export class SettingsView extends EventEmitter {
     }
 
     private renderPage() {
+        this.mainPageContainer = document.body.querySelector('main') as HTMLElement
         const path = this.model.path
         if (!(path[0] === Paths.Settings && path[1] === SettingsPaths.Profile)) return
         if (!this.model.user) {
@@ -113,7 +111,7 @@ export class SettingsView extends EventEmitter {
             img.src = <string>e.target?.result
         }
         reader.readAsDataURL(file)
-        const imageWrapper = this.mainPageContainer.querySelector('.user-avatar') as HTMLDivElement
+        const imageWrapper = this.mainPageContainer?.querySelector('.user-avatar') as HTMLDivElement
         imageWrapper.innerHTML = ''
         imageWrapper.append(img)
     }
@@ -143,7 +141,7 @@ export class SettingsView extends EventEmitter {
     }
 
     private showAuthFail() {
-        this.mainPageContainer.innerHTML = ''
+        if (this.mainPageContainer) this.mainPageContainer.innerHTML = ''
         const pageWrapper = document.createElement('div')
         pageWrapper.className = 'sm:container mx-auto'
         pageWrapper.innerHTML = authErrorPage({ words: getWords(Dictionary.errorPage, this.model.lang) })
@@ -151,7 +149,7 @@ export class SettingsView extends EventEmitter {
         mainPageBtn.onclick = () => {
             this.emit<string>('GOTO', location.origin)
         }
-        this.mainPageContainer.append(pageWrapper)
+        this.mainPageContainer?.append(pageWrapper)
     }
 
     private setUserProps(user: UserData) {
@@ -160,7 +158,7 @@ export class SettingsView extends EventEmitter {
 
     private removeAvatar() {
         if (this.user) this.user.properties.avatar = null
-        const imageWrapper = this.mainPageContainer.querySelector('.user-avatar') as HTMLDivElement
+        const imageWrapper = this.mainPageContainer?.querySelector('.user-avatar') as HTMLDivElement
         imageWrapper.innerHTML = `<img class="w-full h-full object-contain" src="${emptyAvatar}" alt="user-avatar">`
     }
 }

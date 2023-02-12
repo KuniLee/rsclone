@@ -4,7 +4,7 @@ import { rootModel, URLParams } from 'types/interfaces'
 import { ParsedQuery } from 'query-string'
 import { UserData } from 'types/types'
 
-type PageModelEventsName = 'CHANGE_PAGE' | '404' | 'SIGN_IN' | 'SIGN_OUT'
+type PageModelEventsName = 'CHANGE_PAGE' | '404' | 'AUTH_LOADED'
 export type PageModelInstance = InstanceType<typeof PageModel>
 
 export class PageModel extends EventEmitter {
@@ -57,7 +57,6 @@ export class PageModel extends EventEmitter {
                 this.goToSandbox()
                 break
             case Paths.Feed:
-                console.log(this._user)
                 this.goToFeed()
                 break
             case Paths.Auth:
@@ -129,10 +128,9 @@ export class PageModel extends EventEmitter {
     changeAuth(userData?: UserData) {
         if (userData) {
             this._user = userData
-            this.emit('SIGN_IN')
         } else {
             this._user = null
-            this.emit('SIGN_OUT')
         }
+        this.emit('AUTH_LOADED')
     }
 }

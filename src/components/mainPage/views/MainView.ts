@@ -11,7 +11,7 @@ import { rootModel } from 'types/interfaces'
 import emptyAvatar from '@/assets/icons/avatar.svg'
 import preloader from '@/templates/preloader.html'
 
-type ItemViewEventsName = 'GOTO' | 'SIGN_OUT'
+type ItemViewEventsName = 'GOTO' | 'SIGN_OUT' | 'PAGE_BUILD'
 
 export type MainViewInstance = InstanceType<typeof MainView>
 
@@ -26,17 +26,14 @@ export class MainView extends EventEmitter {
         this.mainPageContainer = document.createElement('main')
         this.mainPageContainer.classList.add('main', 'sm:mt-3', 'mb-10')
         this.footerEl = this.createFooter()
-        //this.buildPage()
         this.showPreloader()
         this.model.on('404', () => {
             this.show404page()
         })
-        // this.model.on('SIGN_IN', () => {
-        //    this.buildPage()
-        // })
-        // this.model.on('SIGN_OUT', () => {
-        //     this.buildPage()
-        // })
+        this.model.on('AUTH_LOADED', () => {
+            this.buildPage()
+            this.emit('PAGE_BUILD')
+        })
     }
 
     emit<T>(event: ItemViewEventsName, arg?: T) {
