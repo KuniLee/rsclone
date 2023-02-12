@@ -7,6 +7,8 @@ import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { Plugins, Sortable } from '@shopify/draggable'
 import { SortableEventNames } from '@shopify/draggable'
 import { NewArticleData, ParsedArticle, ParsedPreviewArticle } from 'types/types'
+import authErrorPage from '@/templates/authError.hbs'
+import Dictionary, { getWords } from '@/utils/dictionary'
 
 type ItemViewEventsName = 'GOTO' | 'ARTICLE_PARSED'
 
@@ -26,7 +28,11 @@ export class EditorView extends EventEmitter {
         this.previewEditorBuilded = false
         this.pageModel.on('CHANGE_PAGE', () => {
             if (this.pageModel.path[0] === Paths.Sandbox && this.pageModel.path[1] === Sandbox.New) {
-                this.buildPage()
+                if (this.pageModel.user) {
+                    this.buildPage()
+                } else {
+                    this.showAuthFail()
+                }
             }
         })
     }
@@ -597,6 +603,20 @@ export class EditorView extends EventEmitter {
             parent?.querySelector('.drag')?.classList.remove('hidden')
         } else {
             parent?.querySelector('.drag')?.classList.add('hidden')
+        }
+    }
+    showAuthFail() {
+        const main = document.querySelector('main') as HTMLElement
+        if (main) {
+            main.innerHTML = ''
+            const pageWrapper = document.createElement('div')
+            pageWrapper.className = 'sm:container mx-auto'
+            pageWrapper.innerHTML = authErrorPage({ words: getWords(Dictionary.errorPage, this.pageModel.lang) })
+            const mainPageBtn = pageWrapper.querySelector('button') as HTMLButtonElement
+            mainPageBtn.onclick = () => {
+                this.emit<string>('GOTO', location.origin)
+            }
+            main.append(pageWrapper)
         }
     }
 

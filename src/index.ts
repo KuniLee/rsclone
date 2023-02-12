@@ -23,8 +23,8 @@ const router = new Router(pageModel)
 
 const mainView = new MainView(pageModel)
 const feedView = new FeedView({ feedModel, pageModel })
-const editorView = new EditorView(editorModel, pageModel)
 const settingsView = new SettingsView(pageModel)
+const editorView = new EditorView(editorModel, pageModel)
 
 const feedController = new FeedController(feedView, { feedModel, pageModel }, api)
 const appController = new AppController({ mainView, settingsView }, pageModel, router, api)
