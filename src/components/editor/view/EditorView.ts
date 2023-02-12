@@ -54,7 +54,6 @@ export class EditorView extends EventEmitter {
             })
             this.addDrag(editor)
         }
-        const hubsInput = document.querySelector('.hubs-input') as HTMLInputElement
         const keywordsInput = document.querySelector('.keywords-input') as HTMLInputElement
         const translateAuthor = document.querySelector('.translate__author') as HTMLInputElement
         const buttonText = document.querySelector('.buttonTextInput') as HTMLInputElement
@@ -72,18 +71,16 @@ export class EditorView extends EventEmitter {
                     this.checkSettings()
                 })
             }
-            const array = [hubsInput, keywordsInput, translateAuthor, translateCheckbox, translateLink, buttonText].map(
-                (el) => {
-                    if (el) {
-                        const element = el as HTMLElement
-                        element.addEventListener('input', () => {
-                            if (hubsInput && keywordsInput && translateAuthor && translateCheckbox && translateLink) {
-                                this.checkSettings()
-                            }
-                        })
-                    }
+            const array = [keywordsInput, translateAuthor, translateCheckbox, translateLink, buttonText].map((el) => {
+                if (el) {
+                    const element = el as HTMLElement
+                    element.addEventListener('input', () => {
+                        if (keywordsInput && translateAuthor && translateCheckbox && translateLink) {
+                            this.checkSettings()
+                        }
+                    })
                 }
-            )
+            })
             this.addDrag(previewEditor)
         }
         document.querySelector('.isTranslate')?.addEventListener('change', () => {
@@ -108,12 +105,11 @@ export class EditorView extends EventEmitter {
             const submitButton = document.querySelector('.submitArticle') as HTMLButtonElement
             submitButton?.addEventListener('click', (e) => {
                 e.preventDefault()
-                if (hubsInput && keywordsInput && buttonText && translateCheckbox && translateLink && translateAuthor) {
+                if (keywordsInput && buttonText && translateCheckbox && translateLink && translateAuthor) {
                     submitButton.disabled = true
                     const parseMainEditorResult = this.parseArticle(editor)
                     const parsedPreviewResult = this.parseArticle(previewEditor)
                     const translateCheckbox = document.querySelector('.isTranslate-checkbox') as HTMLInputElement
-                    const parsedHubs = hubsInput.value ? hubsInput.value.split(', ') : []
                     const parsedKeywords = keywordsInput.value ? keywordsInput.value.split(', ') : []
                     const lang = (document.querySelector("input[name='lang']:checked") as HTMLInputElement)?.value
                     const image = document.querySelector('.preview-image') as HTMLImageElement
@@ -128,7 +124,6 @@ export class EditorView extends EventEmitter {
                     const result: NewArticleData = {
                         blocks: parseMainEditorResult.blocks,
                         title: parseMainEditorResult.blocks[0].value,
-                        habs: parsedHubs,
                         keywords: parsedKeywords,
                         lang: lang,
                         preview: preview,
@@ -497,17 +492,12 @@ export class EditorView extends EventEmitter {
     }
 
     checkSettings() {
-        const hubsInput = document.querySelector('.hubs-input') as HTMLInputElement
         const keywordsInput = document.querySelector('.keywords-input') as HTMLInputElement
         const translateAuthor = document.querySelector('.translate__author') as HTMLInputElement
         const buttonTextInput = document.querySelector('.buttonTextInput') as HTMLInputElement
         const translateCheckbox = document.querySelector('.isTranslate-checkbox') as HTMLInputElement
         const translateLink = document.querySelector('.translate__link') as HTMLInputElement
-        if (hubsInput && keywordsInput && translateAuthor && buttonTextInput && translateCheckbox && translateLink) {
-            const checkHubsResult = this.checkValue(hubsInput.value, new RegExp('[A-zА-я]{5,}'))
-            checkHubsResult
-                ? hubsInput.classList.remove('border-[#ff8d85]')
-                : hubsInput.classList.add('border-[#ff8d85]')
+        if (keywordsInput && translateAuthor && buttonTextInput && translateCheckbox && translateLink) {
             const checkKeywordsResult = this.checkValue(keywordsInput.value, new RegExp('[A-zА-я]{5,}'))
             checkKeywordsResult
                 ? keywordsInput.classList.remove('border-[#ff8d85]')
@@ -543,7 +533,6 @@ export class EditorView extends EventEmitter {
             const button = document.querySelector('.submitArticle') as HTMLButtonElement
             if (button) {
                 if (
-                    checkHubsResult &&
                     checkKeywordsResult &&
                     checkTranslateLink &&
                     checkTranslateAuthor &&
