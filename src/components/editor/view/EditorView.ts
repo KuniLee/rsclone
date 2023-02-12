@@ -29,6 +29,7 @@ export class EditorView extends EventEmitter {
         this.pageModel.on('CHANGE_PAGE', () => {
             if (this.pageModel.path[0] === Paths.Sandbox && this.pageModel.path[1] === Sandbox.New) {
                 if (this.pageModel.user) {
+                    console.log(this.pageModel.user)
                     this.buildPage()
                 } else {
                     this.showAuthFail()
@@ -40,7 +41,12 @@ export class EditorView extends EventEmitter {
     private buildPage() {
         const main = document.querySelector('main')
         if (main) {
-            main.innerHTML = textEditor({})
+            main.innerHTML = textEditor({
+                userName: this.pageModel.user.displayName,
+                userAvatar: this.pageModel.user.properties.avatar
+                    ? this.pageModel.user.properties.avatar
+                    : require('@/assets/icons/avatar.svg'),
+            })
         }
         this.addGlobalEventListener()
         const editor = document.querySelector('.textEditor') as HTMLElement
