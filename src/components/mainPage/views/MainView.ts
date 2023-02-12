@@ -9,6 +9,7 @@ import { DropdownMenu } from '@/utils/dropdownMenu'
 import footerTemplate from '@/templates/footer.hbs'
 import { rootModel } from 'types/interfaces'
 import emptyAvatar from '@/assets/icons/avatar.svg'
+import preloader from '@/templates/preloader.html'
 
 type ItemViewEventsName = 'GOTO' | 'SIGN_OUT'
 
@@ -25,16 +26,17 @@ export class MainView extends EventEmitter {
         this.mainPageContainer = document.createElement('main')
         this.mainPageContainer.classList.add('main', 'sm:mt-3', 'mb-10')
         this.footerEl = this.createFooter()
-        this.buildPage()
+        //this.buildPage()
+        this.showPreloader()
         this.model.on('404', () => {
             this.show404page()
         })
-        this.model.on('SIGN_IN', () => {
-            this.buildPage()
-        })
-        this.model.on('SIGN_OUT', () => {
-            this.buildPage()
-        })
+        // this.model.on('SIGN_IN', () => {
+        //    this.buildPage()
+        // })
+        // this.model.on('SIGN_OUT', () => {
+        //     this.buildPage()
+        // })
     }
 
     emit<T>(event: ItemViewEventsName, arg?: T) {
@@ -254,5 +256,9 @@ export class MainView extends EventEmitter {
 
     private render(header: HTMLElement) {
         document.body.replaceChildren(header, this.mainPageContainer, this.footerEl)
+    }
+
+    private showPreloader() {
+        document.body.innerHTML = preloader
     }
 }
