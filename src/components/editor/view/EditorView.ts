@@ -145,7 +145,7 @@ export class EditorView extends EventEmitter {
                         keywords: parsedKeywords,
                         lang: lang,
                         preview: preview,
-                        userId: '',
+                        userId: this.pageModel.user.uid,
                         translateAuthor: translateAuthor.value,
                         translateLink: translateLink.value,
                         isTranslate: translateCheckbox.checked,
