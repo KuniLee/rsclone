@@ -9,7 +9,10 @@
       {{/if}}
     </a>
   </div>
-  <a href="/users/{{user.displayName}}" class="text-color-button user-name">@{{user.displayName}}</a>
+  <div class="flex flex-col">
+    <span class="text-color-text-dark">{{user.properties.fullName}}</span>
+    <a href="/users/{{user.displayName}}" class="text-color-button user-name">@{{user.displayName}}</a>
+  </div>
 </div>
 <a href="/settings/profile"
   class="pl-5 py-3.5  hover:bg-color-dropdown-menu-btn-hover w-full my-3 transition flex gap-2 items-center drop-down-menu__btn link">

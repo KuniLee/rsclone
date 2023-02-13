@@ -7,8 +7,11 @@
           <img class="object-contain w-full h-full" src="{{user.properties.avatar}}" alt="user-avatar" />{{else}}
           <img class="object-cover w-full h-full rounded border-2" src="{{emptyAvatar}}" alt="user-avatar" />
           {{/if}}
-      </div></a>
-      <a href="/users/{{user.displayName}}" class="text-color-button text-xl">@{{user.displayName}}</a>
+        </a>
+      </div>
+      <span class="text-color-text-dark text-2xl font-bold">{{user.properties.fullName}}</span>
+      <a href="/users/{{user.displayName}}" class="text-color-button text-2xl">@{{user.displayName}}</span>
+      </a>
       <p class="text-color-text-dark">{{user.properties.about}}</p>
     </div>
     <div class="user-card__tabs tabs">
