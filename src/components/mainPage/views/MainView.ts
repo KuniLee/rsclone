@@ -203,6 +203,7 @@ export class MainView extends EventEmitter {
                 })
             }
         }
+        document.body.classList.add('overflow-hidden')
         if (visualSettingsEl) this.openPopup(header, visualSettingsEl, popupSettings, overlay)
         this.OnExitClick(sidebarUserMenu)
     }
@@ -211,6 +212,7 @@ export class MainView extends EventEmitter {
         sidebarWrapper.classList.remove('sidebar_active')
         sidebarUserMenu.remove()
         overlay.remove()
+        document.body.classList.remove('overflow-hidden')
     }
 
     private openDropdownMenu({
@@ -258,6 +260,7 @@ export class MainView extends EventEmitter {
     private openPopup(header: HTMLElement, visualSettings: Element, popupSettings: HTMLElement, overlay: HTMLElement) {
         visualSettings.addEventListener('click', () => {
             header.append(overlay, popupSettings)
+            document.body.classList.add('overflow-hidden')
             Array.from(document.getElementsByName('lang')).forEach((input) => {
                 if (input instanceof HTMLInputElement && this.model.lang === input.id) {
                     input.checked = true
@@ -325,18 +328,21 @@ export class MainView extends EventEmitter {
     private closePopup(popupSettings: HTMLElement, overlay: HTMLElement) {
         popupSettings.remove()
         overlay.remove()
+        document.body.classList.remove('overflow-hidden')
     }
 
     private openFlowsSidebar(headerFlows: Element, sidebarOverlay: HTMLElement, header: HTMLElement) {
         headerFlows.classList.add('header__flows_active')
         headerFlows.classList.remove('hidden')
         header.appendChild(sidebarOverlay)
+        document.body.classList.add('overflow-hidden')
     }
 
     private closeFlowsSidebar(headerFlows: Element, sidebarOverlay: HTMLElement, header: HTMLElement) {
         headerFlows.classList.remove('header__flows_active')
         headerFlows.classList.add('hidden')
         header.removeChild(sidebarOverlay)
+        document.body.classList.remove('overflow-hidden')
     }
 
     private setActiveLink(links: NodeListOf<Element>, currentLink: HTMLElement) {
