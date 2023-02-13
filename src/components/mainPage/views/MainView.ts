@@ -98,7 +98,7 @@ export class MainView extends EventEmitter {
                     element instanceof HTMLElement &&
                     dropDownMenuEl.classList.contains('drop-down-menu_active') &&
                     (!element.closest('.drop-down-menu_active') ||
-                        element.classList.contains('user-name') ||
+                        element.classList.contains('username') ||
                         element.classList.contains('user-avatar') ||
                         element.closest('.link')) &&
                     !element.classList.contains('user-img-desktop')
@@ -121,7 +121,7 @@ export class MainView extends EventEmitter {
                     sidebarUserMenuEl.classList.contains('sidebar_active') &&
                     element instanceof HTMLElement &&
                     (!element.closest('.sidebar__inner') ||
-                        element.classList.contains('user-name') ||
+                        element.classList.contains('username') ||
                         element.classList.contains('user-avatar') ||
                         element.closest('.link'))
                 ) {
@@ -243,7 +243,7 @@ export class MainView extends EventEmitter {
     }
 
     private addUserProfileLinksListeners(wrapper: Element, navLinksEl: NodeListOf<Element>) {
-        const profileLinksEl = [wrapper.querySelector('.link'), wrapper.querySelector('.user-name')]
+        const profileLinksEl = [wrapper.querySelector('.link'), wrapper.querySelector('.username')]
         profileLinksEl.forEach((linkEl) => {
             if (linkEl instanceof HTMLAnchorElement) {
                 linkEl.addEventListener('click', (ev) => {

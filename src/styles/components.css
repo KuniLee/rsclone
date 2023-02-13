@@ -169,3 +169,13 @@
   display: flex;
   align-items: center;
 }
+
+.tabs__tab-item::after {
+  content: '';
+  background-color: #77a8d0;
+  bottom: -1px;
+  display: block;
+  height: 2px;
+  position: absolute;
+  width: 100%;
+}
