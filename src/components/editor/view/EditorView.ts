@@ -10,7 +10,10 @@ import { NewArticleData, ParsedArticle, ParsedPreviewArticle } from 'types/types
 import authErrorPage from '@/templates/authError.hbs'
 import Dictionary, { getWords } from '@/utils/dictionary'
 import { EditorBlocks } from '@/utils/editorPopupWithBlocks'
-import headerPopup from '@/templates/textEditorHeaderTemplate.hbs'
+import headingBlockTemplate from '@/templates/textEditorHeaderTemplate.hbs'
+import quoteBlockTemplate from '@/templates/textEditorQuoteTemplate.hbs'
+import emptyParagraph from '@/templates/paragraph.hbs'
+import { list } from 'postcss'
 
 type ItemViewEventsName = 'GOTO' | 'ARTICLE_PARSED'
 
@@ -254,19 +257,39 @@ export class EditorView extends EventEmitter {
     }
 
     addTextInputListeners(el: HTMLElement, editor: HTMLElement) {
+        const parent = el.parentNode as HTMLElement
         el.addEventListener('keypress', (e) => {
             const event = e as KeyboardEvent
-            const item = editor.querySelector('.focused')
+            const value = el.textContent
             if (event.key === 'Enter') {
                 e.preventDefault()
-                this.addNewField(editor)
+                if (!el.closest('.quoteElement')) {
+                    this.addNewField(editor)
+                }
+                if (el.closest('.quoteElement')) {
+                    const listParagraphs = el.parentElement as HTMLElement
+                    const item = el.closest('.quoteElement') as HTMLElement
+                    if (value) {
+                        this.addNewParagraph(el)
+                    } else {
+                        if (listParagraphs) {
+                            if (listParagraphs.children.length !== 2) {
+                                this.deleteElement(el, editor)
+                            } else {
+                                if (item) {
+                                    this.deleteElement(item, editor)
+                                }
+                            }
+                        }
+                        this.addNewField(editor)
+                    }
+                }
             }
         })
         el.addEventListener('input', (e) => {
             const event = e as KeyboardEvent
             const target = el as HTMLElement
             const value = target.textContent
-            const parent = el.parentNode as HTMLElement
             if (parent) {
                 const menu = document.querySelector('.menu') as HTMLElement
                 if (value) {
@@ -274,8 +297,7 @@ export class EditorView extends EventEmitter {
                     const rect = el.getBoundingClientRect()
                     const parentRect = editor.getBoundingClientRect()
                     const elComputedStyles = getComputedStyle(el)
-                    if (value.length === 1 && value === '/' && menu) {
-                        console.log(elComputedStyles.height)
+                    if (value.length === 1 && value === '/' && menu && el.closest('.textElement')) {
                         menu.style.top = `${rect.top - parentRect.top + parseInt(elComputedStyles.height)}px`
                         parent.classList.add('focusedItem')
                         menu.hidden = false
@@ -307,17 +329,39 @@ export class EditorView extends EventEmitter {
             if (e.key === 'Backspace') {
                 const target = el as HTMLElement
                 const value = target.textContent
-                const parent = target.parentElement
+                const parent = target.closest('.editorElement') as HTMLElement
                 const listOfElements = editor.querySelectorAll('.editorElement')
-                if (value === '' && parent && parent.classList.contains('textElement') && listOfElements.length !== 1) {
-                    this.deleteElement(parent, editor)
-                    e.preventDefault()
+                if (value === '' && parent) {
+                    console.log(parent)
+                    if (
+                        parent.classList.contains('editorElement') &&
+                        listOfElements.length !== 1 &&
+                        !parent.classList.contains('quoteElement')
+                    ) {
+                        console.log(1)
+                        this.deleteElement(parent, editor)
+                        e.preventDefault()
+                    }
+                    if (parent.classList.contains('quoteElement')) {
+                        const listParagraphs = el.parentElement as HTMLElement
+                        e.preventDefault()
+                        if (listParagraphs) {
+                            if (listParagraphs.children.length !== 2) {
+                                this.deleteElement(el, editor)
+                            } else {
+                                this.deleteElement(parent, editor)
+                                if (listOfElements.length === 1) {
+                                    this.addNewField(editor)
+                                }
+                            }
+                        }
+                    }
                 }
             }
         })
         el.addEventListener('focus', () => {
             const target = el as HTMLElement
-            const parent = target.parentElement
+            const parent = target.closest('.editorElement')
             const range = document.createRange()
             const selection = window.getSelection()
             range.selectNodeContents(target)
@@ -332,7 +376,7 @@ export class EditorView extends EventEmitter {
         })
         el.addEventListener('blur', () => {
             const target = el as HTMLElement
-            const parent = target.parentElement
+            const parent = target.closest('.editorElement')
             if (parent) {
                 parent.classList.remove('focused')
             }
@@ -367,7 +411,6 @@ export class EditorView extends EventEmitter {
         textElement.querySelector('.delete-btn')?.addEventListener('click', (e) => {
             e.preventDefault()
             if (editor.querySelectorAll('.editorElement')?.length !== 1) {
-                console.log(editor.querySelectorAll('.editorElement'))
                 this.deleteElement(textElement, editor)
             }
         })
@@ -410,12 +453,13 @@ export class EditorView extends EventEmitter {
         element.remove()
         if (editor) {
             const lastChild = editor.lastElementChild as HTMLElement
-            const lastChildInputField = lastChild.querySelector('.editable') as HTMLElement
-            if (lastChild && lastChildInputField) {
-                if (lastChildInputField.textContent === '') {
+            const lastChildInputFields = lastChild.querySelectorAll('.editable')
+            const last = lastChildInputFields[lastChildInputFields.length - 1] as HTMLElement
+            if (lastChild && last) {
+                if (last.textContent === '') {
                     lastChild.classList.remove('before:hidden')
                 }
-                lastChildInputField.focus()
+                last.focus()
             }
         }
     }
@@ -423,7 +467,6 @@ export class EditorView extends EventEmitter {
         const checkHeaderResult = this.checkHeader()
         const checkArticleFieldsResult = this.checkArticleFields()
         const toSettingsButton = document.querySelector('.toSettings') as HTMLButtonElement
-        console.log(checkHeaderResult, checkArticleFieldsResult, toSettingsButton)
         if (toSettingsButton) {
             toSettingsButton.disabled = !(checkHeaderResult && checkArticleFieldsResult && toSettingsButton)
         }
@@ -507,6 +550,19 @@ export class EditorView extends EventEmitter {
                     this.addNewField(editor)
                 }
             }
+        }
+    }
+
+    addNewParagraph(el: HTMLElement) {
+        const template = document.createElement('template')
+        template.innerHTML = emptyParagraph({})
+        el.after(template.content)
+        const newField = document.querySelector('.new') as HTMLElement
+        const editor = document.querySelector('.textEditor') as HTMLElement
+        if (newField && editor) {
+            newField.classList.remove('new')
+            this.addTextInputListeners(newField, editor)
+            newField.focus()
         }
     }
 
@@ -733,15 +789,20 @@ export class EditorView extends EventEmitter {
             const element = el as HTMLElement
             element.addEventListener('click', () => {
                 const item = document.querySelector('.focusedItem')
-                console.log(item)
-                if (item) {
+                const editor = document.querySelector('.textEditor') as HTMLElement
+                if (item && editor) {
                     const template = document.createElement('template')
                     console.log(element)
                     switch (element.dataset.type) {
                         case 'heading':
-                            template.innerHTML = headerPopup({})
+                            template.innerHTML = headingBlockTemplate({})
+                            break
+                        case 'quote':
+                            template.innerHTML = quoteBlockTemplate({})
+                            break
                     }
                     item.replaceWith(template.content)
+                    this.addNewField(editor)
                     const newItem = document.querySelector('.new') as HTMLElement
                     if (element.dataset.type === 'heading') {
                         if (newItem) {
@@ -758,7 +819,6 @@ export class EditorView extends EventEmitter {
                             })
                         }
                     }
-                    const editor = document.querySelector('.textEditor') as HTMLElement
                     const newItemField = newItem.querySelector('.editable') as HTMLElement
                     if (editor && newItem && newItemField) {
                         newItem.classList.remove('new')
