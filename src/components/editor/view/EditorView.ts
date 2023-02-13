@@ -9,6 +9,8 @@ import { SortableEventNames } from '@shopify/draggable'
 import { NewArticleData, ParsedArticle, ParsedPreviewArticle } from 'types/types'
 import authErrorPage from '@/templates/authError.hbs'
 import Dictionary, { getWords } from '@/utils/dictionary'
+import { EditorBlocks } from '@/utils/editorPopupWithBlocks'
+import headerPopup from '@/templates/textEditorHeaderTemplate.hbs'
 
 type ItemViewEventsName = 'GOTO' | 'ARTICLE_PARSED'
 
@@ -19,6 +21,7 @@ export class EditorView extends EventEmitter {
     private pageModel: PageModelInstance
     private isGlobalListener: boolean
     private previewEditorBuilded: boolean
+    private blocksPopup: EditorBlocks
 
     constructor(editorModel: EditorModel, pageModel: PageModelInstance) {
         super()
@@ -26,6 +29,7 @@ export class EditorView extends EventEmitter {
         this.pageModel = pageModel
         this.isGlobalListener = false
         this.previewEditorBuilded = false
+        this.blocksPopup = new EditorBlocks()
         this.pageModel.on('CHANGE_PAGE', () => {
             if (this.pageModel.path[0] === Paths.Sandbox && this.pageModel.path[1] === Sandbox.New) {
                 if (this.pageModel.user) {
@@ -47,6 +51,15 @@ export class EditorView extends EventEmitter {
                     : require('@/assets/icons/avatar.svg'),
             })
         }
+        const popupMenu = document.querySelector('.menu') as HTMLElement
+        if (popupMenu) {
+            popupMenu.innerHTML = ''
+            const arrayWithBlocks = Array.from(this.blocksPopup.getListOfElements())
+            arrayWithBlocks.forEach((el) => {
+                popupMenu.append(el)
+            })
+            this.addEventListenersToPopup(popupMenu)
+        }
         this.addGlobalEventListener()
         const editor = document.querySelector('.textEditor') as HTMLElement
         const previewEditor = document.querySelector('.textPreviewEditor') as HTMLElement
@@ -54,7 +67,7 @@ export class EditorView extends EventEmitter {
             editor.querySelectorAll('.editable')?.forEach((el) => {
                 this.addTextInputListeners(el as HTMLElement, editor)
             })
-            editor.querySelectorAll('.textElement')?.forEach((el) => {
+            editor.querySelectorAll('.editorElement')?.forEach((el) => {
                 this.addTextElementListeners(el as HTMLElement, editor)
             })
             this.addDrag(editor)
@@ -184,7 +197,7 @@ export class EditorView extends EventEmitter {
 
     addDrag(list: HTMLElement) {
         const sortable = new Sortable<SortableEventNames | 'drag:stopped'>(list, {
-            draggable: '.textElement',
+            draggable: '.editorElement',
             delay: {
                 mouse: 0,
                 drag: 0,
@@ -232,6 +245,10 @@ export class EditorView extends EventEmitter {
                         element.classList.remove('open')
                     }
                 })
+                const menu = document.querySelector('.menu') as HTMLElement
+                if (menu) {
+                    menu.hidden = true
+                }
             })
         }
     }
@@ -260,13 +277,16 @@ export class EditorView extends EventEmitter {
                     if (value.length === 1 && value === '/' && menu) {
                         console.log(elComputedStyles.height)
                         menu.style.top = `${rect.top - parentRect.top + parseInt(elComputedStyles.height)}px`
+                        parent.classList.add('focusedItem')
                         menu.hidden = false
                     } else {
                         menu.hidden = true
+                        parent.classList.remove('focusedItem')
                     }
                 } else {
                     if (menu) {
                         menu.hidden = true
+                        parent.classList.remove('focusedItem')
                     }
                     if (editor.lastElementChild === parent) {
                         parent.classList.remove('before:hidden')
@@ -279,14 +299,16 @@ export class EditorView extends EventEmitter {
             if (editor.classList.contains('textPreviewEditor')) {
                 this.checkSettings()
             }
-            this.changeDragIconState(el)
+            if (parent && parent.classList.contains('textElement')) {
+                this.changeDragIconState(el)
+            }
         })
         el.addEventListener('keydown', (e) => {
             if (e.key === 'Backspace') {
                 const target = el as HTMLElement
                 const value = target.textContent
                 const parent = target.parentElement
-                const listOfElements = editor.querySelectorAll('.textElement')
+                const listOfElements = editor.querySelectorAll('.editorElement')
                 if (value === '' && parent && parent.classList.contains('textElement') && listOfElements.length !== 1) {
                     this.deleteElement(parent, editor)
                     e.preventDefault()
@@ -344,7 +366,8 @@ export class EditorView extends EventEmitter {
         })
         textElement.querySelector('.delete-btn')?.addEventListener('click', (e) => {
             e.preventDefault()
-            if (editor.querySelectorAll('.textElement')?.length !== 1) {
+            if (editor.querySelectorAll('.editorElement')?.length !== 1) {
+                console.log(editor.querySelectorAll('.editorElement'))
                 this.deleteElement(textElement, editor)
             }
         })
@@ -371,13 +394,17 @@ export class EditorView extends EventEmitter {
                     if (value) {
                         newElemField.textContent = value
                     }
-                    this.addTextInputListeners(newElemField, editor)
-                    this.addTextElementListeners(newElem, editor)
+                    this.addEventListenersForNewElement(newElem, newElemField, editor)
                     newElemField.focus()
                 }
             }
         }
         this.hidePlaceholder(editor)
+    }
+
+    addEventListenersForNewElement(element: HTMLElement, editable: HTMLElement, editor: HTMLElement) {
+        this.addTextInputListeners(editable, editor)
+        this.addTextElementListeners(element, editor)
     }
     deleteElement(element: HTMLElement, editor: HTMLElement) {
         element.remove()
@@ -396,6 +423,7 @@ export class EditorView extends EventEmitter {
         const checkHeaderResult = this.checkHeader()
         const checkArticleFieldsResult = this.checkArticleFields()
         const toSettingsButton = document.querySelector('.toSettings') as HTMLButtonElement
+        console.log(checkHeaderResult, checkArticleFieldsResult, toSettingsButton)
         if (toSettingsButton) {
             toSettingsButton.disabled = !(checkHeaderResult && checkArticleFieldsResult && toSettingsButton)
         }
@@ -415,7 +443,7 @@ export class EditorView extends EventEmitter {
 
     checkArticleFields() {
         let charactersCount = 0
-        document.querySelectorAll('.textElement')?.forEach((el) => {
+        document.querySelectorAll('.editorElement')?.forEach((el) => {
             const editableField = el.querySelector('.editable')
             if (editableField) {
                 if (editableField.textContent) {
@@ -427,15 +455,19 @@ export class EditorView extends EventEmitter {
     }
 
     hidePlaceholder(editor: HTMLElement) {
-        const elements = editor.querySelectorAll('.textElement')
+        const elements = editor.querySelectorAll('.editorElement')
         for (let i = 0; i < elements.length; i++) {
             if (elements.length - 1 !== i) {
-                elements[i].classList.add('before:hidden')
+                if (elements[i].classList.contains('textElement')) {
+                    elements[i].classList.add('before:hidden')
+                }
             } else {
-                const elem = elements[i].querySelector('.editable') as HTMLElement
-                if (elem) {
-                    if (elem.textContent?.length === 0) {
-                        elements[i].classList.remove('before:hidden')
+                if (elements[i].classList.contains('textElement')) {
+                    const elem = elements[i].querySelector('.editable') as HTMLElement
+                    if (elem) {
+                        if (elem.textContent?.length === 0) {
+                            elements[i].classList.remove('before:hidden')
+                        }
                     }
                 }
             }
@@ -460,8 +492,6 @@ export class EditorView extends EventEmitter {
                             this.addNewField(previewEditor)
                         }
                     }
-                } else {
-                    return
                 }
             })
         }
@@ -675,6 +705,34 @@ export class EditorView extends EventEmitter {
                     inputFile.dispatchEvent(event)
                 }
             }
+        })
+    }
+
+    addEventListenersToPopup(popup: HTMLElement) {
+        const popupButtons = Array.from(popup.children)
+        popupButtons.forEach((el) => {
+            const element = el as HTMLElement
+            element.addEventListener('click', () => {
+                const item = document.querySelector('.focusedItem')
+                console.log(item)
+                if (item) {
+                    const template = document.createElement('template')
+                    console.log(element)
+                    switch (element.dataset.type) {
+                        case 'heading':
+                            template.innerHTML = headerPopup({})
+                    }
+                    item.replaceWith(template.content)
+                    const newItem = document.querySelector('.new') as HTMLElement
+                    const editor = document.querySelector('.textEditor') as HTMLElement
+                    const newItemField = newItem.querySelector('.editable') as HTMLElement
+                    if (editor && newItem && newItemField) {
+                        newItem.classList.remove('new')
+                        this.addTextElementListeners(newItem, editor)
+                        this.addTextInputListeners(newItemField, editor)
+                    }
+                }
+            })
         })
     }
 
