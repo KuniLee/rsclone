@@ -29,7 +29,6 @@ export class EditorView extends EventEmitter {
         this.pageModel.on('CHANGE_PAGE', () => {
             if (this.pageModel.path[0] === Paths.Sandbox && this.pageModel.path[1] === Sandbox.New) {
                 if (this.pageModel.user) {
-                    console.log(this.pageModel.user)
                     this.buildPage()
                 } else {
                     this.showAuthFail()
@@ -201,7 +200,6 @@ export class EditorView extends EventEmitter {
         sortable.on('drag:start', (event) => {
             const target = event.source
             if (target) {
-                console.log(target)
                 if (!target.querySelector('.startDrag')) {
                     event.cancel()
                 }
@@ -417,7 +415,6 @@ export class EditorView extends EventEmitter {
     hidePlaceholder(editor: HTMLElement) {
         const elements = editor.querySelectorAll('.textElement')
         for (let i = 0; i < elements.length; i++) {
-            console.log(elements.length)
             if (elements.length - 1 !== i) {
                 elements[i].classList.add('before:hidden')
             } else {
@@ -439,7 +436,6 @@ export class EditorView extends EventEmitter {
                     const textField = el.querySelector('.editable')
                     if (textField && count < 3000) {
                         if (textField.textContent) {
-                            console.log(count + textField.textContent.length)
                             if (count + textField.textContent.length > 3000) {
                                 return
                             } else {
@@ -630,7 +626,6 @@ export class EditorView extends EventEmitter {
     addDropZoneEvents(el: HTMLElement) {
         el.addEventListener('dragenter', (e) => {
             e.preventDefault()
-            console.log('In')
         })
         el.addEventListener('dragleave', (e) => {
             e.preventDefault()
@@ -648,7 +643,6 @@ export class EditorView extends EventEmitter {
             const target = e.target as HTMLElement
             if (target) {
                 const parent = target.parentElement
-                console.log(parent)
                 if (parent && parent.classList.contains('previewImageBlock')) {
                     parent.classList.remove('border-color-gray-separator')
                     parent.classList.add('border-color-button')
