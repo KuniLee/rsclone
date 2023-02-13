@@ -340,6 +340,10 @@ export class EditorView extends EventEmitter {
             if (newElem) {
                 if (editor.classList.contains('textPreviewEditor')) {
                     newElem.dataset.isEmpty = 'Введите текст'
+                    if (value) {
+                        const dragIcon = newElem.querySelector('.drag')
+                        dragIcon?.classList.remove('hidden')
+                    }
                 }
                 const newElemField = newElem.querySelector('.editable') as HTMLElement
                 if (newElemField) {
