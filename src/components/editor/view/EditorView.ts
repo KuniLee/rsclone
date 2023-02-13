@@ -4,7 +4,7 @@ import textEditor from '@/templates/textEditor.hbs'
 import newField from '@/templates/textEditorNewField.hbs'
 import { Paths, Sandbox } from 'types/enums'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
-import { Plugins, Sortable } from '@shopify/draggable'
+import { DragEvent, Plugins, Sortable } from '@shopify/draggable'
 import { SortableEventNames } from '@shopify/draggable'
 import { NewArticleData, ParsedArticle, ParsedPreviewArticle } from 'types/types'
 import authErrorPage from '@/templates/authError.hbs'
@@ -173,6 +173,14 @@ export class EditorView extends EventEmitter {
                 }
             }
         })
+        const dropZone = document.querySelector('.dropZone') as HTMLElement
+        if (dropZone) {
+            this.addDropZoneEvents(dropZone)
+        }
+        const dropZoneText = document.querySelector('.load-image-preview-text') as HTMLElement
+        if (dropZoneText) {
+            this.addDropZoneEvents(dropZoneText)
+        }
     }
 
     addDrag(list: HTMLElement) {
@@ -617,6 +625,49 @@ export class EditorView extends EventEmitter {
             }
             main.append(pageWrapper)
         }
+    }
+
+    addDropZoneEvents(el: HTMLElement) {
+        el.addEventListener('dragenter', (e) => {
+            e.preventDefault()
+            console.log('In')
+        })
+        el.addEventListener('dragleave', (e) => {
+            e.preventDefault()
+            const target = e.target as HTMLElement
+            if (target) {
+                const parent = target.parentElement
+                if (parent && parent.classList.contains('previewImageBlock')) {
+                    parent.classList.add('border-color-gray-separator')
+                    parent.classList.remove('border-color-button')
+                }
+            }
+        })
+        el.addEventListener('dragover', (e) => {
+            e.preventDefault()
+            const target = e.target as HTMLElement
+            if (target) {
+                const parent = target.parentElement
+                console.log(parent)
+                if (parent && parent.classList.contains('previewImageBlock')) {
+                    parent.classList.remove('border-color-gray-separator')
+                    parent.classList.add('border-color-button')
+                }
+            }
+        })
+        el.addEventListener('drop', (e) => {
+            e.preventDefault()
+            const event = e as DragEventInit
+            const dt = event.dataTransfer
+            if (dt) {
+                const inputFile = document.querySelector('.image-preview') as HTMLInputElement
+                if (inputFile) {
+                    const event = new Event('change', { bubbles: true })
+                    inputFile.files = dt.files
+                    inputFile.dispatchEvent(event)
+                }
+            }
+        })
     }
 
     emit<T>(event: ItemViewEventsName, arg?: T, articleData?: NewArticleData) {
