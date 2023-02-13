@@ -12,7 +12,7 @@ export class PopupSettings {
         this.modalSettings.className = 'popup'
     }
 
-    render() {
+    create() {
         const textData = Object.keys(dictionary.popupSettings).reduce((acc, key) => {
             return { ...acc, [key]: dictionary.popupSettings[key][this.model.lang] }
         }, {})

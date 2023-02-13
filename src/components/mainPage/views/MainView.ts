@@ -1,13 +1,13 @@
 import { PopupSettings } from '@/utils/popupSettings'
 import EventEmitter from 'events'
 import type { PageModel } from '../model/PageModel'
-import headerUserSignInTemplate from '@/templates/headerUserSignIn.hbs'
-import headerUserSignOutTemplate from '@/templates/header.hbs'
+import headerTemplate from '@/templates/header.hbs'
+import sidebarUserMenuTemplate from '@/templates/sidebarUserMenu.hbs'
 import { Flows, Paths } from 'types/enums'
 import dictionary from '@/utils/dictionary'
 import { DropdownMenu } from '@/utils/dropdownMenu'
 import footerTemplate from '@/templates/footer.hbs'
-import { rootModel } from 'types/interfaces'
+import { DropdownMenuElements, HeaderElements, rootModel, SidebarUserMenuElements } from 'types/interfaces'
 import emptyAvatar from '@/assets/icons/avatar.svg'
 import preloader from '@/templates/preloader.html'
 
@@ -48,55 +48,127 @@ export class MainView extends EventEmitter {
         const dropdownMenu = new DropdownMenu(this.model)
         const popupSettings = new PopupSettings(this.model)
         const headerEl = this.createHeader()
-        let dropdownMenuEl = dropdownMenu.renderUserSignOut()
-        if (this.model.user) {
-            dropdownMenuEl = dropdownMenu.renderUserSignIn()
-        }
-        const popupSettingsEl = popupSettings.render()
+        const dropdownMenuEl = dropdownMenu.create()
+        const popupSettingsEl = popupSettings.create()
+        const sidebarUserMenuEl = this.createSidebarUserMenu()
         this.render(headerEl)
-        document.body.onclick = null
-        this.addListeners(headerEl, dropdownMenuEl, popupSettingsEl)
+        this.addListeners({
+            header: headerEl,
+            dropdownMenu: dropdownMenuEl,
+            popupSettings: popupSettingsEl,
+            sidebarUserMenu: sidebarUserMenuEl,
+        })
     }
 
-    private addListeners(header: HTMLElement, dropDownMenu: HTMLElement, popupSettings: HTMLElement) {
-        const navEl = header.querySelector('.nav')
+    private addListeners({ header, dropdownMenu, popupSettings, sidebarUserMenu }: HeaderElements) {
+        const navLinksEl = header.querySelectorAll('.nav__link')
+        const burgerEl = header.querySelector('.burger')
         const headerFlowsEl = header.querySelector('.header__flows')
-        const bgEl = this.createBg()
+        const overlayEl = this.createOverlay()
+        const headerLinksEl = header.querySelectorAll('.header__link')
+        const userIconEl = header.querySelector('.user-img')
+        const userDesktopIconEl = header.querySelector('.user-img-desktop')
+        const dropdownMenuWrapperEl = header.querySelector('.drop-down-menu')
+        const sidebarUserMenuEl = header.querySelector('.sidebar')
 
-        header.addEventListener('click', (ev) => {
-            const el = (ev.target as HTMLElement).parentElement
-            if (el instanceof HTMLAnchorElement) {
-                ev.preventDefault()
-                this.emit<string>('GOTO', el.href)
+        headerLinksEl.forEach((linkEl) => {
+            if (linkEl instanceof HTMLAnchorElement) {
+                linkEl.addEventListener('click', (ev) => {
+                    ev.preventDefault()
+                    this.emit<string>('GOTO', linkEl.href)
+                    this.removeActiveLink(navLinksEl)
+                })
             }
         })
 
-        if (navEl) {
-            navEl.addEventListener('click', (ev) => {
-                if (ev.target instanceof HTMLAnchorElement) {
-                    const pathname = ev.target.href
-                    if (!pathname.includes(Paths.Auth) && !pathname.includes(Paths.Registration)) {
-                        ev.preventDefault()
-                        this.setActiveLink(navEl.children, ev.target)
-                        this.emit<string>('GOTO', ev.target.href)
-                    }
-                }
+        if (userDesktopIconEl) {
+            userDesktopIconEl.addEventListener('click', () => {
+                this.toggleDropdownMenu({ header, dropdownMenu, popupSettings, overlay: overlayEl, navLinksEl })
             })
         }
 
-        document.body.onclick = (ev) => {
-            if (ev.target instanceof HTMLElement) {
-                this.toggleDropdownMenu(ev.target, header, dropDownMenu)
-                this.togglePopupSettings(ev.target, header, popupSettings, bgEl)
-                if (headerFlowsEl) {
-                    this.toggleSidebar(ev.target, headerFlowsEl, bgEl, header)
+        document.addEventListener(
+            'click',
+            (ev) => {
+                const element = ev.target
+                const dropDownMenuEl = header.querySelector('.drop-down-menu')
+                const popupEl = header.querySelector('.popup')
+                if (
+                    dropDownMenuEl &&
+                    element instanceof HTMLElement &&
+                    dropDownMenuEl.classList.contains('drop-down-menu_active') &&
+                    (!element.closest('.drop-down-menu_active') ||
+                        element.classList.contains('user-name') ||
+                        element.classList.contains('user-avatar') ||
+                        element.closest('.link')) &&
+                    !element.classList.contains('user-img-desktop')
+                ) {
+                    this.closeDropdownMenu(dropDownMenuEl, dropdownMenu)
                 }
-            }
+                if (
+                    headerFlowsEl &&
+                    headerFlowsEl.classList.contains('header__flows_active') &&
+                    element instanceof HTMLElement &&
+                    (element.classList.contains('nav__link') || element.classList.contains('overlay'))
+                ) {
+                    this.closeFlowsSidebar(headerFlowsEl, overlayEl, header)
+                }
+                if (popupEl && element instanceof HTMLElement && !element.closest('.popup__inner')) {
+                    this.closePopup(popupSettings, overlayEl)
+                }
+                if (
+                    sidebarUserMenuEl &&
+                    sidebarUserMenuEl.classList.contains('sidebar_active') &&
+                    element instanceof HTMLElement &&
+                    (!element.closest('.sidebar__inner') ||
+                        element.classList.contains('user-name') ||
+                        element.classList.contains('user-avatar') ||
+                        element.closest('.link'))
+                ) {
+                    this.closeUserMenuSidebar(sidebarUserMenuEl, sidebarUserMenu, overlayEl)
+                }
+            },
+            true
+        )
+
+        navLinksEl.forEach((navLink) => {
+            navLink.addEventListener('click', (ev) => {
+                const element = ev.target
+                if (element instanceof HTMLAnchorElement) {
+                    this.setActiveLink(navLinksEl, element)
+                }
+            })
+        })
+
+        if (burgerEl) {
+            burgerEl.addEventListener('click', () => {
+                if (headerFlowsEl) this.openFlowsSidebar(headerFlowsEl, overlayEl, header)
+            })
+        }
+
+        if (userIconEl) {
+            userIconEl.addEventListener('click', () => {
+                this.openSidebarUserMenu({ header, sidebarUserMenu, overlay: overlayEl, popupSettings, navLinksEl })
+            })
         }
 
         window.addEventListener('resize', () => {
-            if (headerFlowsEl && window.innerWidth > 768 && headerFlowsEl.classList.contains('sidebar')) {
-                this.closeSidebar(headerFlowsEl, bgEl, header)
+            if (headerFlowsEl && window.innerWidth > 768 && headerFlowsEl.classList.contains('header__flows_active')) {
+                this.closeFlowsSidebar(headerFlowsEl, overlayEl, header)
+            }
+            if (
+                dropdownMenuWrapperEl &&
+                window.innerWidth > 768 &&
+                dropdownMenuWrapperEl.classList.contains('drop-down-menu_active')
+            ) {
+                this.closeDropdownMenu(dropdownMenuWrapperEl, dropdownMenu)
+            }
+            if (
+                sidebarUserMenuEl &&
+                sidebarUserMenuEl.classList.contains('sidebar_active') &&
+                window.innerWidth > 768
+            ) {
+                this.closeUserMenuSidebar(sidebarUserMenuEl, sidebarUserMenu, overlayEl)
             }
         })
     }
@@ -105,109 +177,129 @@ export class MainView extends EventEmitter {
         this.mainPageContainer.innerText = '404'
     }
 
-    private togglePopupSettings(
-        element: HTMLElement,
-        header: HTMLElement,
-        popupSettings: HTMLElement,
-        bg: HTMLElement
-    ) {
-        const visualSettings = header.querySelector('.visual-settings')
-        const popupSettingsEl = document.querySelector('.popup-settings')
-        const saveSettingsBtn = document.querySelector('.btn-save')
-        if (visualSettings) {
-            visualSettings.addEventListener('click', () => {
-                header.append(bg, popupSettings)
-                Array.from(document.getElementsByName('lang')).forEach((input) => {
-                    if (input instanceof HTMLInputElement && this.model.lang === input.id) {
-                        input.checked = true
+    private openSidebarUserMenu({
+        header,
+        sidebarUserMenu,
+        overlay,
+        popupSettings,
+        navLinksEl,
+    }: SidebarUserMenuElements) {
+        const sidebarWrapperEl = header.querySelector('.sidebar')
+        const visualSettingsEl = sidebarUserMenu.querySelector('.visual-settings')
+        if (sidebarWrapperEl) {
+            sidebarWrapperEl.append(sidebarUserMenu, overlay)
+            sidebarWrapperEl.classList.add('sidebar_active')
+            this.addUserProfileLinksListeners(sidebarWrapperEl, navLinksEl)
+            const sidebarInnerContainerEl = sidebarWrapperEl.querySelector('.sidebar__inner')
+            if (sidebarInnerContainerEl) {
+                Array.from(sidebarInnerContainerEl.children).forEach((sidebarChildEl) => {
+                    if (sidebarChildEl instanceof HTMLAnchorElement) {
+                        sidebarChildEl.addEventListener('click', (ev) => {
+                            ev.preventDefault()
+                            this.emit<string>('GOTO', sidebarChildEl.href)
+                            this.removeActiveLink(navLinksEl)
+                        })
                     }
                 })
-            })
-            if (saveSettingsBtn) {
-                saveSettingsBtn.addEventListener('click', (ev) => {
+            }
+        }
+        if (visualSettingsEl) this.openPopup(header, visualSettingsEl, popupSettings, overlay)
+        this.OnExitClick(sidebarUserMenu)
+    }
+
+    private closeUserMenuSidebar(sidebarWrapper: Element, sidebarUserMenu: HTMLElement, overlay: HTMLElement) {
+        sidebarWrapper.classList.remove('sidebar_active')
+        sidebarUserMenu.remove()
+        overlay.remove()
+    }
+
+    private openDropdownMenu({
+        header,
+        dropdownMenuWrapper,
+        dropdownMenu,
+        popupSettings,
+        overlay,
+        navLinksEl,
+    }: DropdownMenuElements) {
+        if (dropdownMenuWrapper) {
+            dropdownMenuWrapper.append(dropdownMenu)
+            const dropdownMenuItemsEl = dropdownMenuWrapper.querySelector('.drop-down-menu__body')
+            const visualSettingsEl = dropdownMenuWrapper.querySelector('.visual-settings')
+            if (dropdownMenuItemsEl) {
+                Array.from(dropdownMenuItemsEl.children).forEach((dropdownMenuChildEl) => {
+                    if (dropdownMenuChildEl instanceof HTMLAnchorElement) {
+                        dropdownMenuChildEl.addEventListener('click', (ev) => {
+                            ev.preventDefault()
+                            this.emit<string>('GOTO', dropdownMenuChildEl.href)
+                            this.removeActiveLink(navLinksEl)
+                        })
+                    }
+                })
+            }
+            this.addUserProfileLinksListeners(dropdownMenuWrapper, navLinksEl)
+            this.OnExitClick(dropdownMenu)
+            if (visualSettingsEl) this.openPopup(header, visualSettingsEl, popupSettings, overlay)
+        }
+    }
+
+    private addUserProfileLinksListeners(wrapper: Element, navLinksEl: NodeListOf<Element>) {
+        const profileLinksEl = [wrapper.querySelector('.link'), wrapper.querySelector('.user-name')]
+        profileLinksEl.forEach((linkEl) => {
+            if (linkEl instanceof HTMLAnchorElement) {
+                linkEl.addEventListener('click', (ev) => {
                     ev.preventDefault()
-                    const selectedLangInput = Array.from(document.getElementsByName('lang')).find(
-                        (input) => input instanceof HTMLInputElement && input.checked
-                    )
-                    if (selectedLangInput) {
-                        localStorage.lang = selectedLangInput.id as rootModel['lang']
-                        location.reload()
-                    }
+                    this.emit<string>('GOTO', linkEl.href)
+                    this.removeActiveLink(navLinksEl)
                 })
             }
-        }
-
-        if (popupSettingsEl) {
-            if (
-                !element.closest('.visual-settings') &&
-                (!element.closest('.popup-settings') || element.classList.contains('ico_close'))
-            ) {
-                header.removeChild(popupSettings)
-                header.removeChild(bg)
-            }
-        }
+        })
     }
 
-    private openSidebar(headerFlows: Element, sidebarBg: HTMLElement, header: HTMLElement) {
-        headerFlows.classList.add('sidebar')
-        headerFlows.classList.remove('hidden')
-        header.appendChild(sidebarBg)
-    }
-
-    private closeSidebar(headerFlows: Element, sidebarBg: HTMLElement, header: HTMLElement) {
-        headerFlows.classList.remove('sidebar')
-        headerFlows.classList.add('hidden')
-        header.removeChild(sidebarBg)
-    }
-
-    private toggleSidebar(element: HTMLElement, headerFlows: Element, bgEl: HTMLElement, header: HTMLElement) {
-        if (element.classList.contains('burger')) {
-            this.openSidebar(headerFlows, bgEl, header)
-        }
-        if (
-            headerFlows.classList.contains('sidebar') &&
-            (element.classList.contains('nav__link') || element.classList.contains('bg'))
-        ) {
-            this.closeSidebar(headerFlows, bgEl, header)
-        }
-    }
-
-    private toggleDropdownMenu(element: HTMLElement, header: HTMLElement, dropdownMenu: HTMLElement) {
-        const userIconLight = header.querySelector('.ico_user-light')
-        const userIcon = header.querySelectorAll('.user')
-        const exit = dropdownMenu.querySelector('.exit')
-        if (element.classList.contains('user')) {
-            element.classList.toggle('active')
-            if (element.classList.contains('active')) {
-                header.append(dropdownMenu)
-            } else {
-                header.removeChild(dropdownMenu)
-            }
-        }
-        if (
-            (!element.closest('.drop-down-menu') && !element.classList.contains('user')) ||
-            element.classList.contains('user-avatar') ||
-            element.classList.contains('user-name')
-        ) {
-            userIcon.forEach((userIcon) => {
-                if (userIcon && userIcon.classList.contains('active')) {
-                    userIcon.classList.remove('active')
-                    header.removeChild(dropdownMenu)
+    private openPopup(header: HTMLElement, visualSettings: Element, popupSettings: HTMLElement, overlay: HTMLElement) {
+        visualSettings.addEventListener('click', () => {
+            header.append(overlay, popupSettings)
+            Array.from(document.getElementsByName('lang')).forEach((input) => {
+                if (input instanceof HTMLInputElement && this.model.lang === input.id) {
+                    input.checked = true
                 }
             })
+        })
+        const saveSettingsBtnEl = popupSettings.querySelector('.btn-save')
+        const closeBtnEl = popupSettings.querySelector('.ico_close')
+        if (saveSettingsBtnEl) this.OnSaveClick(saveSettingsBtnEl)
+        if (closeBtnEl) {
+            closeBtnEl.addEventListener('click', () => {
+                this.closePopup(popupSettings, overlay)
+            })
         }
-        if (
-            (!element.closest('.drop-down-menu') &&
-                !element.classList.contains('ico_user-light') &&
-                !element.classList.contains('ico_close')) ||
-            element.classList.contains('user-avatar') ||
-            element.classList.contains('user-name')
-        ) {
-            if (userIconLight && userIconLight.classList.contains('active')) {
-                userIconLight.classList.remove('active')
-                header.removeChild(dropdownMenu)
+    }
+
+    private toggleDropdownMenu({ header, dropdownMenu, popupSettings, overlay, navLinksEl }: DropdownMenuElements) {
+        const dropdownMenuWrapperEl = header.querySelector('.drop-down-menu')
+        if (dropdownMenuWrapperEl) {
+            dropdownMenuWrapperEl.classList.toggle('drop-down-menu_active')
+            if (dropdownMenuWrapperEl.classList.contains('drop-down-menu_active')) {
+                this.openDropdownMenu({
+                    header,
+                    dropdownMenuWrapper: dropdownMenuWrapperEl,
+                    dropdownMenu,
+                    popupSettings,
+                    overlay,
+                    navLinksEl,
+                })
+            } else {
+                this.closeDropdownMenu(dropdownMenuWrapperEl, dropdownMenu)
             }
         }
+    }
+
+    private closeDropdownMenu(dropdownMenuWrapper: Element, dropdownMenu: HTMLElement) {
+        if (dropdownMenuWrapper) dropdownMenuWrapper.classList.remove('drop-down-menu_active')
+        dropdownMenu.remove()
+    }
+
+    private OnExitClick(dropdownMenu: HTMLElement) {
+        const exit = dropdownMenu.querySelector('.exit')
         if (exit) {
             exit.addEventListener('click', (ev) => {
                 ev.preventDefault()
@@ -217,10 +309,46 @@ export class MainView extends EventEmitter {
         }
     }
 
-    private setActiveLink(links: HTMLCollection, currentLink: HTMLElement) {
+    private OnSaveClick(saveBtn: Element) {
+        saveBtn.addEventListener('click', (ev) => {
+            ev.preventDefault()
+            const selectedLangInput = Array.from(document.getElementsByName('lang')).find(
+                (input) => input instanceof HTMLInputElement && input.checked
+            )
+            if (selectedLangInput) {
+                localStorage.lang = selectedLangInput.id as rootModel['lang']
+                location.reload()
+            }
+        })
+    }
+
+    private closePopup(popupSettings: HTMLElement, overlay: HTMLElement) {
+        popupSettings.remove()
+        overlay.remove()
+    }
+
+    private openFlowsSidebar(headerFlows: Element, sidebarOverlay: HTMLElement, header: HTMLElement) {
+        headerFlows.classList.add('header__flows_active')
+        headerFlows.classList.remove('hidden')
+        header.appendChild(sidebarOverlay)
+    }
+
+    private closeFlowsSidebar(headerFlows: Element, sidebarOverlay: HTMLElement, header: HTMLElement) {
+        headerFlows.classList.remove('header__flows_active')
+        headerFlows.classList.add('hidden')
+        header.removeChild(sidebarOverlay)
+    }
+
+    private setActiveLink(links: NodeListOf<Element>, currentLink: HTMLElement) {
         Array.from(links).forEach((link) => {
             if (link !== currentLink) link.classList.replace('text-color-text-dark', 'text-color-text-light')
             currentLink.classList.replace('text-color-text-light', 'text-color-text-dark')
+        })
+    }
+
+    private removeActiveLink(links: NodeListOf<Element>) {
+        Array.from(links).forEach((link) => {
+            link.classList.replace('text-color-text-dark', 'text-color-text-light')
         })
     }
 
@@ -235,12 +363,7 @@ export class MainView extends EventEmitter {
         const logo = dictionary.logo.Logo[this.model.lang]
         let currentPath = location.pathname
         if (currentPath === Flows.All) currentPath = Paths.Flows + currentPath
-        if (this.model.user) {
-            const userAvatar = this.model.user.properties.avatar
-            header.innerHTML = headerUserSignInTemplate({ flows, logo, currentPath, userAvatar, emptyAvatar })
-        } else {
-            header.innerHTML = headerUserSignOutTemplate({ flows, logo, currentPath })
-        }
+        header.innerHTML = headerTemplate({ flows, logo, currentPath, user: this.model.user, emptyAvatar })
         return header
     }
 
@@ -251,10 +374,22 @@ export class MainView extends EventEmitter {
         return footer
     }
 
-    private createBg() {
-        const bg = document.createElement('div')
-        bg.className = 'bg-color-popup-bg fixed top-0 bottom-0 left-0 right-0 bg'
-        return bg
+    private createOverlay() {
+        const overlay = document.createElement('div')
+        overlay.className = 'bg-color-overlay fixed top-0 bottom-0 left-0 right-0 overlay z-10'
+        return overlay
+    }
+
+    private createSidebarUserMenu() {
+        const sidebarWrapper = document.createElement('div')
+        sidebarWrapper.className = 'fixed inset-0 sidebar__body z-20'
+        const buttons = Object.keys(dictionary.buttons)
+            .slice(1)
+            .reduce((acc, key) => {
+                return { ...acc, [key]: dictionary.buttons[key][this.model.lang] }
+            }, {})
+        sidebarWrapper.innerHTML = sidebarUserMenuTemplate({ buttons, user: this.model.user, emptyAvatar })
+        return sidebarWrapper
     }
 
     private render(header: HTMLElement) {
