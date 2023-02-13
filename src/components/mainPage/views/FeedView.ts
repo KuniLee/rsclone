@@ -3,6 +3,7 @@ import { Flows, Paths } from 'types/enums'
 import { PageModelInstance } from '../model/PageModel'
 import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
 import articleTemplate from '@/templates/atricle.hbs'
+import preloader from '@/templates/preloader.html'
 
 type FeedViewEventsName = 'LOAD_ARTICLES' | 'DOWNLOAD_IMAGE' | 'UPLOAD_IMAGE'
 
@@ -21,9 +22,12 @@ export class FeedView extends EventEmitter {
             const path = this.pageModel.path
             if (Object.values(Flows).includes(path[1] as Flows) || path[0] === Paths.All || path[0] === Paths.Feed) {
                 this.renderPage()
-                this.renderArticles()
+                this.showPreloader()
                 this.emit('LOAD_ARTICLES')
             }
+        })
+        this.feedModel.on('LOADED', () => {
+            console.log(this.feedModel.articles)
         })
     }
 
@@ -56,5 +60,10 @@ export class FeedView extends EventEmitter {
             ],
         })
         wrap.append(temp.content)
+    }
+
+    private showPreloader() {
+        const feedEl = this.mainPageContainer?.querySelector('.feed') as HTMLDivElement
+        feedEl.innerHTML = preloader
     }
 }

@@ -40,12 +40,6 @@ export class FeedController {
             console.log(this.pageModel.path[0])
             this.feedModel.setArticles(await this.loadArticles())
         })
-        this.view.on<File>('UPLOAD_IMAGE', async (file) => {
-            this.loadImage(file)
-        })
-        this.view.on('DOWNLOAD_IMAGE', async () => {
-            await this.downloadImage()
-        })
     }
 
     private async loadArticles() {
@@ -56,23 +50,11 @@ export class FeedController {
             const article = doc.data() as Article
             articles.push({ ...article, id: doc.id })
         })
-        return articles
+        return await Promise.all(articles.map((article) => this.downloadImage(article)))
     }
 
-    private loadImage(file: File) {
-        const imageRef = ref(this.storage, `images/avatar`)
-        uploadBytes(imageRef, file).then((snapshot) => {
-            console.log(snapshot)
-            this.downloadImage()
-        })
-    }
-
-    private async downloadImage() {
-        try {
-            const url = await getDownloadURL(ref(this.storage, 'images/avatar'))
-            this.feedModel.setImage(url)
-        } catch (e) {
-            console.log(e)
-        }
+    private async downloadImage(article: Article) {
+        article.preview.image = await getDownloadURL(ref(this.storage, article.preview.image))
+        return article
     }
 }

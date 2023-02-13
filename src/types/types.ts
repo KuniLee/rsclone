@@ -23,6 +23,13 @@ export type Article = {
     title: string
     userId: string
     images: StorageReference
+    preview: Preview
+}
+
+export type Preview = {
+    image: string
+    nextBtnText: string
+    previewBlocks: Array<{ type: 'text'; value: string }>
 }
 
 export type UserData = {
