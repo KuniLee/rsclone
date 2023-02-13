@@ -1,6 +1,6 @@
 <div class="bg-color-logo">
-  <div class="container mx-auto flex justify-start items-center h-12 px-3">
-    <div class="flex gap-4 items-center">
+  <div class="container mx-auto flex justify-start items-center h-12">
+    <div class="flex gap-4 items-center px-3 md:px-0">
       {{#if flows}}
       <span class="header__burger burger md:hidden">
         <span class="burger__line"></span>
@@ -11,7 +11,7 @@
       </a>
     </div>
     {{#if flows}}
-    <div class="gap-5 flex header__user-menu user-menu md:hidden ml-auto items-center">
+    <div class="gap-5 flex header__user-menu user-menu md:hidden ml-auto items-center px-3 md:px-0">
       {{#if user}}
       <a href="/search" class="h-6 header__link">
         <span class="ico ico_search ico_search-light"></span>
