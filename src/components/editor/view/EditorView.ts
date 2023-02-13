@@ -251,9 +251,23 @@ export class EditorView extends EventEmitter {
             const value = target.textContent
             const parent = el.parentNode as HTMLElement
             if (parent) {
+                const menu = document.querySelector('.menu') as HTMLElement
                 if (value) {
                     parent.classList.add('before:hidden')
+                    const rect = el.getBoundingClientRect()
+                    const parentRect = editor.getBoundingClientRect()
+                    const elComputedStyles = getComputedStyle(el)
+                    if (value.length === 1 && value === '/' && menu) {
+                        console.log(elComputedStyles.height)
+                        menu.style.top = `${rect.top - parentRect.top + parseInt(elComputedStyles.height)}px`
+                        menu.hidden = false
+                    } else {
+                        menu.hidden = true
+                    }
                 } else {
+                    if (menu) {
+                        menu.hidden = true
+                    }
                     if (editor.lastElementChild === parent) {
                         parent.classList.remove('before:hidden')
                     }
