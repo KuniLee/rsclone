@@ -724,6 +724,21 @@ export class EditorView extends EventEmitter {
                     }
                     item.replaceWith(template.content)
                     const newItem = document.querySelector('.new') as HTMLElement
+                    if (element.dataset.type === 'heading') {
+                        if (newItem) {
+                            newItem.querySelectorAll('.heading')?.forEach((el) => {
+                                const element = el as HTMLElement
+                                element.addEventListener('click', (e) => {
+                                    const parent = newItem.closest('.editorElement') as HTMLElement
+                                    if (parent) {
+                                        if (element.dataset.name) {
+                                            parent.dataset.type = element.dataset.name
+                                        }
+                                    }
+                                })
+                            })
+                        }
+                    }
                     const editor = document.querySelector('.textEditor') as HTMLElement
                     const newItemField = newItem.querySelector('.editable') as HTMLElement
                     if (editor && newItem && newItemField) {

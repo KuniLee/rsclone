@@ -1,16 +1,10 @@
-import { PageModel } from '@/components/mainPage/model/PageModel'
 import blocksPopup from '../templates/textEditorBlocksPopup.hbs'
-import headerPopup from '../templates/textEditorHeaderTemplate.hbs'
-import popupSettings from '../templates/popupSettings.hbs'
-import dictionary from '@/utils/dictionary'
-import EventEmitter from 'events'
 
 type editorPopupEvents = 'ITEM_INSERT'
 
-export class EditorBlocks extends EventEmitter {
+export class EditorBlocks {
     private blocks: (() => DocumentFragment)[]
     constructor() {
-        super()
         this.blocks = [this.getHeader]
         this.getHeader()
     }
@@ -34,13 +28,5 @@ export class EditorBlocks extends EventEmitter {
             type: 'heading',
         })
         return template.content
-    }
-
-    emit<T>(event: editorPopupEvents, arg?: T) {
-        return super.emit(event, arg)
-    }
-
-    on<T>(event: editorPopupEvents, callback: (arg: T) => void) {
-        return super.on(event, callback)
     }
 }
