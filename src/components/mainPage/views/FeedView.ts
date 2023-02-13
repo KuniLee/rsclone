@@ -27,7 +27,7 @@ export class FeedView extends EventEmitter {
             }
         })
         this.feedModel.on('LOADED', () => {
-            console.log(this.feedModel.articles)
+            this.renderArticles()
         })
     }
 
@@ -47,18 +47,12 @@ export class FeedView extends EventEmitter {
     }
 
     private renderArticles() {
-        const wrap = this.mainPageContainer?.querySelector('.feed') as HTMLDivElement
+        const feedEl = this.mainPageContainer?.querySelector('.feed') as HTMLDivElement
+        feedEl.innerHTML = ''
+        const articles = this.feedModel.articles
+
         const temp = document.createElement('template')
-        temp.innerHTML = articleTemplate({
-            avatar: require('@/assets/icons/avatar.svg'),
-            habs: [
-                'Блог компании OTUS',
-                'Высокая производительность',
-                'Программирование',
-                'Java',
-                'Администрирование баз данных',
-            ],
-        })
+        temp.innerHTML = articleTemplate()
         wrap.append(temp.content)
     }
 
