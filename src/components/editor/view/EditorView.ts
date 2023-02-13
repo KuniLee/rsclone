@@ -529,12 +529,31 @@ export class EditorView extends EventEmitter {
             }
         }
         editor.querySelectorAll('.editorElement')?.forEach((el) => {
+            const element = el as HTMLElement
             if (el.classList.contains('textElement')) {
                 const textField = el.querySelector('.editable')
                 if (textField) {
                     if (textField.textContent) {
                         obj.blocks.push({
                             type: 'text',
+                            value: textField.textContent,
+                        })
+                    } else {
+                        obj.blocks.push({
+                            type: 'delimiter',
+                            value: '',
+                        })
+                    }
+                }
+            }
+            if (el.classList.contains('headerElement')) {
+                const textField = el.querySelector('.editable')
+                if (textField) {
+                    const type = element.dataset.type
+                    if (textField.textContent) {
+                        obj.blocks.push({
+                            type: 'heading',
+                            mod: type,
                             value: textField.textContent,
                         })
                     } else {

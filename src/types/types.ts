@@ -45,6 +45,7 @@ export type BlocksType = {
         lang?: string
     }
     type: 'heading' | 'code' | 'delimiter' | 'text'
+    mod?: string
     value: string
 }
 
