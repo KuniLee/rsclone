@@ -1,15 +1,34 @@
 import EventEmitter from 'events'
 import { Article } from 'types/types'
 
+import type { QueryDocumentSnapshot } from 'firebase/firestore'
+import { Flows } from 'types/enums'
+
 type FeedModelEventsName = 'LOADED' | 'IMAGE_LOADED'
 export type FeedModelInstance = InstanceType<typeof FeedModel>
 
 export class FeedModel extends EventEmitter {
     public articles: Array<Article> = []
-    image = ''
+    private _latestArticle: QueryDocumentSnapshot | null = null
+    private _flow: Flows | undefined
 
     constructor() {
         super()
+    }
+
+    set setFlow(flow: Flows) {
+        this._flow = flow
+    }
+
+    get currentFlow() {
+        return this._flow
+    }
+
+    get latestArticle() {
+        return this._latestArticle
+    }
+    set latestArticle(value) {
+        this._latestArticle = value
     }
 
     on<T>(event: FeedModelEventsName, callback: (arg: T) => void) {
@@ -20,13 +39,8 @@ export class FeedModel extends EventEmitter {
         return super.emit(event)
     }
 
-    setArticles(articles: Array<Article>) {
+    addArticles(articles: Array<Article>) {
         this.articles = articles
         this.emit('LOADED')
-    }
-
-    setImage(url: string) {
-        this.image = url
-        this.emit('IMAGE_LOADED')
     }
 }

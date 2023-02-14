@@ -11,6 +11,9 @@ import {
     getDocs,
     getDoc,
     updateDoc,
+    orderBy,
+    limit,
+    startAt,
     where,
 } from 'firebase/firestore'
 import {
@@ -40,6 +43,9 @@ export {
     uploadBytes,
     getDownloadURL,
     updateDoc,
+    orderBy,
+    limit,
+    startAt,
     where,
 }
 import EventEmitter from 'events'
@@ -54,7 +60,6 @@ export class FireBaseAPI extends EventEmitter {
     public db: Firestore
     public auth: Auth
     public storage: FirebaseStorage
-
     constructor() {
         super()
         const config = {

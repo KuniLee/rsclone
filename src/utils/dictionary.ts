@@ -10,10 +10,10 @@ const flowsNames: Record<keyof typeof Flows, language> = {
     All: { ru: 'Все потоки', en: 'All streams' },
     Develop: { ru: 'Разработка', en: 'Development' },
     Admin: { ru: 'Администрирование', en: 'Admin' },
+    Design: { ru: 'Дизайн', en: 'Design' },
 }
 
 const buttons: Record<string, language> = {
-    Feed: { ru: 'Моя лента', en: 'My feed' },
     Auth: { ru: 'Вход', en: 'Sign in' },
     Registration: { ru: 'Регистрация', en: 'Registration' },
     Sandbox: { ru: 'Написать статью', en: 'Write article' },
