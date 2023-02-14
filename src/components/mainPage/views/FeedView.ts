@@ -57,7 +57,8 @@ export class FeedView extends EventEmitter {
     renderArticles() {
         const feedEl = this.mainPageContainer?.querySelector('.feed') as HTMLDivElement
         feedEl.innerHTML = ''
-        feedEl.append(...this.articles.map((el) => el.render()))
+        if (this.articles.length === 0) feedEl.innerHTML = 'no articles'
+        else feedEl.append(...this.articles.map((el) => el.render()))
     }
 
     private showPreloader() {
