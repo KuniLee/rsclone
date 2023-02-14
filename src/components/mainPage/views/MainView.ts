@@ -225,7 +225,6 @@ export class MainView extends EventEmitter {
             name: dictionary.flowsNames[el as keyof typeof Flows][this.model.lang],
             link: Paths.Flows + Flows[el as keyof typeof Flows],
         }))
-        flows.unshift({ name: dictionary.buttons.Feed[this.model.lang], link: Paths.Feed })
         const logo = dictionary.logo.Logo[this.model.lang]
         let currentPath = location.pathname
         if (currentPath === Flows.All) currentPath = Paths.Flows + currentPath

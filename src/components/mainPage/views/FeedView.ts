@@ -20,10 +20,10 @@ export class FeedView extends EventEmitter {
         this.feedModel = models.feedModel
         this.pageModel.on('CHANGE_PAGE', () => {
             const path = this.pageModel.path
-            if (Object.values(Flows).includes(path[1] as Flows) || path[0] === Paths.All || path[0] === Paths.Feed) {
+            if (Object.values(Flows).includes(path[1] as Flows) || path[0] === Paths.All) {
                 this.renderPage()
                 this.showPreloader()
-                this.emit('LOAD_ARTICLES')
+                this.emit('LOAD_ARTICLES', path[1])
             }
         })
         this.feedModel.on('LOADED', () => {
@@ -52,8 +52,8 @@ export class FeedView extends EventEmitter {
         const articles = this.feedModel.articles
 
         const temp = document.createElement('template')
-        temp.innerHTML = articleTemplate()
-        wrap.append(temp.content)
+        //temp.innerHTML = articleTemplate()
+        feedEl.append(temp.content)
     }
 
     private showPreloader() {

@@ -10,6 +10,11 @@ import {
     getDocs,
     getDoc,
     updateDoc,
+    query,
+    orderBy,
+    limit,
+    startAt,
+    where,
 } from 'firebase/firestore'
 import {
     createUserWithEmailAndPassword,
@@ -37,6 +42,11 @@ export {
     uploadBytes,
     getDownloadURL,
     updateDoc,
+    query,
+    orderBy,
+    limit,
+    startAt,
+    where,
 }
 import EventEmitter from 'events'
 
@@ -50,7 +60,6 @@ export class FireBaseAPI extends EventEmitter {
     public db: Firestore
     public auth: Auth
     public storage: FirebaseStorage
-
     constructor() {
         super()
         const config = {
