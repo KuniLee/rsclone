@@ -34,6 +34,13 @@ export class MainView extends EventEmitter {
             this.buildPage()
             this.emit('PAGE_BUILD')
         })
+        this.model.on('CHANGE_PAGE', () => {
+            const path = this.model.path
+            if (path.join('') === Paths.All) {
+                const flowsLinksEl = document.querySelectorAll('.nav__link')
+                if (flowsLinksEl[0] instanceof HTMLElement) this.setActiveLink(flowsLinksEl, flowsLinksEl[0])
+            }
+        })
     }
 
     emit<T>(event: ItemViewEventsName, arg?: T) {

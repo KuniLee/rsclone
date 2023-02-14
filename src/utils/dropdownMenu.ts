@@ -14,11 +14,9 @@ export class DropdownMenu {
     }
 
     create() {
-        const buttons = Object.keys(dictionary.buttons)
-            .slice(1)
-            .reduce((acc, key) => {
-                return { ...acc, [key]: dictionary.buttons[key][this.model.lang] }
-            }, {})
+        const buttons = Object.keys(dictionary.buttons).reduce((acc, key) => {
+            return { ...acc, [key]: dictionary.buttons[key][this.model.lang] }
+        }, {})
         this.dropdownMenu.innerHTML = dropDownUserSignInTemplate({ buttons, user: this.model.user, emptyAvatar })
         return this.dropdownMenu
     }
