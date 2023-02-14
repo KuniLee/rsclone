@@ -4,7 +4,6 @@ import { PageModelInstance } from './../../mainPage/model/PageModel'
 import { Paths } from '@/types/enums'
 import profilePageTemplate from '@/templates/profilePage.hbs'
 import Dictionary, { getWords } from '@/utils/dictionary'
-import { UserData } from '@/types/types'
 import emptyAvatar from '@/assets/icons/avatar.svg'
 import preloader from '@/templates/preloader.html'
 import { User } from 'firebase/auth'
@@ -24,7 +23,7 @@ export class ProfileView extends EventEmitter {
         this.profileModel = models.profileModel
         this.pageModel.on('CHANGE_PAGE', () => {
             const path = this.pageModel.path
-            if (path.length === 2 && path[0] === Paths.UsersList && path[1]) {
+            if (path.length === 2 && path[0] === Paths.UsersList) {
                 const username = this.pageModel.path[1].slice(1)
                 this.showPreloader()
                 this.emit<User['displayName']>('LOAD_USER_INFO', username)
@@ -51,10 +50,6 @@ export class ProfileView extends EventEmitter {
         this.addListeners(profilePage)
     }
 
-    private convertTimeStampToDate({ sec, nanosec }: Record<string, number>) {
-        return new Date(sec * 1000 + nanosec / 1000000).toLocaleDateString()
-    }
-
     private addListeners(pageWrapper: HTMLElement) {
         const usernameEl = pageWrapper.querySelector('.username')
         if (usernameEl && usernameEl instanceof HTMLAnchorElement) {
@@ -67,14 +62,11 @@ export class ProfileView extends EventEmitter {
 
     private createPage() {
         const profilePageWrapper = document.createElement('div')
-        const registeredDate = this.convertTimeStampToDate({
-            sec: this.pageModel.user.createdAt.seconds,
-            nanosec: this.pageModel.user.createdAt.nanoseconds,
-        })
+        const registeredDate = this.profileModel.userInfo?.createdAt.toDate().toLocaleDateString()
         profilePageWrapper.className = 'profile sm:container mx-auto'
         profilePageWrapper.innerHTML = profilePageTemplate({
             words: getWords(Dictionary.ProfilePage, this.pageModel.lang),
-            user: this.pageModel.user,
+            user: this.profileModel.userInfo,
             registeredDate,
             emptyAvatar,
         })

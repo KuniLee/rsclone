@@ -27,7 +27,11 @@ export type Article = {
 
 export type UserData = {
     uid: string
-    createdAt: { seconds: number; nanoseconds: number }
+    createdAt: {
+        toDate: () => Date
+        seconds: number
+        nanoseconds: number
+    }
     email: string
     displayName: string
     properties: Partial<UserProps>

@@ -1,10 +1,9 @@
 import { UserData } from 'types/types'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
-import { collection, doc, FireBaseAPIInstance, Firestore, getDoc } from '@/utils/FireBaseAPI'
+import { collection, FireBaseAPIInstance, Firestore, getDocs, query, where } from '@/utils/FireBaseAPI'
 import { Auth, getAuth, User } from 'firebase/auth'
 import { ProfileModelInstance } from '../model/ProfileModel'
 import { ProfileViewInstance } from './../view/ProfileView'
-import { getDocs, query, where } from 'firebase/firestore'
 
 export class ProfileController {
     private view: ProfileViewInstance
@@ -25,19 +24,16 @@ export class ProfileController {
         this.profileModel = models.profileModel
         this.view.on('LOAD_USER_INFO', async (username: User['displayName']) => {
             const userInfo = await this.getUserInfo(username)
-            this.profileModel.setUserInfo = userInfo
+            if (!userInfo) this.pageModel.goTo404()
+            else this.profileModel.setUserInfo = userInfo
         })
     }
 
     private async getUserInfo(username: User['displayName']) {
-        const user = query(collection(this.db, 'users'), where('displayName', '==', username))
-        let userInfo
         try {
-            const querySnapshot = await getDocs(user)
-            querySnapshot.forEach((doc) => {
-                userInfo = doc.data()
-            })
-            return userInfo
+            const q = query(collection(this.db, 'users'), where('displayName', '==', username))
+            const querySnapshot = await getDocs(q)
+            if (!querySnapshot.empty) return querySnapshot.docs[0].data() as UserData
         } catch (error) {
             console.log('Error fetching user data:', error)
         }
