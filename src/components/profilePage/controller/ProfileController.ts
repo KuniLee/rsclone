@@ -1,9 +1,10 @@
 import { UserData } from 'types/types'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
-import { doc, FireBaseAPIInstance, Firestore, getDoc } from '@/utils/FireBaseAPI'
+import { collection, doc, FireBaseAPIInstance, Firestore, getDoc } from '@/utils/FireBaseAPI'
 import { Auth, getAuth, User } from 'firebase/auth'
 import { ProfileModelInstance } from '../model/ProfileModel'
 import { ProfileViewInstance } from './../view/ProfileView'
+import { getDocs, query, where } from 'firebase/firestore'
 
 export class ProfileController {
     private view: ProfileViewInstance
@@ -28,24 +29,17 @@ export class ProfileController {
         })
     }
 
-    get currentUser() {
-        const auth = getAuth()
-        return auth.currentUser
-    }
-
     private async getUserInfo(username: User['displayName']) {
-        const user = this.currentUser
-        if (user) {
-            const uid = user.uid
-            if (user && user.displayName === username) {
-                const docRef = doc(this.db, `users/${uid}`)
-                try {
-                    const docSnap = await getDoc(docRef)
-                    return { ...docSnap.data() } as UserData
-                } catch (error) {
-                    console.log('Error fetching user data:', error)
-                }
-            }
+        const user = query(collection(this.db, 'users'), where('displayName', '==', username))
+        let userInfo
+        try {
+            const querySnapshot = await getDocs(user)
+            querySnapshot.forEach((doc) => {
+                userInfo = doc.data()
+            })
+            return userInfo
+        } catch (error) {
+            console.log('Error fetching user data:', error)
         }
     }
 }
