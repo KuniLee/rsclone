@@ -102,7 +102,7 @@ export class PageModel extends EventEmitter {
         } else this.goTo404()
     }
 
-    private goTo404() {
+    public goTo404() {
         console.log('страница 404')
         this.emit('404')
     }
@@ -124,13 +124,8 @@ export class PageModel extends EventEmitter {
     }
 
     private goToProfile() {
-        if (this.path.length === 2 && this.path[0] === Paths.UsersList) {
-            if (this._user && this.path[1] === '/' + this._user.displayName) {
-                this.emit('CHANGE_PAGE')
-            } else {
-                this.goTo404()
-            }
-        }
+        if (this.path.length === 2 && this.path[0] === Paths.UsersList) this.emit('CHANGE_PAGE')
+        else this.goTo404()
     }
 
     private goToSearch() {
