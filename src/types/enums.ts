@@ -1,6 +1,6 @@
 export enum Paths {
     Root = '/',
-    Feed = '/feed',
+    Post = '/post',
     UserAccount = '/user',
     UsersList = '/users',
     News = '/news',
@@ -22,6 +22,7 @@ export enum Flows {
     All = '/all',
     Develop = '/develop',
     Admin = '/admin',
+    Design = '/design',
 }
 
 export enum SettingsPaths {

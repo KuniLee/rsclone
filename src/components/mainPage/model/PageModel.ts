@@ -56,9 +56,6 @@ export class PageModel extends EventEmitter {
             case Paths.Sandbox:
                 this.goToSandbox()
                 break
-            case Paths.Feed:
-                this.goToFeed()
-                break
             case Paths.Auth:
                 this.goToAuth()
                 break
@@ -107,12 +104,6 @@ export class PageModel extends EventEmitter {
     private goToNews() {
         console.log('страница news')
         this.emit('CHANGE_PAGE')
-    }
-
-    private goToFeed() {
-        if (this.path.length === 1) this.emit('CHANGE_PAGE')
-        else if (this.path.length === 2 && this.path[1] === '/settings') console.log('настройки')
-        else this.goTo404()
     }
 
     private goToAuth() {

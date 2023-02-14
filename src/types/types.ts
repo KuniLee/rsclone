@@ -19,10 +19,19 @@ export type AuthViewTypes = {
 }
 
 export type Article = {
+    createdAt: { toDate: () => Date }
     id: string
     title: string
     userId: string
     images: StorageReference
+    preview: Preview
+    user?: UserData
+}
+
+export type Preview = {
+    image: string
+    nextBtnText: string
+    previewBlocks: Array<{ type: 'text'; value: string }>
 }
 
 export type UserData = {
