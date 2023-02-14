@@ -158,7 +158,7 @@ export class MainView extends EventEmitter {
             }
             if (
                 dropdownMenuWrapperEl &&
-                window.innerWidth > 768 &&
+                window.innerWidth < 768 &&
                 dropdownMenuWrapperEl.classList.contains('drop-down-menu_active')
             ) {
                 this.closeDropdownMenu(dropdownMenuWrapperEl, dropdownMenu)
