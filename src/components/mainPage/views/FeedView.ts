@@ -5,7 +5,7 @@ import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
 import preloader from '@/templates/preloader.html'
 import { Preview } from '@/utils/previewBuilder'
 
-type FeedViewEventsName = 'LOAD_ARTICLES' | 'DOWNLOAD_IMAGE' | 'UPLOAD_IMAGE'
+type FeedViewEventsName = 'LOAD_ARTICLES' | 'DOWNLOAD_IMAGE' | 'UPLOAD_IMAGE' | 'GO_TO'
 
 export type FeedViewInstance = InstanceType<typeof FeedView>
 
@@ -51,6 +51,7 @@ export class FeedView extends EventEmitter {
     private setArticles() {
         const articles = this.feedModel.articles
         this.articles = articles.map((el) => new Preview(el))
+        this.articles.forEach((el) => el.on('GO_TO', (path) => this.emit('GO_TO', path)))
     }
 
     renderArticles() {

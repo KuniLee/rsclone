@@ -20,6 +20,7 @@ import {
 import type { QueryConstraint } from 'firebase/firestore'
 import { Article, UserData } from 'types/types'
 import { Flows } from 'types/enums'
+import { URLParams } from 'types/interfaces'
 
 export class FeedController {
     private view: FeedViewInstance
@@ -44,6 +45,9 @@ export class FeedController {
             if (flow) this.feedModel.setFlow = flow
             else this.feedModel.setFlow = Flows.All
             this.feedModel.addArticles(await this.loadArticles())
+        })
+        this.view.on<URLParams>('GO_TO', (path) => {
+            this.pageModel.changePage(path)
         })
     }
 

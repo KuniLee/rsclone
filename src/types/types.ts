@@ -19,6 +19,7 @@ export type AuthViewTypes = {
 }
 
 export type Article = {
+    createdAt: { toDate: () => Date }
     id: string
     title: string
     userId: string

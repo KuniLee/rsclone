@@ -1,21 +1,19 @@
 <article class="p-4 bg-color-light">
   <div class="mb-1 flex items-center gap-1">
-    <div class="avatar h-8 w-8 rounded overflow-hidden"><img class="h-full w-full object-cover" src="{{user.properties.avatar}}" alt=""></div>
-    <span class="text-sm font-medium">{{user.displayName}}</span>
-    <span class="text-sm">был долго назад</span>
+    <div class="article__user cursor-pointer h-8 w-8 rounded overflow-hidden"><img class="h-full w-full object-cover" src="{{article.user.properties.avatar}}" alt=""></div>
+    <span class="article__user cursor-pointer text-sm font-medium">{{article.user.displayName}}</span>
+    <span class="text-sm text-color-text-light">{{time}}</span>
   </div>
-  <a href="#">
-    <h1 class="text-xxl font-medium">{{title}}</h1>
-  </a>
+    <h1 class="article__link text-xxl cursor-pointer font-medium">{{article.title}}</h1>
   <div class="flex mb-4 flex-wrap gap-0.5 text-color-popup-text">
-    {{#each habs}}
+    {{#each article.habs}}
       <a href="#" class="article_hab hover:opacity-75 text-sm">{{this}}</a>
     {{/each}}
   </div>
   <img class="w-full mb-4"
-      src="{{preview.image}}" alt="preview_image">
-  {{#each preview.previewBlocks}}
+      src="{{article.preview.image}}" alt="preview_image">
+  {{#each article.preview.previewBlocks}}
     <p>{{{this.value}}}</p>
   {{/each}}
-  <button class="py-2 px-5 mt-6 text-sm text-sky-900 focus:outline-none bg-white rounded-lg border border-sky-700 hover:border-sky-400 hover:bg-sky-200 hover:border-sky-100 focus:z-10 focus:ring-4 focus:ring-sky-200">{{preview.nextBtnText}}</button>
+  <button class="article__link py-2 px-5 mt-6 text-sm text-sky-900 focus:outline-none bg-white rounded-lg border border-sky-700 hover:border-sky-400 hover:bg-sky-200 hover:border-sky-100 focus:z-10 focus:ring-4 focus:ring-sky-200">{{article.preview.nextBtnText}}</button>
 </article>

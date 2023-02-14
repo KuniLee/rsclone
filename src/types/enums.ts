@@ -1,5 +1,6 @@
 export enum Paths {
     Root = '/',
+    Post = '/post',
     UserAccount = '/user',
     UsersList = '/users',
     News = '/news',
