@@ -2,8 +2,8 @@ import EventEmitter from 'events'
 import { Flows, Paths } from 'types/enums'
 import { PageModelInstance } from '../model/PageModel'
 import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
-import articleTemplate from '@/templates/atricle.hbs'
 import preloader from '@/templates/preloader.html'
+import { Preview } from '@/utils/previewBuilder'
 
 type FeedViewEventsName = 'LOAD_ARTICLES' | 'DOWNLOAD_IMAGE' | 'UPLOAD_IMAGE'
 
@@ -13,6 +13,7 @@ export class FeedView extends EventEmitter {
     private mainPageContainer: HTMLElement | undefined
     private pageModel: PageModelInstance
     private feedModel: FeedModelInstance
+    private articles: Preview[] = []
 
     constructor(models: { pageModel: PageModelInstance; feedModel: FeedModelInstance }) {
         super()
@@ -27,6 +28,7 @@ export class FeedView extends EventEmitter {
             }
         })
         this.feedModel.on('LOADED', () => {
+            this.setArticles()
             this.renderArticles()
         })
     }
@@ -42,18 +44,19 @@ export class FeedView extends EventEmitter {
     private renderPage() {
         this.mainPageContainer = document.querySelector('main') as HTMLElement
         this.mainPageContainer.innerHTML = `<div class="container mx-auto flex gap-4">
-<div class="w-full feed"></div><aside class="hidden lg:block min-w-[300px] bg-color-light">Асайд</aside>
+<div class="w-full flex flex-col gap-4 feed"></div><aside class="hidden lg:block min-w-[300px] bg-color-light">Асайд</aside>
 </div>`
     }
 
-    private renderArticles() {
+    private setArticles() {
+        const articles = this.feedModel.articles
+        this.articles = articles.map((el) => new Preview(el))
+    }
+
+    renderArticles() {
         const feedEl = this.mainPageContainer?.querySelector('.feed') as HTMLDivElement
         feedEl.innerHTML = ''
-        const articles = this.feedModel.articles
-
-        const temp = document.createElement('template')
-        //temp.innerHTML = articleTemplate()
-        feedEl.append(temp.content)
+        feedEl.append(...this.articles.map((el) => el.render()))
     }
 
     private showPreloader() {

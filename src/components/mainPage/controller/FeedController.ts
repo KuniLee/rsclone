@@ -4,9 +4,11 @@ import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
 import {
     Auth,
     collection,
+    doc,
     FireBaseAPIInstance,
     FirebaseStorage,
     Firestore,
+    getDoc,
     getDocs,
     getDownloadURL,
     limit,
@@ -16,7 +18,7 @@ import {
     where,
 } from '@/utils/FireBaseAPI'
 import type { QueryConstraint } from 'firebase/firestore'
-import { Article } from 'types/types'
+import { Article, UserData } from 'types/types'
 import { Flows } from 'types/enums'
 
 export class FeedController {
@@ -46,7 +48,7 @@ export class FeedController {
     }
 
     private async loadArticles() {
-        const queryConstants: QueryConstraint[] = [orderBy('createdAt', 'desc'), limit(1)]
+        const queryConstants: QueryConstraint[] = [orderBy('createdAt', 'desc'), limit(5)]
         if (this.feedModel.currentFlow !== Flows.All)
             queryConstants.push(where('flow', '==', this.feedModel.currentFlow?.slice(1)))
         const ref = collection(this.db, 'articles')
@@ -62,7 +64,12 @@ export class FeedController {
     }
 
     private async downloadImage(article: Article) {
-        article.preview.image = await getDownloadURL(ref(this.storage, article.preview.image))
+        const [user, image] = await Promise.all([
+            (await getDoc(doc(this.db, 'users', article.userId))).data(),
+            getDownloadURL(ref(this.storage, article.preview.image)),
+        ])
+        article.preview.image = image
+        article.user = user as UserData
         return article
     }
 }

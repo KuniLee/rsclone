@@ -24,6 +24,7 @@ export type Article = {
     userId: string
     images: StorageReference
     preview: Preview
+    user?: UserData
 }
 
 export type Preview = {
