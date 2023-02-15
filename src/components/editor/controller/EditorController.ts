@@ -12,6 +12,7 @@ import {
     doc,
     setDoc,
     updateDoc,
+    serverTimestamp,
 } from '@/utils/FireBaseAPI'
 import { FirebaseStorage, uploadString } from 'firebase/storage'
 
@@ -46,7 +47,10 @@ export class EditorController {
             try {
                 const image = articleData.preview.image
                 articleData.preview.image = ''
-                const newArticle = await addDoc(collection(this.db, 'articles'), articleData)
+                const newArticle = await addDoc(
+                    collection(this.db, 'articles'),
+                    Object.assign(articleData, { createdAt: serverTimestamp() })
+                )
                 if (image) {
                     const imageRef = ref(this.storage, `articles/${newArticle.id}/previewImage`)
                     await uploadString(imageRef, image, 'data_url')
