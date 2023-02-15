@@ -63,7 +63,6 @@ export class FeedController {
             articles.push({ ...article, id: doc.id })
         })
         this.feedModel.latestArticle = querySnapshot.docs[querySnapshot.docs.length - 1]
-        console.log(articles)
         return await Promise.all(articles.map((article) => this.downloadImage(article)))
     }
 

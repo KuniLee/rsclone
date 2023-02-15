@@ -23,7 +23,7 @@ export class ProfileView extends EventEmitter {
         this.profileModel = models.profileModel
         this.pageModel.on('CHANGE_PAGE', () => {
             const path = this.pageModel.path
-            if (path.length === 2 && path[0] === Paths.UsersList) {
+            if (path.length === 2 && path[0] === Paths.UsersPage) {
                 const username = this.pageModel.path[1].slice(1)
                 this.showPreloader()
                 this.emit<User['displayName']>('LOAD_USER_INFO', username)

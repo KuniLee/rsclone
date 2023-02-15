@@ -30,7 +30,7 @@ export class Preview extends EventEmitter {
         usersLinks.forEach((el) =>
             el.addEventListener('click', () => {
                 this.emit<Pick<URLParams, 'path'>>('GO_TO', {
-                    path: [Paths.UserAccount, `/${this.article.user?.displayName}`],
+                    path: [Paths.UsersPage, `/${this.article.user?.displayName}`],
                 })
             })
         )

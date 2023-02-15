@@ -66,7 +66,7 @@ export class PageModel extends EventEmitter {
                 if (Object.values(SettingsPaths).includes(this.path[1] as SettingsPaths)) this.emit('CHANGE_PAGE')
                 else this.goTo404()
                 break
-            case Paths.UsersList:
+            case Paths.UsersPage:
                 this.goToProfile()
                 break
             default:
@@ -115,7 +115,7 @@ export class PageModel extends EventEmitter {
     }
 
     private goToProfile() {
-        if (this.path.length === 2 && this.path[0] === Paths.UsersList) this.emit('CHANGE_PAGE')
+        if (this.path.length === 2 && this.path[0] === Paths.UsersPage) this.emit('CHANGE_PAGE')
         else this.goTo404()
     }
 
