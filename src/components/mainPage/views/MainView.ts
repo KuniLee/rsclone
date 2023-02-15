@@ -35,11 +35,16 @@ export class MainView extends EventEmitter {
             this.emit('PAGE_BUILD')
         })
         this.model.on('CHANGE_PAGE', () => {
-            const path = this.model.path
-            if (path.join('') === Paths.All) {
-                const flowsLinksEl = document.querySelectorAll('.nav__link')
-                if (flowsLinksEl[0] instanceof HTMLElement) this.setActiveLink(flowsLinksEl, flowsLinksEl[0])
-            }
+            const path = this.model.path.join('').slice(1)
+            const flowsLinksEl = document.querySelectorAll('.nav__link')
+            flowsLinksEl.forEach((flowLinkEl) => {
+                if (flowLinkEl instanceof HTMLAnchorElement) {
+                    let flowLinkHref = flowLinkEl.href.split('/').slice(-2).join('/')
+                    const allFlowLinkHref = Paths.Flows.slice(1) + Flows.All
+                    if (flowLinkHref === allFlowLinkHref) flowLinkHref = flowLinkHref.split('/').slice(1).join('')
+                    if (flowLinkHref === path) this.setActiveLink(flowsLinksEl, flowLinkEl)
+                }
+            })
         })
     }
 
