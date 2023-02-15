@@ -10,10 +10,10 @@ const flowsNames: Record<keyof typeof Flows, language> = {
     All: { ru: 'Все потоки', en: 'All streams' },
     Develop: { ru: 'Разработка', en: 'Development' },
     Admin: { ru: 'Администрирование', en: 'Admin' },
+    Design: { ru: 'Дизайн', en: 'Design' },
 }
 
 const buttons: Record<string, language> = {
-    Feed: { ru: 'Моя лента', en: 'My feed' },
     Auth: { ru: 'Вход', en: 'Sign in' },
     Registration: { ru: 'Регистрация', en: 'Registration' },
     Sandbox: { ru: 'Написать статью', en: 'Write article' },
@@ -62,6 +62,12 @@ const ProfileSettings: Record<string, language> = {
     Remove: { ru: 'Удалить', en: 'Remove' },
 }
 
+const ProfilePage: Record<string, language> = {
+    Information: { ru: 'Информация', en: 'Information' },
+    Registered: { ru: 'Зарегистрирован', en: 'Registered' },
+    Posts: { ru: 'Публикации', en: 'Posts' },
+}
+
 export function getWords(wordObj: Record<string, language>, lang: keyof language) {
     const result: Record<string, string> = {}
     for (const wordObjKey in wordObj) {
@@ -70,4 +76,4 @@ export function getWords(wordObj: Record<string, language>, lang: keyof language
     return result
 }
 
-export default { flowsNames, buttons, popupSettings, logo, ProfileSettings, errorPage }
+export default { flowsNames, buttons, popupSettings, logo, ProfileSettings, errorPage, ProfilePage }

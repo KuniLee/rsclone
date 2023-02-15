@@ -1,17 +1,49 @@
 <div class="bg-color-logo">
   <div class="container mx-auto flex justify-start items-center h-12">
-    <div class="flex gap-4 items-center">
+    <div class="flex gap-4 items-center px-3 md:px-0">
       {{#if flows}}
-      <span class="header__burger burger md:hidden"><span class="burger__line"></span></span>
+      <span class="header__burger burger md:hidden">
+        <span class="burger__line"></span>
+      </span>
       {{/if}}
       <a href="/">
         <h1 class="font-bold text-color-light m-0">{{logo}}</h1>
       </a>
     </div>
     {{#if flows}}
-    <div class="gap-5 header__menu md:hidden flex ml-auto items-center">
-      <a href="/search" class="h-6"><span class="ico ico_search ico_search-light"></span></a>
-      <span class="ico ico_user-light user"></span>
+    <div class="gap-5 flex header__user-menu user-menu md:hidden ml-auto items-center px-3 md:px-0">
+      {{#if user}}
+      <a href="/search" class="h-6 header__link">
+        <span class="ico ico_search ico_search-light"></span>
+      </a>
+      <span class="ico ico_bell ico_bell-light"></span>
+      <a href="/sandbox/new" class="flex items-center header__link">
+        <span class="ico ico_pen ico_pen-light"></span>
+      </a>
+      <div class="w-8 h-8 rounded-sm overflow-hidden user-menu__item flex items-center">
+        <div class="sidebar h-8">
+          <div class="sidebar__header h-full flex items-center cursor-pointer">
+            {{#if user.properties.avatar}}
+            <img class="object-contain w-full h-full user-img" src="{{user.properties.avatar}}" alt="user-avatar" />
+            {{else}}
+            <img class="object-cover w-full h-full rounded border-2 bg-color-light user-img" src="{{emptyAvatar}}"
+              alt="user-avatar" />
+            {{/if}}
+          </div>
+        </div>
+      </div>
+      {{else}}
+      <a href="/search" class="flex items-center header__link">
+        <span class="ico ico_search ico_search-light"></span>
+      </a>
+      <div class="user-menu__item">
+        <div class="sidebar h-8">
+          <div class="sidebar__header h-full flex items-center">
+            <span class="ico ico_user-light user-img"></span>
+          </div>
+        </div>
+      </div>
+      {{/if}}
     </div>
     {{/if}}
   </div>
@@ -23,16 +55,44 @@
       {{#each flows}}
       {{#if (eq this.link ../currentPath)}}
       <a href="{{this.link}}"
-        class="hover:text-color-link-hover transition text-color-text-dark nav__link">{{this.name}}</a>
+        class="hover:text-color-link-hover transition text-color-text-dark nav__link header__link">{{this.name}}</a>
       {{else}}
       <a href="{{this.link}}"
-        class="hover:text-color-link-hover transition text-color-text-light nav__link">{{this.name}}</a>
+        class="hover:text-color-link-hover transition text-color-text-light nav__link header__link">{{this.name}}</a>
       {{/if}}
       {{/each}}
     </nav>
-    <div class="md:flex gap-5 header__menu hidden items-center">
-      <a href="/search" class="flex items-center"><span class="ico ico_search"></span></a>
-      <span class="ico ico_user user"></span>
+    <div class="md:flex gap-5 header__user-menu user-menu hidden items-center">
+      <a href="/search" class="flex items-center header__link">
+        <span class="ico ico_search"></span>
+      </a>
+      {{#if user}}
+      <span class="ico ico_bell"></span>
+      <a href="/sandbox/new" class="flex items-center header__link">
+        <span class="ico ico_pen"></span>
+      </a>
+      <div class="user-menu__item user-menu__user">
+        <div class="drop-down-menu relative">
+          <div class="drop-down-menu__header w-8 h-8 rounded-sm overflow-hidden cursor-pointer">
+            {{#if user.properties.avatar}}
+            <img class="object-contain w-full h-full user-img-desktop" src="{{user.properties.avatar}}"
+              alt="user-avatar" />
+            {{else}}
+            <img class="object-cover w-full h-full rounded border-2 user-img-desktop" src="{{emptyAvatar}}"
+              alt="user-avatar" />
+            {{/if}}
+          </div>
+        </div>
+      </div>
+      {{else}}
+      <div class="user-menu__item user-menu__user">
+        <div class="drop-down-menu relative">
+          <div class="drop-down-menu__header">
+            <span class="ico ico_user user-img-desktop"></span>
+          </div>
+        </div>
+      </div>
+      {{/if}}
     </div>
     {{/if}}
   </div>
