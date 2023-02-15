@@ -1,6 +1,5 @@
 import { PageModel } from '@/components/mainPage/model/PageModel'
-import dropDownUserSignOutTemplate from '../templates/dropdownMenuUserSignOut.hbs'
-import dropDownUserSignInTemplate from '../templates/dropdownMenuUserSignIn.hbs'
+import dropDownUserSignInTemplate from '../templates/dropdownMenu.hbs'
 import dictionary from '@/utils/dictionary'
 import emptyAvatar from '@/assets/icons/avatar.svg'
 
@@ -11,30 +10,14 @@ export class DropdownMenu {
     constructor(model: PageModel) {
         this.model = model
         this.dropdownMenu = document.createElement('div')
+        this.dropdownMenu.className = 'drop-down-menu__body'
     }
 
-    renderUserSignOut() {
-        const buttons = Object.keys(dictionary.buttons)
-            .slice(1)
-            .reduce((acc, key) => {
-                return { ...acc, [key]: dictionary.buttons[key][this.model.lang] }
-            }, {})
-        this.dropdownMenu.innerHTML = dropDownUserSignOutTemplate({ buttons })
-        return this.dropdownMenu
-    }
-
-    renderUserSignIn() {
-        const buttons = Object.keys(dictionary.buttons)
-            .slice(1)
-            .reduce((acc, key) => {
-                return { ...acc, [key]: dictionary.buttons[key][this.model.lang] }
-            }, {})
-        if (this.model.user) {
-            const userName = this.model.user.displayName
-            const userAvatar = this.model.user.properties.avatar
-            this.dropdownMenu.innerHTML = dropDownUserSignInTemplate({ buttons, userName, userAvatar, emptyAvatar })
-        }
-
+    create() {
+        const buttons = Object.keys(dictionary.buttons).reduce((acc, key) => {
+            return { ...acc, [key]: dictionary.buttons[key][this.model.lang] }
+        }, {})
+        this.dropdownMenu.innerHTML = dropDownUserSignInTemplate({ buttons, user: this.model.user, emptyAvatar })
         return this.dropdownMenu
     }
 }

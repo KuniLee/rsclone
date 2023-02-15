@@ -66,6 +66,9 @@ export class PageModel extends EventEmitter {
                 if (Object.values(SettingsPaths).includes(this.path[1] as SettingsPaths)) this.emit('CHANGE_PAGE')
                 else this.goTo404()
                 break
+            case Paths.UsersPage:
+                this.goToProfile()
+                break
             default:
                 this.goTo404()
         }
@@ -96,7 +99,7 @@ export class PageModel extends EventEmitter {
         } else this.goTo404()
     }
 
-    private goTo404() {
+    public goTo404() {
         console.log('страница 404')
         this.emit('404')
     }
@@ -108,6 +111,11 @@ export class PageModel extends EventEmitter {
 
     private goToAuth() {
         if (this.path.length === 1 && this.path[0] === Paths.Auth) this.emit('CHANGE_PAGE')
+        else this.goTo404()
+    }
+
+    private goToProfile() {
+        if (this.path.length === 2 && this.path[0] === Paths.UsersPage) this.emit('CHANGE_PAGE')
         else this.goTo404()
     }
 

@@ -2,7 +2,7 @@ import EventEmitter from 'events'
 import { Paths, SettingsPaths } from 'types/enums'
 import { PageModelInstance } from '../model/PageModel'
 import authErrorPage from '@/templates/authError.hbs'
-import profileTemp from '@/templates/profile.hbs'
+import profileSettingsTemp from '@/templates/profileSettings.hbs'
 import Dictionary, { getWords } from '@/utils/dictionary'
 import emptyAvatar from '@/assets/icons/avatar.svg'
 import { UserData, UserProps } from 'types/types'
@@ -43,7 +43,7 @@ export class SettingsView extends EventEmitter {
         this.mainPageContainer.innerHTML = ''
         const pageWrapper = document.createElement('div')
         pageWrapper.className = 'sm:container mx-auto'
-        pageWrapper.innerHTML = profileTemp({
+        pageWrapper.innerHTML = profileSettingsTemp({
             words: getWords(Dictionary.ProfileSettings, this.model.lang),
             user: this.user?.properties,
             emptyAvatar,

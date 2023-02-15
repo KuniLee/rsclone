@@ -1,8 +1,7 @@
 export enum Paths {
     Root = '/',
     Post = '/post',
-    UserAccount = '/user',
-    UsersList = '/users',
+    UsersPage = '/users',
     News = '/news',
     Hub = '/hub',
     Sandbox = '/sandbox',

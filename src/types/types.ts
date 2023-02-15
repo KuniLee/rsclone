@@ -1,3 +1,4 @@
+import { Timestamp } from 'firebase/firestore'
 import type { StorageReference } from 'firebase/storage'
 
 export type FirebaseConfigType = {
@@ -19,7 +20,7 @@ export type AuthViewTypes = {
 }
 
 export type Article = {
-    createdAt: { toDate: () => Date }
+    createdAt: Timestamp
     id: string
     title: string
     userId: string
@@ -36,7 +37,11 @@ export type Preview = {
 
 export type UserData = {
     uid: string
-    createdAt: { seconds: number; nanoseconds: number }
+    createdAt: {
+        toDate: () => Date
+        seconds: number
+        nanoseconds: number
+    }
     email: string
     displayName: string
     properties: Partial<UserProps>

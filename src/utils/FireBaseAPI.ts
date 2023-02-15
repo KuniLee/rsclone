@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app'
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import {
+    query,
     getFirestore,
     serverTimestamp,
     setDoc,
@@ -10,7 +11,6 @@ import {
     getDocs,
     getDoc,
     updateDoc,
-    query,
     orderBy,
     limit,
     startAt,
@@ -31,6 +31,7 @@ import type { Firestore } from 'firebase/firestore'
 import type { FirebaseStorage } from 'firebase/storage'
 
 export {
+    query,
     serverTimestamp,
     setDoc,
     addDoc,
@@ -42,7 +43,6 @@ export {
     uploadBytes,
     getDownloadURL,
     updateDoc,
-    query,
     orderBy,
     limit,
     startAt,
