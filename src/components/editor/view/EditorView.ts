@@ -297,6 +297,7 @@ export class EditorView extends EventEmitter {
                     const rect = el.getBoundingClientRect()
                     const parentRect = editor.getBoundingClientRect()
                     const elComputedStyles = getComputedStyle(el)
+                    parent?.querySelector('.plus')?.classList.remove('plusOpen')
                     if (value.length === 1 && value === '/' && menu && el.closest('.textElement')) {
                         menu.style.top = `${rect.top - parentRect.top + parseInt(elComputedStyles.height)}px`
                         parent.classList.add('focusedItem')
@@ -306,6 +307,10 @@ export class EditorView extends EventEmitter {
                         parent.classList.remove('focusedItem')
                     }
                 } else {
+                    document.querySelectorAll('.plusOpen')?.forEach((el) => {
+                        el.classList.remove('plusOpen')
+                    })
+                    parent?.querySelector('.plus')?.classList.add('plusOpen')
                     if (menu) {
                         menu.hidden = true
                         parent.classList.remove('focusedItem')
@@ -367,7 +372,6 @@ export class EditorView extends EventEmitter {
                 }
             }
             if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-                const oldRange = window.getSelection()?.getRangeAt(0).startOffset
                 setTimeout(() => {
                     const listOfEditors: Array<HTMLElement> = Array.from(editor.querySelectorAll('.editable'))
                     const currentItemIndex = listOfEditors.indexOf(el)
@@ -408,6 +412,17 @@ export class EditorView extends EventEmitter {
             const selection = window.getSelection()
             range.selectNodeContents(target)
             range.collapse(false)
+            if (target.textContent === '') {
+                if (target.textContent.length) {
+                    console.log(parent?.querySelector('.plus'))
+                    parent?.querySelector('.plus')?.classList.remove('plusOpen')
+                } else {
+                    document.querySelectorAll('.plusOpen')?.forEach((el) => {
+                        el.classList.remove('plusOpen')
+                    })
+                    parent?.querySelector('.plus')?.classList.add('plusOpen')
+                }
+            }
             if (selection) {
                 selection.removeAllRanges()
                 selection.addRange(range)
@@ -419,6 +434,7 @@ export class EditorView extends EventEmitter {
         el.addEventListener('blur', () => {
             const target = el as HTMLElement
             const parent = target.closest('.editorElement')
+            parent?.querySelector('.plus')?.classList.remove('plusOpen')
             if (parent) {
                 parent.classList.remove('focused')
             }
@@ -446,6 +462,22 @@ export class EditorView extends EventEmitter {
                 if (dropMenu) {
                     dropMenu.hidden = false
                     dropMenu.classList.add('open')
+                    e.stopImmediatePropagation()
+                }
+            }
+            const plusBlock = el.querySelector('.plus')
+            if (plusBlock) {
+                const menu = document.querySelector('.menu') as HTMLElement
+                const parent = el.closest('.editorElement')
+                if (menu && parent) {
+                    plusBlock.classList.add('plusOpen')
+                    parent.classList.add('focused')
+                    const rect = el.getBoundingClientRect()
+                    const parentRect = editor.getBoundingClientRect()
+                    const elComputedStyles = getComputedStyle(el)
+                    menu.style.top = `${rect.top - parentRect.top + parseInt(elComputedStyles.height)}px`
+                    menu.hidden = false
+                    parent.classList.add('focusedItem')
                     e.stopImmediatePropagation()
                 }
             }
@@ -893,6 +925,7 @@ export class EditorView extends EventEmitter {
                         this.addTextElementListeners(newItem, editor)
                         this.addTextInputListeners(newItemField, editor)
                         newItemField.focus()
+                        setTimeout(() => this.addNewField(editor))
                     }
                 }
             })
