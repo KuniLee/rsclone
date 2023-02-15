@@ -332,13 +332,11 @@ export class EditorView extends EventEmitter {
                 const parent = target.closest('.editorElement') as HTMLElement
                 const listOfElements = editor.querySelectorAll('.editorElement')
                 if (value === '' && parent) {
-                    console.log(parent)
                     if (
                         parent.classList.contains('editorElement') &&
                         listOfElements.length !== 1 &&
                         !parent.classList.contains('quoteElement')
                     ) {
-                        console.log(1)
                         this.deleteElement(parent, editor)
                         e.preventDefault()
                     }
@@ -802,7 +800,6 @@ export class EditorView extends EventEmitter {
                             break
                     }
                     item.replaceWith(template.content)
-                    this.addNewField(editor)
                     const newItem = document.querySelector('.new') as HTMLElement
                     if (element.dataset.type === 'heading') {
                         if (newItem) {
@@ -819,6 +816,7 @@ export class EditorView extends EventEmitter {
                             })
                         }
                     }
+                    this.addNewField(editor)
                     const newItemField = newItem.querySelector('.editable') as HTMLElement
                     if (editor && newItem && newItemField) {
                         newItem.classList.remove('new')
