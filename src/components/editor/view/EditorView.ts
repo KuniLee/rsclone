@@ -366,8 +366,42 @@ export class EditorView extends EventEmitter {
                     }
                 }
             }
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                const oldRange = window.getSelection()?.getRangeAt(0).startOffset
+                setTimeout(() => {
+                    const listOfEditors: Array<HTMLElement> = Array.from(editor.querySelectorAll('.editable'))
+                    const currentItemIndex = listOfEditors.indexOf(el)
+                    if (currentItemIndex !== -1) {
+                        const selection = window.getSelection()
+                        if (selection) {
+                            const range = selection.getRangeAt(0).startOffset
+                            if (range === 0) {
+                                if (e.key === 'ArrowUp') {
+                                    if (listOfEditors[currentItemIndex - 1] !== undefined) {
+                                        listOfEditors[currentItemIndex - 1].focus()
+                                    }
+                                } else {
+                                    console.log(listOfEditors[currentItemIndex + 1])
+                                    if (listOfEditors[currentItemIndex + 1] !== undefined) {
+                                        listOfEditors[currentItemIndex + 1].focus()
+                                    }
+                                }
+                            }
+                            if (e.key === 'ArrowDown') {
+                                if (el.textContent) {
+                                    if (el.textContent.length === range) {
+                                        if (listOfEditors[currentItemIndex + 1] !== undefined) {
+                                            listOfEditors[currentItemIndex + 1].focus()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }, 0)
+            }
         })
-        el.addEventListener('focus', () => {
+        el.addEventListener('focus', (e) => {
             const target = el as HTMLElement
             const parent = target.closest('.editorElement')
             const range = document.createRange()
@@ -858,6 +892,7 @@ export class EditorView extends EventEmitter {
                         newItem.classList.remove('new')
                         this.addTextElementListeners(newItem, editor)
                         this.addTextInputListeners(newItemField, editor)
+                        newItemField.focus()
                     }
                 }
             })
