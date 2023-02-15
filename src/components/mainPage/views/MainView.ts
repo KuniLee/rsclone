@@ -24,7 +24,7 @@ export class MainView extends EventEmitter {
         super()
         this.model = model
         this.mainPageContainer = document.createElement('main')
-        this.mainPageContainer.classList.add('main', 'sm:mt-3', 'mb-10')
+        this.mainPageContainer.className = 'main sm:mt-3 mb-10 container mx-auto'
         this.footerEl = this.createFooter()
         this.showPreloader()
         this.model.on('404', () => {
@@ -181,7 +181,16 @@ export class MainView extends EventEmitter {
     }
 
     show404page() {
-        this.mainPageContainer.innerText = '404'
+        const pageNotFoundWrapper = document.createElement('div')
+        pageNotFoundWrapper.className = 'p-4'
+        const errorTitle = document.createElement('h2')
+        errorTitle.className = 'text-xl font-semibold text-color-text-dark mb-3'
+        errorTitle.textContent = dictionary.PageNotFound.Title[this.model.lang]
+        const errorMessage = document.createElement('p')
+        errorMessage.className = 'text-color-text-dark'
+        errorMessage.textContent = dictionary.PageNotFound.Message[this.model.lang]
+        pageNotFoundWrapper.append(errorTitle, errorMessage)
+        this.mainPageContainer.replaceChildren(pageNotFoundWrapper)
     }
 
     private openSidebarUserMenu({

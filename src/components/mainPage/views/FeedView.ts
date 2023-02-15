@@ -43,7 +43,7 @@ export class FeedView extends EventEmitter {
 
     private renderPage() {
         this.mainPageContainer = document.querySelector('main') as HTMLElement
-        this.mainPageContainer.innerHTML = `<div class="container mx-auto flex gap-4">
+        this.mainPageContainer.innerHTML = `<div class="flex gap-4">
 <div class="w-full flex flex-col gap-4 feed"></div><aside class="hidden lg:block min-w-[300px] bg-color-light">Асайд</aside>
 </div>`
     }
