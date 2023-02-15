@@ -345,7 +345,17 @@ export class EditorView extends EventEmitter {
                         e.preventDefault()
                         if (listParagraphs) {
                             if (listParagraphs.children.length !== 2) {
-                                this.deleteElement(el, editor)
+                                const elContainer = el.parentElement
+                                if (elContainer) {
+                                    const listOfElements: Array<HTMLElement> = Array.from(
+                                        elContainer.querySelectorAll('.editable')
+                                    )
+                                    const indexOf = listOfElements.indexOf(el)
+                                    if (indexOf) {
+                                        listOfElements[indexOf - 1]?.focus()
+                                    }
+                                    this.deleteElement(el, editor, false)
+                                }
                             } else {
                                 this.deleteElement(parent, editor)
                                 if (listOfElements.length === 1) {
@@ -447,7 +457,9 @@ export class EditorView extends EventEmitter {
         this.addTextInputListeners(editable, editor)
         this.addTextElementListeners(element, editor)
     }
-    deleteElement(element: HTMLElement, editor: HTMLElement) {
+    deleteElement(element: HTMLElement, editor: HTMLElement, focusLastElement = true) {
+        const listOfElements: Array<HTMLElement> = Array.from(editor.querySelectorAll('.editorElement'))
+        const indexOfElement = listOfElements.indexOf(element)
         element.remove()
         if (editor) {
             const lastChild = editor.lastElementChild as HTMLElement
@@ -457,7 +469,19 @@ export class EditorView extends EventEmitter {
                 if (last.textContent === '') {
                     lastChild.classList.remove('before:hidden')
                 }
-                last.focus()
+                if (focusLastElement) {
+                    if (indexOfElement) {
+                        const elementToFocus = listOfElements[indexOfElement - 1]?.querySelector(
+                            '.editable'
+                        ) as HTMLElement
+                        elementToFocus?.focus()
+                    } else {
+                        const elementToFocus = listOfElements[indexOfElement + 1]?.querySelector(
+                            '.editable'
+                        ) as HTMLElement
+                        elementToFocus?.focus()
+                    }
+                }
             }
         }
     }
@@ -829,7 +853,6 @@ export class EditorView extends EventEmitter {
                             })
                         }
                     }
-                    this.addNewField(editor)
                     const newItemField = newItem.querySelector('.editable') as HTMLElement
                     if (editor && newItem && newItemField) {
                         newItem.classList.remove('new')
