@@ -6,7 +6,7 @@ import { Paths, Sandbox } from 'types/enums'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { DragEvent, Plugins, Sortable } from '@shopify/draggable'
 import { SortableEventNames } from '@shopify/draggable'
-import { NewArticleData, ParsedArticle, ParsedPreviewArticle } from 'types/types'
+import { BlocksType, NewArticleData, ParsedArticle, ParsedPreviewArticle } from 'types/types'
 import authErrorPage from '@/templates/authError.hbs'
 import Dictionary, { getWords } from '@/utils/dictionary'
 import { EditorBlocks } from '@/utils/editorPopupWithBlocks'
@@ -144,7 +144,7 @@ export class EditorView extends EventEmitter {
                     }
                     const result: NewArticleData = {
                         blocks: parseMainEditorResult.blocks,
-                        title: parseMainEditorResult.blocks[0].value,
+                        title: String(parseMainEditorResult.blocks[0].value),
                         keywords: parsedKeywords,
                         lang: lang,
                         preview: preview,
@@ -576,7 +576,7 @@ export class EditorView extends EventEmitter {
                         options: {
                             size: 'h1',
                         },
-                        type: 'heading',
+                        type: 'title',
                         value: header.textContent,
                     },
                 ]
@@ -584,8 +584,8 @@ export class EditorView extends EventEmitter {
         }
         editor.querySelectorAll('.editorElement')?.forEach((el) => {
             const element = el as HTMLElement
+            const textField = el.querySelector('.editable')
             if (el.classList.contains('textElement')) {
-                const textField = el.querySelector('.editable')
                 if (textField) {
                     if (textField.textContent) {
                         obj.blocks.push({
@@ -601,7 +601,6 @@ export class EditorView extends EventEmitter {
                 }
             }
             if (el.classList.contains('headerElement')) {
-                const textField = el.querySelector('.editable')
                 if (textField) {
                     const type = element.dataset.type
                     if (textField.textContent) {
@@ -618,7 +617,21 @@ export class EditorView extends EventEmitter {
                     }
                 }
             }
+            if (el.classList.contains('quoteElement')) {
+                const quoteInputs: Array<BlocksType> = []
+                const quoteElements = el.querySelectorAll('.editable')?.forEach((el) => {
+                    quoteInputs.push({
+                        type: 'text',
+                        value: el.textContent ?? '',
+                    })
+                })
+                obj.blocks.push({
+                    type: 'quotes',
+                    value: quoteInputs,
+                })
+            }
         })
+        console.log(obj)
         return obj
     }
 

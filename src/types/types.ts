@@ -58,9 +58,9 @@ export type BlocksType = {
         size?: string
         lang?: string
     }
-    type: 'heading' | 'code' | 'delimiter' | 'text'
+    type: 'title' | 'heading' | 'code' | 'delimiter' | 'text' | 'quotes'
     mod?: string
-    value: string
+    value: string | Array<BlocksType>
 }
 
 export type ParsedArticle = {
