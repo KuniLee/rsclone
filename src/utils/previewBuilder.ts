@@ -4,6 +4,7 @@ import EventEmitter from 'events'
 import { Paths } from 'types/enums'
 import { URLParams } from 'types/interfaces'
 import { getTimeAgo } from '@/utils/getTimeAgo'
+import emptyAvatar from '@/assets/icons/avatar.svg'
 
 type PreviewEventsName = 'GO_TO' | 'DOWNLOAD_IMAGE' | 'UPLOAD_IMAGE'
 
@@ -19,6 +20,7 @@ export class Preview extends EventEmitter {
         template.innerHTML = articleTemplate({
             time: getTimeAgo(this.article.createdAt.toDate(), localStorage.lang),
             article: this.article,
+            emptyAvatar,
         })
         this.el = template.content
         this.addListeners()

@@ -41,5 +41,19 @@ module.exports = {
             Arial: ['Arial', 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif'],
         },
     },
-    plugins: [],
+    plugins: [
+        function ({ addComponents }) {
+            addComponents({
+                '.container': {
+                    maxWidth: '100%',
+                    '@screen xl': {
+                        maxWidth: '1096px',
+                    },
+                    '@screen 2xl': {
+                        maxWidth: '1096px',
+                    },
+                },
+            })
+        },
+    ],
 }

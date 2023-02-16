@@ -1,6 +1,6 @@
 <article class="p-4 bg-color-light">
   <div class="mb-1 flex items-center gap-1">
-    <div class="article__user cursor-pointer h-8 w-8 rounded overflow-hidden"><img class="h-full w-full object-cover" src="{{article.user.properties.avatar}}" alt=""></div>
+    <div class="article__user cursor-pointer h-8 w-8 rounded overflow-hidden"><img class="h-full w-full object-cover" src="{{#if article.user.properties.avatar}}{{article.user.properties.avatar}}{{else}}{{emptyAvatar}}{{/if}}" alt=""></div>
     <span class="article__user cursor-pointer text-sm font-medium">{{article.user.displayName}}</span>
     <span class="text-sm text-color-text-light">{{time}}</span>
   </div>
