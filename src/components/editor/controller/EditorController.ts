@@ -46,20 +46,14 @@ export class EditorController {
         view.on('ARTICLE_PARSED', async (arg, articleData) => {
             try {
                 const image = articleData.preview.image
-                articleData.preview.image = ''
-                const newArticle = await addDoc(
-                    collection(this.db, 'articles'),
-                    Object.assign(articleData, { createdAt: serverTimestamp() })
-                )
+                const docRef = doc(collection(this.db, 'articles'))
+                const docId = docRef.id
                 if (image) {
-                    const imageRef = ref(this.storage, `articles/${newArticle.id}/previewImage`)
+                    const imageRef = ref(this.storage, `articles/${docId}/previewImage`)
                     await uploadString(imageRef, image, 'data_url')
-                    await updateDoc(doc(this.db, 'articles', newArticle.id), {
-                        preview: {
-                            image: imageRef.fullPath,
-                        },
-                    })
+                    articleData.preview.image = imageRef.fullPath
                 }
+                const newArticle = await setDoc(docRef, Object.assign(articleData, { createdAt: serverTimestamp() }))
                 alert('Удачно!')
             } catch (e) {
                 console.log(e)

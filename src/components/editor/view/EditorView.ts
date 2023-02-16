@@ -707,10 +707,12 @@ export class EditorView extends EventEmitter {
                             value: textField.textContent,
                         })
                     } else {
-                        obj.blocks.push({
-                            type: 'delimiter',
-                            value: '',
-                        })
+                        if (!editor.classList.contains('textPreviewEditor')) {
+                            obj.blocks.push({
+                                type: 'delimiter',
+                                value: '',
+                            })
+                        }
                     }
                 }
             }
