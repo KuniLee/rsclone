@@ -1,26 +1,29 @@
 <div class="flex gap-4">
-  <div class="w-full user-card bg-color-light pb-4">
-    <div class="mb-6 px-5 mt-4">
-      <div class="w-12 h-12 rounded-sm overflow-hidden mb-2.5">
-        <a href="/users/{{user.displayName}}">
-          {{#if user.properties.avatar}}
-          <img class="object-contain w-full h-full" src="{{user.properties.avatar}}" alt="user-avatar" />{{else}}
-          <img class="object-cover w-full h-full rounded border-2" src="{{emptyAvatar}}" alt="user-avatar" />
-          {{/if}}
+  <div class="w-full">
+    <div class="user-card bg-color-light mb-3">
+      <div class="mb-6 px-5 pt-4">
+        <div class="w-12 h-12 rounded-sm overflow-hidden mb-2.5">
+          <a href="/users/{{user.displayName}}">
+            {{#if user.properties.avatar}}
+            <img class="object-contain w-full h-full" src="{{user.properties.avatar}}" alt="user-avatar" />{{else}}
+            <img class="object-cover w-full h-full rounded border-2" src="{{emptyAvatar}}" alt="user-avatar" />
+            {{/if}}
+          </a>
+        </div>
+        <span class="text-color-text-dark text-xl font-bold">{{user.properties.fullName}}</span>
+        <a href="/users/{{user.displayName}}" class="text-color-button text-xl username">@{{user.displayName}}</span>
         </a>
+        <p class="text-color-text-dark">{{user.properties.about}}</p>
       </div>
-      <span class="text-color-text-dark text-xl font-bold">{{user.properties.fullName}}</span>
-      <a href="/users/{{user.displayName}}" class="text-color-button text-xl username">@{{user.displayName}}</span>
-      </a>
-      <p class="text-color-text-dark">{{user.properties.about}}</p>
+      <div class="border-color-border-light border-b">
+        <ul class="user-card__tabs tabs pl-5">
+          <li class="tabs__tab-item text-color-link-hover uppercase tracking-wide font-medium pb-2 w-fit relative">
+            {{words.Posts}}
+          </li>
+        </ul>
+      </div>
     </div>
-    <div class="border-color-border-light border-b">
-      <ul class="user-card__tabs tabs pl-5">
-        <li class="tabs__tab-item text-color-link-hover uppercase tracking-wide font-medium pb-2 w-fit relative">
-          {{words.Posts}}
-        </li>
-      </ul>
-    </div>
+    <div class="articles-list flex flex-col gap-4"></div>
   </div>
   <aside class="hidden lg:block min-w-[300px] bg-color-light h-fit">
     <div class="px-5 py-4">

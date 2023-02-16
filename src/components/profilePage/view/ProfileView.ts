@@ -7,8 +7,9 @@ import Dictionary, { getWords } from '@/utils/dictionary'
 import emptyAvatar from '@/assets/icons/avatar.svg'
 import preloader from '@/templates/preloader.html'
 import { User } from 'firebase/auth'
+import { Preview } from '@/utils/previewBuilder'
 
-type ProfileViewEventsName = 'GOTO' | 'LOAD_USER_INFO'
+type ProfileViewEventsName = 'GOTO' | 'LOAD_USER_INFO' | 'LOAD_ARTICLES'
 
 export type ProfileViewInstance = InstanceType<typeof ProfileView>
 
@@ -16,6 +17,7 @@ export class ProfileView extends EventEmitter {
     private mainPageContainer: HTMLElement | undefined
     private pageModel: PageModelInstance
     private profileModel: ProfileModelInstance
+    private articles: Preview[] = []
 
     constructor(models: { profileModel: ProfileModelInstance; pageModel: PageModelInstance }) {
         super()
@@ -30,7 +32,12 @@ export class ProfileView extends EventEmitter {
             }
         })
         this.profileModel.on('USER_INFO_LOADED', () => {
+            this.emit('LOAD_ARTICLES')
             this.buildPage()
+        })
+        this.profileModel.on('ARTICLES_LOADED', () => {
+            this.createArticles()
+            this.renderArticles()
         })
     }
 
@@ -74,7 +81,17 @@ export class ProfileView extends EventEmitter {
     }
 
     private showPreloader() {
-        this.mainPageContainer = document.querySelector('main') as HTMLElement
+        this.mainPageContainer = document.querySelector('.main') as HTMLElement
         this.mainPageContainer.innerHTML = preloader
+    }
+
+    private createArticles() {
+        const articles = this.profileModel.articles
+        this.articles = articles.map((article) => new Preview(article))
+    }
+
+    private renderArticles() {
+        const articlesListEl = document.querySelector('.articles-list')
+        if (articlesListEl) articlesListEl.replaceChildren(...this.articles.map((article) => article.render()))
     }
 }
