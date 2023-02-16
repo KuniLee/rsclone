@@ -48,6 +48,21 @@ export class EditorController {
                 const image = articleData.preview.image
                 const docRef = doc(collection(this.db, 'articles'))
                 const docId = docRef.id
+                const blocks = articleData.blocks
+                if (blocks) {
+                    let index = 0
+                    for (const el of blocks) {
+                        if (el.type === 'image') {
+                            const image = el.imageSrc
+                            const imageRef = ref(this.storage, `articles/${docId}/${index}`)
+                            if (image != null) {
+                                await uploadString(imageRef, image, 'data_url')
+                                el.imageSrc = imageRef.fullPath
+                            }
+                            index++
+                        }
+                    }
+                }
                 if (image) {
                     const imageRef = ref(this.storage, `articles/${docId}/previewImage`)
                     await uploadString(imageRef, image, 'data_url')

@@ -4,7 +4,7 @@ import textEditor from '@/templates/textEditor.hbs'
 import newField from '@/templates/textEditorNewField.hbs'
 import { Paths, Sandbox } from 'types/enums'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
-import { DragEvent, Plugins, Sortable } from '@shopify/draggable'
+import { Plugins, Sortable } from '@shopify/draggable'
 import { SortableEventNames } from '@shopify/draggable'
 import { BlocksType, NewArticleData, ParsedArticle, ParsedPreviewArticle } from 'types/types'
 import authErrorPage from '@/templates/authError.hbs'
@@ -796,6 +796,17 @@ export class EditorView extends EventEmitter {
                     type: 'quotes',
                     value: quoteInputs,
                 })
+            }
+            if (el.classList.contains('imageElement')) {
+                const image = el.querySelector('.image') as HTMLImageElement
+                const figcaption = el.querySelector('.image-block__textarea') as HTMLTextAreaElement
+                if (image && figcaption) {
+                    obj.blocks.push({
+                        type: 'image',
+                        imageSrc: image.src,
+                        value: figcaption.value,
+                    })
+                }
             }
         })
         console.log(obj)
