@@ -11,11 +11,11 @@ import {
     ref,
     where,
 } from '@/utils/FireBaseAPI'
-import { Auth, User } from 'firebase/auth'
+import { Auth, getAuth, User } from 'firebase/auth'
 import { ProfileModelInstance } from '../model/ProfileModel'
 import { ProfileViewInstance } from './../view/ProfileView'
-import { limit, orderBy, QueryConstraint } from 'firebase/firestore'
-import { URLParams } from 'types/interfaces'
+import { doc, getDoc, limit, orderBy, QueryConstraint } from 'firebase/firestore'
+import { StorageReference } from 'firebase/storage'
 
 export class ProfileController {
     private view: ProfileViewInstance
@@ -46,9 +46,6 @@ export class ProfileController {
                 const uid = this.profileModel.userInfo.uid
                 this.profileModel.articles = await this.loadArticles(uid)
             }
-        })
-        this.view.on<URLParams>('GO_TO', (path) => {
-            this.pageModel.changePage(path)
         })
     }
 
