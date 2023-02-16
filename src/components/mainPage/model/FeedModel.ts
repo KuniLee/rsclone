@@ -4,11 +4,12 @@ import { Article } from 'types/types'
 import type { QueryDocumentSnapshot } from 'firebase/firestore'
 import { Flows } from 'types/enums'
 
-type FeedModelEventsName = 'LOADED' | 'IMAGE_LOADED'
+type FeedModelEventsName = 'LOADED' | 'POST_LOADED'
 export type FeedModelInstance = InstanceType<typeof FeedModel>
 
 export class FeedModel extends EventEmitter {
     public articles: Array<Article> = []
+    public article: Article | undefined
     private _latestArticle: QueryDocumentSnapshot | null = null
     private _flow: Flows | undefined
 
@@ -27,6 +28,7 @@ export class FeedModel extends EventEmitter {
     get latestArticle() {
         return this._latestArticle
     }
+
     set latestArticle(value) {
         this._latestArticle = value
     }
@@ -42,5 +44,10 @@ export class FeedModel extends EventEmitter {
     addArticles(articles: Array<Article>) {
         this.articles = articles
         this.emit('LOADED')
+    }
+
+    setArticle(article: Article) {
+        this.article = article
+        this.emit('POST_LOADED')
     }
 }

@@ -1,19 +1,17 @@
 import EventEmitter from 'events'
-import { Flows, Paths } from 'types/enums'
+import { Paths } from 'types/enums'
 import { PageModelInstance } from '../model/PageModel'
 import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
 import preloader from '@/templates/preloader.html'
-import { Preview } from '@/utils/previewBuilder'
 
-type FeedViewEventsName = 'LOAD_ARTICLES' | 'DOWNLOAD_IMAGE' | 'UPLOAD_IMAGE' | 'GO_TO'
+type ArticleEventsName = 'LOAD_POST' | 'GO_TO'
 
-export type FeedViewInstance = InstanceType<typeof FeedView>
+export type ArticleViewInstance = InstanceType<typeof ArticleView>
 
-export class FeedView extends EventEmitter {
+export class ArticleView extends EventEmitter {
     private mainPageContainer: HTMLElement | undefined
     private pageModel: PageModelInstance
     private feedModel: FeedModelInstance
-    private articles: Preview[] = []
 
     constructor(models: { pageModel: PageModelInstance; feedModel: FeedModelInstance }) {
         super()
@@ -21,23 +19,22 @@ export class FeedView extends EventEmitter {
         this.feedModel = models.feedModel
         this.pageModel.on('CHANGE_PAGE', () => {
             const path = this.pageModel.path
-            if (Object.values(Flows).includes(path[1] as Flows) || path[0] === Paths.All) {
+            if (path.length === 2 && path[0] === Paths.Post) {
                 this.renderPage()
                 this.showPreloader()
-                this.emit('LOAD_ARTICLES', path[1])
+                this.emit('LOAD_POST', path[1].slice(1))
             }
         })
-        this.feedModel.on('LOADED', () => {
-            this.setArticles()
-            this.renderArticles()
+        this.feedModel.on('POST_LOADED', () => {
+            this.render()
         })
     }
 
-    emit<T>(event: FeedViewEventsName, arg?: T) {
+    emit<T>(event: ArticleEventsName, arg?: T) {
         return super.emit(event, arg)
     }
 
-    on<T>(event: FeedViewEventsName, callback: (arg: T) => void) {
+    on<T>(event: ArticleEventsName, callback: (arg: T) => void) {
         return super.on(event, callback)
     }
 
@@ -48,20 +45,25 @@ export class FeedView extends EventEmitter {
 </div>`
     }
 
-    private setArticles() {
-        this.articles = this.feedModel.articles.map((el) => new Preview(el))
-        this.articles.forEach((el) => el.on('GO_TO', (path) => this.emit('GO_TO', path)))
-    }
+    // private setArticles() {
+    //     const articles = this.feedModel.articles
+    //     this.articles = articles.map((el) => new Preview(el))
+    //     this.articles.forEach((el) => el.on('GO_TO', (path) => this.emit('GO_TO', path)))
+    // }
 
-    renderArticles() {
-        const feedEl = this.mainPageContainer?.querySelector('.feed') as HTMLDivElement
-        feedEl.innerHTML = ''
-        if (this.articles.length === 0) feedEl.innerHTML = 'no articles'
-        else feedEl.append(...this.articles.map((el) => el.render()))
-    }
+    // renderArticles() {
+    //     const feedEl = this.mainPageContainer?.querySelector('.feed') as HTMLDivElement
+    //     feedEl.innerHTML = ''
+    //     if (this.articles.length === 0) feedEl.innerHTML = 'no articles'
+    //     else feedEl.append(...this.articles.map((el) => el.render()))
+    // }
 
     private showPreloader() {
         const feedEl = this.mainPageContainer?.querySelector('.feed') as HTMLDivElement
         feedEl.innerHTML = preloader
+    }
+
+    private render() {
+        console.log(this.feedModel.article)
     }
 }
