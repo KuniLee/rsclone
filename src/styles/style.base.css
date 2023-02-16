@@ -125,3 +125,7 @@ h1 {
 .plus.plusOpen {
     opacity: 1 !important;
 }
+
+.activeMenu {
+    background-color: rgb(238 238 238);
+}

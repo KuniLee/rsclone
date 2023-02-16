@@ -239,6 +239,7 @@ export class EditorView extends EventEmitter {
     addGlobalEventListener() {
         if (!this.isGlobalListener) {
             this.isGlobalListener = true
+            const menu = document.querySelector('.menu') as HTMLElement
             document.addEventListener('click', () => {
                 const modalOptionsList = document.querySelectorAll('.options__drop-menu')
                 modalOptionsList.forEach((el) => {
@@ -248,9 +249,26 @@ export class EditorView extends EventEmitter {
                         element.classList.remove('open')
                     }
                 })
-                const menu = document.querySelector('.menu') as HTMLElement
                 if (menu) {
                     menu.hidden = true
+                }
+            })
+
+            document.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    if (menu && !menu.hidden) {
+                        const menuItemActive = menu.querySelector('.activeMenu') as HTMLButtonElement
+                        if (menuItemActive) {
+                            menuItemActive.click()
+                        }
+                    }
+                }
+            })
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                    if (menu && !menu.hidden) {
+                        this.navigateInMenu(e.key)
+                    }
                 }
             })
         }
@@ -258,30 +276,33 @@ export class EditorView extends EventEmitter {
 
     addTextInputListeners(el: HTMLElement, editor: HTMLElement) {
         const parent = el.parentNode as HTMLElement
+        const menu = document.querySelector('.menu') as HTMLElement
         el.addEventListener('keypress', (e) => {
             const event = e as KeyboardEvent
             const value = el.textContent
             if (event.key === 'Enter') {
                 e.preventDefault()
-                if (!el.closest('.quoteElement')) {
-                    this.addNewField(editor)
-                }
-                if (el.closest('.quoteElement')) {
-                    const listParagraphs = el.parentElement as HTMLElement
-                    const item = el.closest('.quoteElement') as HTMLElement
-                    if (value) {
-                        this.addNewParagraph(el)
-                    } else {
-                        if (listParagraphs) {
-                            if (listParagraphs.children.length !== 2) {
-                                this.deleteElement(el, editor)
-                            } else {
-                                if (item) {
-                                    this.deleteElement(item, editor)
+                if (menu && menu.hidden) {
+                    if (!el.closest('.quoteElement')) {
+                        this.addNewField(editor)
+                    }
+                    if (el.closest('.quoteElement')) {
+                        const listParagraphs = el.parentElement as HTMLElement
+                        const item = el.closest('.quoteElement') as HTMLElement
+                        if (value) {
+                            this.addNewParagraph(el)
+                        } else {
+                            if (listParagraphs) {
+                                if (listParagraphs.children.length !== 2) {
+                                    this.deleteElement(el, editor)
+                                } else {
+                                    if (item) {
+                                        this.deleteElement(item, editor)
+                                    }
                                 }
                             }
+                            this.addNewField(editor)
                         }
-                        this.addNewField(editor)
                     }
                 }
             }
@@ -291,7 +312,6 @@ export class EditorView extends EventEmitter {
             const target = el as HTMLElement
             const value = target.textContent
             if (parent) {
-                const menu = document.querySelector('.menu') as HTMLElement
                 if (value) {
                     parent.classList.add('before:hidden')
                     const rect = el.getBoundingClientRect()
@@ -372,30 +392,35 @@ export class EditorView extends EventEmitter {
                 }
             }
             if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                if (menu && !menu.hidden) {
+                    e.preventDefault()
+                }
                 setTimeout(() => {
                     const listOfEditors: Array<HTMLElement> = Array.from(editor.querySelectorAll('.editable'))
                     const currentItemIndex = listOfEditors.indexOf(el)
-                    if (currentItemIndex !== -1) {
-                        const selection = window.getSelection()
-                        if (selection) {
-                            const range = selection.getRangeAt(0).startOffset
-                            if (range === 0) {
-                                if (e.key === 'ArrowUp') {
-                                    if (listOfEditors[currentItemIndex - 1] !== undefined) {
-                                        listOfEditors[currentItemIndex - 1].focus()
-                                    }
-                                } else {
-                                    console.log(listOfEditors[currentItemIndex + 1])
-                                    if (listOfEditors[currentItemIndex + 1] !== undefined) {
-                                        listOfEditors[currentItemIndex + 1].focus()
-                                    }
-                                }
-                            }
-                            if (e.key === 'ArrowDown') {
-                                if (el.textContent) {
-                                    if (el.textContent.length === range) {
+                    if (menu && menu.hidden) {
+                        if (currentItemIndex !== -1) {
+                            const selection = window.getSelection()
+                            if (selection) {
+                                const range = selection.getRangeAt(0).startOffset
+                                if (range === 0) {
+                                    if (e.key === 'ArrowUp') {
+                                        if (listOfEditors[currentItemIndex - 1] !== undefined) {
+                                            listOfEditors[currentItemIndex - 1].focus()
+                                        }
+                                    } else {
+                                        console.log(listOfEditors[currentItemIndex + 1])
                                         if (listOfEditors[currentItemIndex + 1] !== undefined) {
                                             listOfEditors[currentItemIndex + 1].focus()
+                                        }
+                                    }
+                                }
+                                if (e.key === 'ArrowDown') {
+                                    if (el.textContent) {
+                                        if (el.textContent.length === range) {
+                                            if (listOfEditors[currentItemIndex + 1] !== undefined) {
+                                                listOfEditors[currentItemIndex + 1].focus()
+                                            }
                                         }
                                     }
                                 }
@@ -882,6 +907,33 @@ export class EditorView extends EventEmitter {
                 }
             }
         })
+    }
+
+    navigateInMenu(key: string) {
+        const menuElements = Array.from(document.querySelectorAll('.menuElement'))
+        const currentItem = document.querySelector('.activeMenu')
+        if (!currentItem) {
+            if (menuElements.length) {
+                menuElements[0].classList.add('activeMenu')
+            }
+        } else {
+            const currentIndex = menuElements.indexOf(currentItem)
+            if (key === 'ArrowUp') {
+                if (!menuElements[currentIndex - 1]) {
+                    menuElements.at(-1)?.classList.add('activeMenu')
+                } else {
+                    menuElements[currentIndex - 1].classList.add('activeMenu')
+                }
+            }
+            if (key === 'ArrowDown') {
+                if (!menuElements[currentIndex + 1]) {
+                    menuElements[0].classList.add('activeMenu')
+                } else {
+                    menuElements[currentIndex + 1].classList.add('activeMenu')
+                }
+            }
+            currentItem.classList.remove('activeMenu')
+        }
     }
 
     addEventListenersToPopup(popup: HTMLElement) {
