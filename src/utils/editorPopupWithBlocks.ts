@@ -5,7 +5,7 @@ type editorPopupEvents = 'ITEM_INSERT'
 export class EditorBlocks {
     private blocks: (() => DocumentFragment)[]
     constructor() {
-        this.blocks = [this.getHeader, this.getQuotes]
+        this.blocks = [this.getHeader, this.getQuotes, this.getImage]
     }
 
     getListOfElements() {
@@ -36,6 +36,17 @@ export class EditorBlocks {
             svg: require('../assets/icons/quote-svg.svg'),
             blockName: 'Цитата',
             type: 'quote',
+        })
+        return template.content
+    }
+
+    getImage() {
+        const template = document.createElement('template')
+        template.innerHTML = blocksPopup({
+            class: 'imageElementPopup',
+            svg: require('../assets/icons/image-icon.svg'),
+            blockName: 'Изображение',
+            type: 'image',
         })
         return template.content
     }

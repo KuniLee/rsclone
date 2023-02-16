@@ -13,7 +13,7 @@ import { EditorBlocks } from '@/utils/editorPopupWithBlocks'
 import headingBlockTemplate from '@/templates/textEditorHeaderTemplate.hbs'
 import quoteBlockTemplate from '@/templates/textEditorQuoteTemplate.hbs'
 import emptyParagraph from '@/templates/paragraph.hbs'
-import { list } from 'postcss'
+import imageBlockTemplate from '@/templates/textEditorImageTemplate.hbs'
 
 type ItemViewEventsName = 'GOTO' | 'ARTICLE_PARSED'
 
@@ -201,6 +201,9 @@ export class EditorView extends EventEmitter {
     addDrag(list: HTMLElement) {
         const sortable = new Sortable<SortableEventNames | 'drag:stopped'>(list, {
             draggable: '.editorElement',
+            mirror: {
+                constrainDimensions: true,
+            },
             delay: {
                 mouse: 0,
                 drag: 0,
@@ -467,6 +470,13 @@ export class EditorView extends EventEmitter {
     }
 
     addTextElementListeners(textElement: HTMLElement, editor: HTMLElement) {
+        'input change'.split(' ').forEach((eventName) => {
+            textElement.querySelector('.image-block__textarea')?.addEventListener(eventName, (e) => {
+                const target = e.target as HTMLElement
+                target.style.height = 22 + 'px'
+                target.style.height = target.scrollHeight + 'px'
+            })
+        })
         textElement.addEventListener('pointerdown', (e) => {
             const target = e.target as HTMLElement
             const closest = target.closest('.drag')
@@ -506,12 +516,53 @@ export class EditorView extends EventEmitter {
                     e.stopImmediatePropagation()
                 }
             }
+            if (el.closest('.imageContainer') && !textElement.classList.contains('image-added')) {
+                const inputField = textElement.querySelector('.image-elem__input') as HTMLInputElement
+                const event = new MouseEvent('click', { bubbles: false })
+                inputField?.dispatchEvent(event)
+                inputField?.addEventListener('change', (e) => {
+                    const target = e.target as HTMLInputElement
+                    if (target) {
+                        if (target.files) {
+                            if (!target.files.length) {
+                                return
+                            } else {
+                                const fileReader = new FileReader()
+                                fileReader.onload = () => {
+                                    console.log(fileReader.result)
+                                    const imgElement = textElement.querySelector('.image') as HTMLImageElement
+                                    const figureElem = textElement.querySelector('.imageFigureTag') as HTMLElement
+                                    const placeholder = textElement.querySelector(
+                                        '.imageElementPlaceholder'
+                                    ) as HTMLElement
+                                    if (imgElement && placeholder && figureElem) {
+                                        placeholder.hidden = true
+                                        if (typeof fileReader.result === 'string') {
+                                            imgElement.src = fileReader.result
+                                            figureElem.hidden = false
+                                            textElement.classList.add('image-added')
+                                        }
+                                    }
+                                }
+                                fileReader.readAsDataURL(target.files[0])
+                            }
+                        }
+                    }
+                })
+            }
         })
         textElement.querySelector('.delete-btn')?.addEventListener('click', (e) => {
             e.preventDefault()
             if (editor.querySelectorAll('.editorElement')?.length !== 1) {
                 this.deleteElement(textElement, editor)
             }
+        })
+        textElement.querySelector('.choseAnotherImage')?.addEventListener('click', (e) => {
+            e.preventDefault()
+            const inputField = textElement.querySelector('.image-elem__input') as HTMLInputElement
+            const event = new MouseEvent('click', { bubbles: false })
+            console.log(inputField)
+            inputField?.dispatchEvent(event)
         })
     }
     addNewField(editor: HTMLElement, value?: string) {
@@ -954,6 +1005,8 @@ export class EditorView extends EventEmitter {
                         case 'quote':
                             template.innerHTML = quoteBlockTemplate({})
                             break
+                        case 'image':
+                            template.innerHTML = imageBlockTemplate({})
                     }
                     item.replaceWith(template.content)
                     const newItem = document.querySelector('.new') as HTMLElement
@@ -972,13 +1025,17 @@ export class EditorView extends EventEmitter {
                             })
                         }
                     }
-                    const newItemField = newItem.querySelector('.editable') as HTMLElement
-                    if (editor && newItem && newItemField) {
-                        newItem.classList.remove('new')
-                        this.addTextElementListeners(newItem, editor)
-                        this.addTextInputListeners(newItemField, editor)
-                        newItemField.focus()
-                        setTimeout(() => this.addNewField(editor))
+                    if (newItem) {
+                        const newItemField = newItem.querySelector('.editable') as HTMLElement
+                        if (editor && newItem) {
+                            newItem.classList.remove('new')
+                            if (newItemField) {
+                                this.addTextInputListeners(newItemField, editor)
+                                newItemField.focus()
+                            }
+                            this.addTextElementListeners(newItem, editor)
+                            setTimeout(() => this.addNewField(editor))
+                        }
                     }
                 }
             })
