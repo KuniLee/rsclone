@@ -529,6 +529,7 @@ export class EditorView extends EventEmitter {
                         const dragIcon = newElem.querySelector('.drag')
                         dragIcon?.classList.remove('hidden')
                     }
+                    newElem.querySelector('.plus')?.remove()
                 }
                 const newElemField = newElem.querySelector('.editable') as HTMLElement
                 if (newElemField) {
@@ -644,8 +645,6 @@ export class EditorView extends EventEmitter {
                                 count += textField.textContent.length
                             }
                             this.addNewField(previewEditor, textField.textContent)
-                        } else {
-                            this.addNewField(previewEditor)
                         }
                     }
                 }
