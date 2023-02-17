@@ -171,21 +171,27 @@ export class EditorView extends EventEmitter {
                     if (!target.files.length) {
                         return
                     } else {
-                        const fileReader = new FileReader()
-                        fileReader.onload = () => {
-                            const previewImage = document.querySelector('.preview-image') as HTMLImageElement
-                            if (previewImage) {
-                                if (typeof fileReader.result === 'string') {
-                                    previewImage.src = fileReader.result
-                                    previewImage.classList.remove('hidden')
-                                    const textPreview = document.querySelector('.load-image-preview-text')
-                                    if (textPreview) {
-                                        textPreview.classList.add('hidden')
+                        const fileTypes = ['jpg', 'jpeg', 'png', 'gif']
+                        const extension = target.files[0].name.split('.').pop()?.toLowerCase()
+                        if (extension && fileTypes.indexOf(extension)) {
+                            const fileReader = new FileReader()
+                            fileReader.readAsDataURL(target.files[0])
+                            fileReader.onload = () => {
+                                const previewImage = document.querySelector('.preview-image') as HTMLImageElement
+                                if (previewImage) {
+                                    if (typeof fileReader.result === 'string') {
+                                        previewImage.src = fileReader.result
+                                        previewImage.classList.remove('hidden')
+                                        const textPreview = document.querySelector('.load-image-preview-text')
+                                        if (textPreview) {
+                                            textPreview.classList.add('hidden')
+                                        }
                                     }
                                 }
                             }
+                        } else {
+                            alert('wrong type of file')
                         }
-                        fileReader.readAsDataURL(target.files[0])
                     }
                 }
             }
@@ -529,24 +535,30 @@ export class EditorView extends EventEmitter {
                             if (!target.files.length) {
                                 return
                             } else {
-                                const fileReader = new FileReader()
-                                fileReader.onload = () => {
-                                    console.log(fileReader.result)
-                                    const imgElement = textElement.querySelector('.image') as HTMLImageElement
-                                    const figureElem = textElement.querySelector('.imageFigureTag') as HTMLElement
-                                    const placeholder = textElement.querySelector(
-                                        '.imageElementPlaceholder'
-                                    ) as HTMLElement
-                                    if (imgElement && placeholder && figureElem) {
-                                        placeholder.hidden = true
-                                        if (typeof fileReader.result === 'string') {
-                                            imgElement.src = fileReader.result
-                                            figureElem.hidden = false
-                                            textElement.classList.add('image-added')
+                                const fileTypes = ['jpg', 'jpeg', 'png', 'gif']
+                                const extension = target.files[0].name.split('.').pop()?.toLowerCase()
+                                if (extension && fileTypes.indexOf(extension) !== -1) {
+                                    const fileReader = new FileReader()
+                                    fileReader.readAsDataURL(target.files[0])
+                                    fileReader.onload = () => {
+                                        console.log(fileReader.result)
+                                        const imgElement = textElement.querySelector('.image') as HTMLImageElement
+                                        const figureElem = textElement.querySelector('.imageFigureTag') as HTMLElement
+                                        const placeholder = textElement.querySelector(
+                                            '.imageElementPlaceholder'
+                                        ) as HTMLElement
+                                        if (imgElement && placeholder && figureElem) {
+                                            placeholder.hidden = true
+                                            if (typeof fileReader.result === 'string') {
+                                                imgElement.src = fileReader.result
+                                                figureElem.hidden = false
+                                                textElement.classList.add('image-added')
+                                            }
                                         }
                                     }
+                                } else {
+                                    alert('wrong type of file')
                                 }
-                                fileReader.readAsDataURL(target.files[0])
                             }
                         }
                     }
