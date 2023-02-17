@@ -1,6 +1,6 @@
 import { Flows } from 'types/enums'
 
-type language = { ru: string; en: string }
+export type language = { ru: string; en: string }
 
 const logo: Record<string, language> = {
     Logo: { ru: 'Хабр', en: 'Habr' },
@@ -76,6 +76,67 @@ const PageNotFound: Record<string, language> = {
     },
 }
 
+const EditorPage: Record<string, language> = {
+    NeverPublish: { ru: 'Никогда не публиковалось', en: 'Never been published' },
+    Title: { ru: 'Заголовок', en: 'Title' },
+    MenuCall: { ru: 'Нажмите "/" для вызова меню', en: 'Press "/" to access menu' },
+    Heading: { ru: 'Заголовок', en: 'Heading' },
+    Quote: { ru: 'Цитата', en: 'Quote' },
+    Delete: { ru: 'Удалить', en: 'Delete' },
+    Image: { ru: 'Изображение', en: 'Image' },
+    ToSettings: { ru: 'Далее к настройкам', en: 'Proceed to settings' },
+    Language: { ru: 'Язык публикации', en: 'Language' },
+    LanguageRu: { ru: 'Русский', en: 'Russian' },
+    LanguageEn: { ru: 'Английский', en: 'English' },
+    Flows: { ru: 'Потоки', en: 'Flows' },
+    PostSettings: { ru: 'Настройки публикации', en: 'Post settings' },
+    FlowsHint: { ru: 'Выберите потоки', en: 'Choose flows' },
+    Keywords: { ru: 'Ключевые слова', en: 'Keywords' },
+    KeywordsHint: {
+        ru: 'Введите сюда от 1 до 10 ключевых слов, отделяя их запятыми',
+        en: 'Enter from 1 to 10 key words here, separated by commas',
+    },
+    PreviewHeader: { ru: 'Отображение в ленте', en: 'Post feed view' },
+    Translation: { ru: 'Перевод', en: 'Translation' },
+    TranslationCheckboxText: { ru: 'Публикация является переводом', en: 'This publication is a translation' },
+    TranslationAuthor: { ru: 'Автор оригинала', en: 'Original author' },
+    TranslationAuthorHint: { ru: "Например: Tim O'Reily", en: "E.g. Tim O'Reily" },
+    TranslationLink: { ru: 'Ссылка на оригинальную публикацию', en: 'Original source' },
+    TranslationLinkHint: {
+        ru: 'Например: http://www.oreillynet.com/pub/a/oreilly/tim/news/2005/09/30/what-is-web-20.html?page=1',
+        en: 'E.g. http://www.oreillynet.com/pub/a/oreilly/tim/news/2005/09/30/what-is-web-20.html?page=1',
+    },
+    Difficult: { ru: 'Сложность', en: 'Level of difficulty' },
+    DifficultNone: { ru: 'Не указан', en: 'Not selected' },
+    DifficultEasy: { ru: 'Легкий', en: 'Easy' },
+    DifficultMedium: { ru: 'Средний', en: 'Medium' },
+    DifficultHard: { ru: 'Тяжелый', en: 'Hard' },
+    AddCover: { ru: 'Добавьте обложку', en: 'Add cover here' },
+    CoverInfo: {
+        ru: 'Перенесите сюда файл (jpg, gif, png) размером 780×440 или нажмите',
+        en: 'Drop a file with 780×440 size here (jpg, gif, png) or click',
+    },
+    UploadCoverButton: { ru: 'Загрузить обложку', en: 'Upload cover' },
+    PreviewTextPlaceholder: { ru: 'Введите текст', en: 'Type something' },
+    PreviewHint: {
+        ru: 'Рекомендуем не менее 100 и не более 2000 символов, минимальное допустимое число - 50 символов, максимально допустимое количество - 3000',
+        en: 'We recommend at least 100 and no more than 2000 characters, the minimum allowed number is 50 characters, the maximum allowed number is 3000',
+    },
+    ReadMoreText: { ru: 'Текст кнопки «Читать далее»', en: 'Read more button text' },
+    ReadMoreTextPlaceholder: { ru: 'Читать далее', en: 'Read more' },
+    BackToPublication: { ru: 'Назад к публикации', en: 'Back to publication' },
+    SendArticle: { ru: 'Опубликовать', en: 'Publish' },
+    PopupNameHeading: { ru: 'Заголовок', en: 'Heading' },
+    PopupNameQuote: { ru: 'Цитата', en: 'Quote' },
+    PopupNameImage: { ru: 'Изображение', en: 'Image' },
+    Heading1: { ru: 'Заголовок 1', en: 'Heading 1' },
+    Heading2: { ru: 'Заголовок 2', en: 'Heading 2' },
+    Heading3: { ru: 'Заголовок 3', en: 'Heading 3' },
+    AddImageText: { ru: 'Добавить картинку', en: 'Add image' },
+    AddFigcaptionText: { ru: 'Добавьте подпись к изображению', en: 'Image title' },
+    LoadAnotherImage: { ru: 'Загрузить другую', en: 'Upload new one' },
+}
+
 export function getWords(wordObj: Record<string, language>, lang: keyof language) {
     const result: Record<string, string> = {}
     for (const wordObjKey in wordObj) {
@@ -84,4 +145,14 @@ export function getWords(wordObj: Record<string, language>, lang: keyof language
     return result
 }
 
-export default { flowsNames, buttons, popupSettings, logo, ProfileSettings, errorPage, ProfilePage, PageNotFound }
+export default {
+    flowsNames,
+    buttons,
+    popupSettings,
+    logo,
+    ProfileSettings,
+    errorPage,
+    ProfilePage,
+    PageNotFound,
+    EditorPage,
+}

@@ -9,13 +9,14 @@ import { SortableEventNames } from '@shopify/draggable'
 import 'select-pure'
 import { BlocksType, NewArticleData, ParsedArticle, ParsedPreviewArticle } from 'types/types'
 import authErrorPage from '@/templates/authError.hbs'
-import Dictionary, { getWords } from '@/utils/dictionary'
+import Dictionary, { getWords, language } from '@/utils/dictionary'
 import { EditorBlocks } from '@/utils/editorPopupWithBlocks'
 import headingBlockTemplate from '@/templates/textEditorHeaderTemplate.hbs'
 import quoteBlockTemplate from '@/templates/textEditorQuoteTemplate.hbs'
 import emptyParagraph from '@/templates/paragraph.hbs'
 import imageBlockTemplate from '@/templates/textEditorImageTemplate.hbs'
 import { SelectPure } from 'select-pure/lib/components'
+import dictionary from '@/utils/dictionary'
 
 type ItemViewEventsName = 'GOTO' | 'ARTICLE_PARSED'
 
@@ -27,6 +28,8 @@ export class EditorView extends EventEmitter {
     private isGlobalListener: boolean
     private previewEditorBuilded: boolean
     private blocksPopup: EditorBlocks
+    private dictonary: Record<string, language>
+    private lang: 'ru' | 'en'
 
     constructor(editorModel: EditorModel, pageModel: PageModelInstance) {
         super()
@@ -34,7 +37,9 @@ export class EditorView extends EventEmitter {
         this.pageModel = pageModel
         this.isGlobalListener = false
         this.previewEditorBuilded = false
-        this.blocksPopup = new EditorBlocks()
+        this.dictonary = dictionary.EditorPage
+        this.lang = this.pageModel.lang
+        this.blocksPopup = new EditorBlocks(this.lang)
         this.pageModel.on('CHANGE_PAGE', () => {
             if (this.pageModel.path[0] === Paths.Sandbox && this.pageModel.path[1] === Sandbox.New) {
                 if (this.pageModel.user) {
@@ -58,6 +63,40 @@ export class EditorView extends EventEmitter {
                     ? this.pageModel.user.properties.avatar
                     : require('@/assets/icons/avatar.svg'),
                 flows,
+                neverPublish: this.dictonary.NeverPublish[this.lang],
+                title: this.dictonary.Title[this.lang],
+                menuCall: this.dictonary.MenuCall[this.lang],
+                delete: this.dictonary.Delete[this.lang],
+                toSettings: this.dictonary.ToSettings[this.lang],
+                postSettings: this.dictonary.PostSettings[this.lang],
+                language: this.dictonary.Language[this.lang],
+                languageButtonRu: this.dictonary.LanguageRu[this.lang],
+                languageButtonEn: this.dictonary.LanguageEn[this.lang],
+                flowsInput: this.dictonary.Flows[this.lang],
+                flowsHint: this.dictonary.FlowsHint[this.lang],
+                keywords: this.dictonary.Keywords[this.lang],
+                keywordsHint: this.dictonary.KeywordsHint[this.lang],
+                translation: this.dictonary.Translation[this.lang],
+                translationCheckText: this.dictonary.TranslationCheckboxText[this.lang],
+                translationAuthor: this.dictonary.TranslationAuthor[this.lang],
+                translationAuthorHint: this.dictonary.TranslationAuthorHint[this.lang],
+                translationLink: this.dictonary.TranslationLink[this.lang],
+                translationLinkHint: this.dictonary.TranslationLinkHint[this.lang],
+                difficult: this.dictonary.Difficult[this.lang],
+                difficultNone: this.dictonary.DifficultNone[this.lang],
+                difficultEasy: this.dictonary.DifficultEasy[this.lang],
+                difficultMedium: this.dictonary.DifficultMedium[this.lang],
+                difficultHard: this.dictonary.DifficultHard[this.lang],
+                previewHeader: this.dictonary.PreviewHeader[this.lang],
+                addCover: this.dictonary.AddCover[this.lang],
+                coverInfo: this.dictonary.CoverInfo[this.lang],
+                uploadCover: this.dictonary.UploadCoverButton[this.lang],
+                previewTextPlaceholder: this.dictonary.PreviewTextPlaceholder[this.lang],
+                previewHint: this.dictonary.PreviewHint[this.lang],
+                readMoreText: this.dictonary.ReadMoreText[this.lang],
+                readMoreTextPlaceholder: this.dictonary.ReadMoreTextPlaceholder[this.lang],
+                backToPublication: this.dictonary.BackToPublication[this.lang],
+                sendArticle: this.dictonary.SendArticle[this.lang],
             })
         }
         const popupMenu = document.querySelector('.menu') as HTMLElement
@@ -594,7 +633,10 @@ export class EditorView extends EventEmitter {
         el = el ? el : editor.lastElementChild
         if (el) {
             const template = document.createElement('template')
-            template.innerHTML = newField({})
+            template.innerHTML = newField({
+                menuCall: this.dictonary.MenuCall[this.lang],
+                delete: this.dictonary.Delete[this.lang],
+            })
             el.after(template.content)
             const newElem = editor.querySelector('.new') as HTMLElement
             if (newElem) {
@@ -1056,13 +1098,27 @@ export class EditorView extends EventEmitter {
                     const template = document.createElement('template')
                     switch (element.dataset.type) {
                         case 'heading':
-                            template.innerHTML = headingBlockTemplate({})
+                            template.innerHTML = headingBlockTemplate({
+                                heading: this.dictonary.Heading[this.lang],
+                                delete: this.dictonary.Delete[this.lang],
+                                heading1: this.dictonary.Heading1[this.lang],
+                                heading2: this.dictonary.Heading2[this.lang],
+                                heading3: this.dictonary.Heading3[this.lang],
+                            })
                             break
                         case 'quote':
-                            template.innerHTML = quoteBlockTemplate({})
+                            template.innerHTML = quoteBlockTemplate({
+                                delete: this.dictonary.Delete[this.lang],
+                                quote: this.dictonary.Quote[this.lang],
+                            })
                             break
                         case 'image':
-                            template.innerHTML = imageBlockTemplate({})
+                            template.innerHTML = imageBlockTemplate({
+                                addImageText: this.dictonary.AddImageText[this.lang],
+                                figcaptionText: this.dictonary.AddFigcaptionText[this.lang],
+                                delete: this.dictonary.Delete[this.lang],
+                                uploadAnother: this.dictonary.LoadAnotherImage[this.lang],
+                            })
                     }
                     item.replaceWith(template.content)
                     const newItem = document.querySelector('.new') as HTMLElement

@@ -1,17 +1,24 @@
 import blocksPopup from '../templates/textEditorBlocksPopup.hbs'
+import Dictionary, { language } from '@/utils/dictionary'
+import { PageModel } from '@/components/mainPage/model/PageModel'
+import dictionary from '@/utils/dictionary'
 
 type editorPopupEvents = 'ITEM_INSERT'
 
 export class EditorBlocks {
     private blocks: (() => DocumentFragment)[]
-    constructor() {
+    private dictionary: Record<string, language>
+    private readonly lang: 'ru' | 'en'
+    constructor(lang: 'ru' | 'en') {
+        this.dictionary = dictionary.EditorPage
+        this.lang = lang
         this.blocks = [this.getHeader, this.getQuotes, this.getImage]
     }
 
     getListOfElements() {
         const template = document.createElement('div')
         this.blocks.forEach((el) => {
-            const content = el()
+            const content = el.call(this)
             template.append(content)
         })
         console.log(template.children)
@@ -23,7 +30,7 @@ export class EditorBlocks {
         template.innerHTML = blocksPopup({
             class: 'headerElementPopup',
             svg: require('../assets/icons/header-svg.svg'),
-            blockName: 'Заголовок',
+            blockName: this.dictionary.PopupNameHeading[this.lang],
             type: 'heading',
         })
         return template.content
@@ -34,7 +41,7 @@ export class EditorBlocks {
         template.innerHTML = blocksPopup({
             class: 'quoterElementPopup',
             svg: require('../assets/icons/quote-svg.svg'),
-            blockName: 'Цитата',
+            blockName: this.dictionary.PopupNameQuote[this.lang],
             type: 'quote',
         })
         return template.content
@@ -45,7 +52,7 @@ export class EditorBlocks {
         template.innerHTML = blocksPopup({
             class: 'imageElementPopup',
             svg: require('../assets/icons/image-icon.svg'),
-            blockName: 'Изображение',
+            blockName: this.dictionary.PopupNameImage[this.lang],
             type: 'image',
         })
         return template.content
