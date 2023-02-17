@@ -760,7 +760,7 @@ export class EditorView extends EventEmitter {
                     } else {
                         if (!editor.classList.contains('textPreviewEditor')) {
                             obj.blocks.push({
-                                type: 'delimiter',
+                                type: 'text',
                                 value: '',
                             })
                         }
@@ -778,7 +778,7 @@ export class EditorView extends EventEmitter {
                         })
                     } else {
                         obj.blocks.push({
-                            type: 'delimiter',
+                            type: 'text',
                             value: '',
                         })
                     }
