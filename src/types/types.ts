@@ -39,11 +39,7 @@ export type Preview = {
 
 export type UserData = {
     uid: string
-    createdAt: {
-        toDate: () => Date
-        seconds: number
-        nanoseconds: number
-    }
+    createdAt: Timestamp
     email: string
     displayName: string
     properties: Partial<UserProps>

@@ -16,7 +16,7 @@ import {
     where,
 } from '@/utils/FireBaseAPI'
 import type { QueryConstraint } from 'firebase/firestore'
-import { Article, UserData } from 'types/types'
+import { Article } from 'types/types'
 import { Flows } from 'types/enums'
 import { URLParams } from 'types/interfaces'
 import { ArticleViewInstance } from '@/components/mainPage/views/ArticleView'
