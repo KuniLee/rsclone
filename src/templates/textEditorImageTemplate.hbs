@@ -1,0 +1,31 @@
+<div class="imageElement group new editorElement before:content-[''] before:absolute before:text-[#c0c0c0] before:pointer-events-none text-xl flex items-center w-full px-[25px]">
+  <input class='image-elem__input' type="file" accept="image/png, image/jpg, image/jpeg, image/gif" hidden>
+  <div class="image-menu"></div>
+  <div class="drag absolute left-0 cursor-grab group-hover:opacity-100 opacity-0">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+    </svg>
+  </div>
+  <div class="imageContainer border-2 border-color-color-gray-light min-h-[60px] w-full max-w-[96.6%]">
+    <div class="imageElementPlaceholder w-full text-center leading-[60px] cursor-pointer">
+      Добавить картинку
+    </div>
+    <figure class="imageFigureTag" hidden>
+      <img class="image w-full">
+      <textarea class="image-block__textarea resize-none min-h-[22px] mt-[4px] text-[#909090] bg-none text-center text-[13px] leading-6 w-full outline-0" placeholder="Добавьте подпись к изображению" oninput="this.style.height"></textarea>
+    </figure>
+  </div>
+  <div class="options cursor-pointer group-hover:opacity-100 opacity-0">
+    <button class="options__open-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+      </svg>
+    </button>
+    <div class="options__drop-menu absolute w-[220px] shadow right-0 bg-color-light z-10" hidden>
+      <div class="py-[5px]">
+        <button class="delete-btn py-[10px] hover:bg-[rgba] w-full text-[13px] border-b hover:bg-color-gray-light transition">Удалить</button>
+        <button class="choseAnotherImage py-[10px] hover:bg-[rgba] w-full text-[13px] hover:bg-color-gray-light transition">Загрузить другую</button>
+      </div>
+    </div>
+  </div>
+</div>

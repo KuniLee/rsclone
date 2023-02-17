@@ -64,8 +64,7 @@ export class FeedView extends EventEmitter {
     }
 
     private setArticles() {
-        const articles = this.feedModel.articles
-        this.articles = articles.map((el) => new Preview(el))
+        this.articles = this.feedModel.articles.map((el) => new Preview(el))
         this.articles.forEach((el) => el.on('GO_TO', (path) => this.emit('GO_TO', path)))
     }
 

@@ -1,5 +1,6 @@
 import { Timestamp } from 'firebase/firestore'
 import type { StorageReference } from 'firebase/storage'
+import { Flows } from 'types/enums'
 
 export type FirebaseConfigType = {
     storageBucket: string
@@ -22,6 +23,7 @@ export type AuthViewTypes = {
 export type Article = {
     createdAt: Timestamp
     id: string
+    flows: Array<Flows>
     title: string
     userId: string
     images: StorageReference
@@ -58,8 +60,10 @@ export type BlocksType = {
         size?: string
         lang?: string
     }
-    type: 'heading' | 'code' | 'delimiter' | 'text'
-    value: string
+    type: 'title' | 'heading' | 'code' | 'delimiter' | 'text' | 'quotes' | 'image'
+    mod?: string
+    imageSrc?: string
+    value: string | Array<BlocksType>
 }
 
 export type ParsedArticle = {
@@ -75,7 +79,7 @@ export type ParsedPreviewArticle = {
 export type NewArticleData = {
     blocks: Array<BlocksType>
     title: string
-    habs: Array<string>
+    flows: Array<string>
     keywords: Array<string>
     lang: string
     preview: ParsedPreviewArticle
