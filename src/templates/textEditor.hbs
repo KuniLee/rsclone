@@ -1,186 +1,391 @@
-<div class="container mx-auto flex justify-between mt-[12px] mb-[12px]">
-  <div class="w-2/3 min-h-[640px] bg-color-light flex flex-col pt-[20px]">
-    <div class="mainEditor flex flex-col relative flex-grow">
-      <div class="flex px-[25px]">
-        <div class="w-[24px] h-[24px] rounded-sm border-2 mr-2">
-          <img class='object-cover w-full h-full rounded' src="{{userAvatar}}" alt="">
-        </div>
-        <p class="mr-[10px]">{{userName}}</p>
-        <p class="mr-[10px]">Никогда не публиковалось</p>
+<div class="mainEditor flex flex-col relative flex-grow">
+  <div class="flex px-[25px]">
+    <div class="w-[24px] h-[24px] rounded-sm border-2 mr-2">
+      <img class='object-cover w-full h-full rounded' src="{{userAvatar}}" alt="">
+    </div>
+    <p class="mr-[10px]">{{userName}}</p>
+    <p class="mr-[10px]">Никогда не публиковалось</p>
+  </div>
+  <div class="relative textEditor flex-grow">
+    <div class="menu absolute w-[200px] bg-white shadow left-[20px] z-10 py-[10px]" hidden>
+      <div class="menu__wrapper"></div>
+    </div>
+    <div
+      class="before:content-[attr(data-is-empty)] before:absolute before:text-[#c0c0c0] before:pointer-events-none text-4xl mb-4 px-[25px]"
+      data-is-empty="Заголовок">
+      <h1 contenteditable="true" class="articleHeader editable outline-0 whitespace-pre-wrap text-4xl"></h1>
+    </div>
+    <div
+      class="textElement group editorElement before:content-[attr(data-is-empty)] before:absolute before:text-[#c0c0c0] before:pointer-events-none text-xl flex items-center w-full px-[25px]"
+      data-is-empty="Нажмите '/' для вызова меню">
+      <div class="plus absolute left-0 plusOpen cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
       </div>
-      <div class="relative textEditor flex-grow">
-        <div class="menu absolute w-[200px] bg-white shadow left-[20px] z-10 py-[10px]" hidden>
-          <div class="menu__wrapper"></div>
+      <div class="drag absolute left-0 cursor-grab hidden group-hover:opacity-100 opacity-0">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+      </div>
+      <p contenteditable="true" class="editable outline-0 whitespace-pre-wrap flex-grow max-w-[96.6%]"></p>
+      <div class="options cursor-pointer group-hover:opacity-100 opacity-0">
+        <button class="options__open-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+          </svg>
+        </button>
+        <div class="options__drop-menu absolute w-[220px] shadow right-0 bg-color-light z-10" hidden>
+          <div class="py-[5px]">
+            <button
+              class="delete-btn py-[10px] hover:bg-[rgba] w-full text-[13px] hover:bg-color-gray-light transition">Удалить</button>
+          </div>
         </div>
-        <div class="before:content-[attr(data-is-empty)] before:absolute before:text-[#c0c0c0] before:pointer-events-none text-4xl mb-4 px-[25px]" data-is-empty="Заголовок">
-          <h1 contenteditable="true" class="articleHeader editable outline-0 whitespace-pre-wrap text-4xl"></h1>
+      </div>
+    </div>
+
+  </div>
+  <div
+    class="mb-4 before:content-[''] before:w-full before:h-[1px] before:bg-color-gray-separator before:absolute before:left-0 pl-[20px]">
+    <button
+      class="toSettings mt-[16px] border-color-button text-color-button border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-btn-hover hover:border-color-btn-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white"
+      disabled>Далее к настройкам</button>
+  </div>
+</div>
+<div class="editorSettings px-[16px] relative hidden">
+  <h2 class="border-b border-color-gray-separator text-xl font-medium pb-[24px] mb-[12px]">Настройка публикации</h2>
+  <form action="#">
+    <div class="flex mb-4">
+      <div>
+        <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Язык публикации</h3>
+        <div class="flex">
+          <div class="border-[1px] rounded-[3px] border-[#d5dddf] flex transition-colors ease-out duration-300">
+            <input type="radio" name="lang" value="ru" id="lang-ru" class="hidden editor__type-radio" checked>
+            <label for="lang-ru" class="editor__radio-label editor__type-label">
+              <span>Русский</span>
+            </label>
+            <input type="radio" name="lang" value="en" id="lang-en" class="hidden editor__type-radio">
+            <label for="lang-en" class="editor__radio-label editor__type-label">
+              <span>Английский</span>
+            </label>
+          </div>
         </div>
-        <div class="textElement group editorElement before:content-[attr(data-is-empty)] before:absolute before:text-[#c0c0c0] before:pointer-events-none text-xl flex items-center w-full px-[25px]" data-is-empty="Нажмите '/' для вызова меню">
-          <div class="plus absolute left-0 plusOpen cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+      </div>
+    </div>
+    <div>
+    </div>
+    <div>
+      <div>
+        <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Потоки</h3>
+        <div>
+          <select-pure class="flows-input w-full rounded-[3px] m-0 text-[14px] outline-0" name="flow-select"
+            id="flow-select" multiple>
+            <option-pure value="" disabled hidden>Выберите поток</option-pure>
+            {{#each flows}}
+            <option-pure value="{{this}}">{{this}}</option-pure>
+            {{/each}}
+          </select-pure>
+        </div>
+        <p class="flows-error text-gray-500 text-[12px] mb-4 mt-[9px]">Выберите потоки</p>
+      </div>
+      <div>
+        <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Ключевые слова</h3>
+        <div>
+          <input
+            class="keywords-input w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0"
+            type="text" placeholder="Введите ключевые слова">
+        </div>
+        <p class="text-gray-500 text-[12px] mb-4 mt-[9px]">Введите сюда от 1 до 10 ключевых слов, отделяя их
+          запятыми</p>
+      </div>
+    </div>
+    <div>
+      <div class="mb-4 isTranslate">
+        <label class="text-m cursor-pointer"><input class="isTranslate-checkbox" type="checkbox"> Публикация
+          является переводом</label>
+      </div>
+      <div class="translate-info hidden">
+        <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Автор оригинала</h3>
+        <div>
+          <input
+            class="translate__author w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0"
+            type="text" name="translate-author">
+        </div>
+        <p class="text-gray-500 text-[12px] mb-4 mt-[9px]">Например: Tim O'Reily</p>
+        <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Ссылка на оригинальную публикацию
+        </h3>
+        <div>
+          <input
+            class="translate__link w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0"
+            type="text" name="translate-link">
+        </div>
+        <p class="text-gray-500 text-[12px] mb-4 mt-[9px]">Например:
+          http://www.oreillynet.com/pub/a/oreilly/tim/news/2005/09/30/what-is-web-20.html?page=1</p>
+      </div>
+    </div>
+    <div class="mb-4">
+      <h3 class="text-m mb-4 font-semibold">Уровень сложности</h3>
+      <div class="flex text-[14px]">
+        <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity" value="no" checked>Не
+          указан</label>
+        <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity"
+            value="easy">Простой</label>
+        <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity"
+            value="medium">Средний</label>
+        <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity"
+            value="hard">Сложный</label>
+      </div>
+    </div>
+    <div class="mb-4">
+      <h2 class="text-2xl mb-4 font-semibold">Отображение в ленте</h2>
+      <div class="previewImageBlock text-[#eee] border border-color-gray-separator relative">
+        <div class="dropZone w-full pb-[56.4103%] z-1">
+          <img class="preview-image absolute w-full h-full object-cover hidden" src="" alt="">
+        </div>
+        <div
+          class="load-image-preview-text absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center flex-col items-center z-1">
+          <div>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#929ca5"
+              class="w-6 h-6">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
           </div>
-          <div class="drag absolute left-0 cursor-grab hidden group-hover:opacity-100 opacity-0">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          <div>
+            <p class="text-[#444] text-[14px] font-semibold mb-[12px]">Добавьте обложку</p>
+          </div>
+          <div>
+            <p class="text-[#777] text-[12px] mb-[9px]">Перенесите сюда файл (jpg, gif, png) размером 780×440 или
+              нажмите</p>
+          </div>
+          <div>
+            <label
+              class="border inline-block border-[#c9c9c9] rounded-[3px] bg-[#f4f4f4] text-[#464646] text-[12px] h-[30px] leading-[30px] px-[12px] cursor-pointer">
+              <input class="image-preview" type="file" accept="image/png, image/jpg, image/jpeg, image/gif"
+                style="display: none;">
+              <span>Загрузить обложку</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="text-[#eee] border border-color-gray-separator relative">
+        <div class="textPreviewEditor relative flex-grow text-black">
+          <div
+            class="textElement group editorElement before:content-[attr(data-is-empty)] before:absolute before:text-[#c0c0c0] before:pointer-events-none text-xl flex items-center w-full px-[25px]"
+            data-is-empty="Введите текст">
+            <div class="drag absolute left-0 cursor-grab hidden group-hover:opacity-100 opacity-0">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+              </svg>
+            </div>
+            <p contenteditable="true" class="editable outline-0 whitespace-pre-wrap flex-grow max-w-[96.6%]"></p>
+            <div class="options cursor-pointer group-hover:opacity-100 opacity-0">
+              <button class="options__open-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                </svg>
+              </button>
+              <div class="options__drop-menu absolute w-[220px] shadow right-0 bg-color-light z-10" hidden>
+                <div class="py-[5px]">
+                  <button
+                    class="delete-btn py-[10px] hover:bg-[rgba] w-full text-[13px] hover:bg-color-gray-light transition">Удалить</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="previewEditorError text-[#777] text-[12px] mb-[9px]">Рекомендуем не менее 100 и не более 2000
+        символов, минимальное допустимое число - 50 символов, максимально допустимое количество - 3000</p>
+    </div>
+    <div class="mb-4">
+      <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Текст кнопки «Читать далее»</h3>
+      <div>
+        <input
+          class="buttonTextInput w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0"
+          type="text" value="Читать далее">
+      </div>
+    </div>
+    <div
+      class="before:content-[''] before:w-full before:h-[1px] before:bg-color-gray-separator before:absolute before:left-0 mb-4 flex justify-between">
+      <button
+        class="backToEditor mt-[16px] border-color-button text-color-button border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-btn-hover hover:border-color-btn-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white">Назад
+        к публикации</button>
+      <button
+        class="submitArticle mt-[16px] border-color-button-send text-white bg-color-button-send text-color border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-button-send-hover hover:border-color-button-send-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white"
+        disabled>Опубликовать</button>
+    </div>
+  </form>
+</div>
+<div class="editorSettings px-[16px] relative hidden">
+  <h2 class="border-b border-color-gray-separator text-xl font-medium pb-[24px] mb-[12px]">Настройка публикации</h2>
+  <form action="#">
+    <div class="flex mb-4">
+      <div class="w-1/2">
+        <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Тип публикации</h3>
+        <div class="border-[1px] rounded-[3px] border-[#d5dddf] w-[82px]">
+          <input type="radio" id="type" name="type" class="hidden editor__type-radio" value="Article" checked>
+          <label for="type" class="editor__radio-label editor__type-label">
+            <span>Статья</span>
+          </label>
+        </div>
+      </div>
+      <div class="w-1/2">
+        <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Язык публикации</h3>
+        <div class="flex">
+          <div class="border-[1px] rounded-[3px] border-[#d5dddf] flex transition-colors ease-out duration-300">
+            <input type="radio" name="lang" value="ru" id="lang-ru" class="hidden editor__type-radio" checked>
+            <label for="lang-ru" class="editor__radio-label editor__type-label">
+              <span>Русский</span>
+            </label>
+            <input type="radio" name="lang" value="en" id="lang-en" class="hidden editor__type-radio">
+            <label for="lang-en" class="editor__radio-label editor__type-label">
+              <span>Английский</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div>
+        <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Язык публикации</h3>
+        <div>
+          <input
+            class="hubs-input w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0"
+            type="text" placeholder="Выберите хабы">
+        </div>
+        <p class="text-gray-500 text-[12px] mt-[9px]">Введите сюда от 1 до 5 хабов, отделяя их запятыми</p>
+      </div>
+    </div>
+    <div>
+      <div>
+        <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Ключевые слова</h3>
+        <div>
+          <input
+            class="keywords-input w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0"
+            type="text" placeholder="Выберите хабы">
+        </div>
+        <p class="text-gray-500 text-[12px] mb-4 mt-[9px]">Введите сюда от 1 до 10 ключевых слов, отделяя их
+          запятыми</p>
+      </div>
+    </div>
+    <div>
+      <div class="mb-4 isTranslate">
+        <label class="text-m cursor-pointer"><input class="isTranslate-checkbox" type="checkbox"> Публикация
+          является переводом</label>
+      </div>
+      <div class="translate-info hidden">
+        <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Автор оригинала</h3>
+        <div>
+          <input
+            class="translate__author w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0"
+            type="text" name="translate-author">
+        </div>
+        <p class="text-gray-500 text-[12px] mb-4 mt-[9px]">Например: Tim O'Reily</p>
+        <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Ссылка на оригинальную публикацию
+        </h3>
+        <div>
+          <input
+            class="translate__link w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0"
+            type="text" name="translate-link">
+        </div>
+        <p class="text-gray-500 text-[12px] mb-4 mt-[9px]">Например:
+          http://www.oreillynet.com/pub/a/oreilly/tim/news/2005/09/30/what-is-web-20.html?page=1</p>
+      </div>
+    </div>
+    <div class="mb-4">
+      <h3 class="text-m mb-4 font-semibold">Уровень сложности</h3>
+      <div class="flex text-[14px]">
+        <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity" value="no" checked>Не
+          указан</label>
+        <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity"
+            value="easy">Простой</label>
+        <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity"
+            value="medium">Средний</label>
+        <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity"
+            value="hard">Сложный</label>
+      </div>
+    </div>
+    <div class="mb-4">
+      <h2 class="text-2xl mb-4 font-semibold">Отображение в ленте</h2>
+      <div class="text-[#eee] border border-color-gray-separator relative">
+        <div class="w-full pb-[56.4103%]">
+          <img class="preview-image absolute w-full h-full object-cover hidden" src="" alt="">
+        </div>
+        <div
+          class="load-image-preview-text w-[90%] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center flex-col items-center">
+          <div>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#929ca5"
+              class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
           </div>
-          <p contenteditable="true" class="editable outline-0 whitespace-pre-wrap flex-grow max-w-[96.6%]"></p>
-          <div class="options cursor-pointer group-hover:opacity-100 opacity-0">
-            <button class="options__open-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
-              </svg>
-            </button>
-            <div class="options__drop-menu absolute w-[220px] shadow right-0 bg-color-light z-10" hidden>
-              <div class="py-[5px]">
-                <button class="delete-btn py-[10px] hover:bg-[rgba] w-full text-[13px] hover:bg-color-gray-light transition">Удалить</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-      <div class="mb-4 before:content-[''] before:w-full before:h-[1px] before:bg-color-gray-separator before:absolute before:left-0 pl-[20px]">
-        <button class="toSettings mt-[16px] border-color-button text-color-button border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-btn-hover hover:border-color-btn-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white" disabled>Далее к настройкам</button>
-      </div>
-    </div>
-    <div class="editorSettings px-[16px] relative hidden">
-      <h2 class="border-b border-color-gray-separator text-xl font-medium pb-[24px] mb-[12px]">Настройка публикации</h2>
-      <form action="#">
-        <div class="flex mb-4">
-            <div>
-              <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Язык публикации</h3>
-              <div class="flex">
-                <div class="border-[1px] rounded-[3px] border-[#d5dddf] flex transition-colors ease-out duration-300">
-                  <input type="radio" name="lang" value="ru" id="lang-ru" class="hidden editor__type-radio" checked>
-                  <label for="lang-ru" class="editor__radio-label editor__type-label">
-                    <span>Русский</span>
-                  </label>
-                  <input type="radio" name="lang" value="en" id="lang-en" class="hidden editor__type-radio">
-                  <label for="lang-en" class="editor__radio-label editor__type-label">
-                    <span>Английский</span>
-                  </label>
-                </div>
-              </div>
-          </div>
-        </div>
-        <div>
-        </div>
-        <div>
           <div>
-            <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Потоки</h3>
-            <div>
-              <select-pure class="flows-input w-full rounded-[3px] m-0 text-[14px] outline-0" name="flow-select" id="flow-select" multiple>
-                <option-pure value="" disabled hidden>Выберите поток</option-pure>
-                {{#each flows}}
-                  <option-pure value="{{this}}">{{this}}</option-pure>
-                {{/each}}
-              </select-pure>
-            </div>
-            <p class="flows-error text-gray-500 text-[12px] mb-4 mt-[9px]">Выберите потоки</p>
+            <p class="text-[#444] text-[14px] font-semibold mb-[12px]">Добавьте обложку</p>
           </div>
           <div>
-            <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Ключевые слова</h3>
-            <div>
-              <input class="keywords-input w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" placeholder="Введите ключевые слова">
-            </div>
-            <p class="text-gray-500 text-[12px] mb-4 mt-[9px]">Введите сюда от 1 до 10 ключевых слов, отделяя их запятыми</p>
+            <p class="text-[#777] text-[12px] mb-[9px]">Перенесите сюда файл (jpg, gif, png) размером 780×440 или
+              нажмите</p>
+          </div>
+          <div>
+            <label
+              class="border inline-block border-[#c9c9c9] rounded-[3px] bg-[#f4f4f4] text-[#464646] text-[12px] h-[30px] leading-[30px] px-[12px] cursor-pointer">
+              <input class="image-preview" type="file" accept="image/png, image/jpg, image/jpeg, image/gif"
+                style="display: none;">
+              <span>Загрузить обложку</span>
+            </label>
           </div>
         </div>
-        <div>
-          <div class="mb-4 isTranslate">
-            <label class="text-m cursor-pointer"><input class="isTranslate-checkbox" type="checkbox"> Публикация является переводом</label>
-          </div>
-          <div class="translate-info hidden">
-            <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Автор оригинала</h3>
-            <div>
-              <input class="translate__author w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" name="translate-author">
-            </div>
-            <p class="text-gray-500 text-[12px] mb-4 mt-[9px]">Например: Tim O'Reily</p>
-            <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Ссылка на оригинальную публикацию</h3>
-            <div>
-              <input class="translate__link w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" name="translate-link">
-            </div>
-            <p class="text-gray-500 text-[12px] mb-4 mt-[9px]">Например: http://www.oreillynet.com/pub/a/oreilly/tim/news/2005/09/30/what-is-web-20.html?page=1</p>
-          </div>
-        </div>
-        <div class="mb-4">
-          <h3 class="text-m mb-4 font-semibold">Уровень сложности</h3>
-          <div class="flex text-[14px]">
-            <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity" value="no" checked>Не указан</label>
-            <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity" value="easy">Простой</label>
-            <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity" value="medium">Средний</label>
-            <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity" value="hard">Сложный</label>
-          </div>
-        </div>
-        <div class="mb-4">
-          <h2 class="text-2xl mb-4 font-semibold">Отображение в ленте</h2>
-          <div class="previewImageBlock text-[#eee] border border-color-gray-separator relative">
-            <div class="dropZone w-full pb-[56.4103%] z-1">
-              <img class="preview-image absolute w-full h-full object-cover hidden" src="" alt="">
-            </div>
-            <div class="load-image-preview-text absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center flex-col items-center z-1">
-              <div>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#929ca5" class="w-6 h-6">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </div>
+      <div class="text-[#eee] border border-color-gray-separator relative">
+        <div class="textPreviewEditor relative flex-grow text-black p-[20px]">
+          <div
+            class="textElement editorElement before:content-[attr(data-is-empty)] w-full before:absolute before:text-[#c0c0c0] before:pointer-events-none text-xl flex items-center"
+            data-is-empty="Введите текст">
+            <p contenteditable="true" class="editable outline-0 whitespace-pre-wrap flex-grow w-full"></p>
+            <div class="options cursor-pointer">
+              <button class="options__open-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
                 </svg>
-              </div>
-              <div>
-                <p class="text-[#444] text-[14px] font-semibold mb-[12px]">Добавьте обложку</p>
-              </div>
-              <div>
-                <p class="text-[#777] text-[12px] mb-[9px]">Перенесите сюда файл (jpg, gif, png) размером 780×440 или нажмите</p>
-              </div>
-              <div>
-                <label class="border inline-block border-[#c9c9c9] rounded-[3px] bg-[#f4f4f4] text-[#464646] text-[12px] h-[30px] leading-[30px] px-[12px] cursor-pointer">
-                  <input class="image-preview" type="file" accept="image/png, image/jpg, image/jpeg, image/gif" style="display: none;">
-                  <span>Загрузить обложку</span>
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="text-[#eee] border border-color-gray-separator relative">
-            <div class="textPreviewEditor relative flex-grow text-black">
-              <div class="textElement group editorElement before:content-[attr(data-is-empty)] before:absolute before:text-[#c0c0c0] before:pointer-events-none text-xl flex items-center w-full px-[25px]" data-is-empty="Введите текст">
-                <div class="drag absolute left-0 cursor-grab hidden group-hover:opacity-100 opacity-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                  </svg>
-                </div>
-                <p contenteditable="true" class="editable outline-0 whitespace-pre-wrap flex-grow max-w-[96.6%]"></p>
-                <div class="options cursor-pointer group-hover:opacity-100 opacity-0">
-                  <button class="options__open-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
-                    </svg>
-                  </button>
-                  <div class="options__drop-menu absolute w-[220px] shadow right-0 bg-color-light z-10" hidden>
-                    <div class="py-[5px]">
-                      <button class="delete-btn py-[10px] hover:bg-[rgba] w-full text-[13px] hover:bg-color-gray-light transition">Удалить</button>
-                    </div>
-                  </div>
+              </button>
+              <div class="options__drop-menu absolute w-[220px] shadow right-0 bg-color-light z-10" hidden>
+                <div class="py-[5px]">
+                  <button
+                    class="delete-btn py-[10px] hover:bg-[rgba] w-full text-[13px] hover:bg-color-gray-light transition">Удалить</button>
                 </div>
               </div>
             </div>
           </div>
-          <p class="previewEditorError text-[#777] text-[12px] mb-[9px]">Рекомендуем не менее 100 и не более 2000 символов, минимальное допустимое число - 50 символов, максимально допустимое количество - 3000</p>
         </div>
-        <div class="mb-4">
-          <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Текст кнопки «Читать далее»</h3>
-          <div>
-            <input class="buttonTextInput w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" value="Читать далее">
-          </div>
-        </div>
-        <div class="before:content-[''] before:w-full before:h-[1px] before:bg-color-gray-separator before:absolute before:left-0 mb-4 flex justify-between">
-          <button class="backToEditor mt-[16px] border-color-button text-color-button border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-btn-hover hover:border-color-btn-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white">Назад к публикации</button>
-          <button class="submitArticle mt-[16px] border-color-button-send text-white bg-color-button-send text-color border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-button-send-hover hover:border-color-button-send-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white" disabled>Опубликовать</button>
-        </div>
-      </form>
+      </div>
+      <p class="previewEditorError text-[#777] text-[12px] mb-[9px]">Рекомендуем не менее 100 и не более 2000
+        символов, минимальное допустимое число - 50 символов, максимально допустимое количество - 3000</p>
     </div>
-  </div>
-  <div class="w-1/4 bg-color-light">
-    <p>test2</p>
-  </div>
+    <div class="mb-4">
+      <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Текст кнопки «Читать далее»</h3>
+      <div>
+        <input
+          class="buttonTextInput w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0"
+          type="text" value="Читать далее">
+      </div>
+    </div>
+    <div
+      class="before:content-[''] before:w-full before:h-[1px] before:bg-color-gray-separator before:absolute before:left-0 mb-4 flex justify-between">
+      <button
+        class="backToEditor mt-[16px] border-color-button text-color-button border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-btn-hover hover:border-color-btn-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white">Назад
+        к публикации</button>
+      <button
+        class="submitArticle mt-[16px] border-color-button-send text-white bg-color-button-send text-color border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-button-send-hover hover:border-color-button-send-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white"
+        disabled>Опубликовать</button>
+    </div>
+  </form>
 </div>

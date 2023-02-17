@@ -10,15 +10,16 @@ import {
     Firestore,
     getDoc,
     getDocs,
+    getDownloadURL,
     limit,
     orderBy,
     query,
+    ref,
     where,
 } from '@/utils/FireBaseAPI'
-import type { QueryConstraint } from 'firebase/firestore'
-import { Article, UserData } from 'types/types'
+import type { QueryConstraint, DocumentReference } from 'firebase/firestore'
 import { Flows } from 'types/enums'
-import { URLParams } from 'types/interfaces'
+import { Article, URLParams } from 'types/interfaces'
 import { ArticleViewInstance } from '@/components/mainPage/views/ArticleView'
 
 export class FeedController {
@@ -49,7 +50,7 @@ export class FeedController {
         })
         this.articleView.on<string>('LOAD_POST', async (id) => {
             const article = await this.loadArticle(id)
-            if (article) this.feedModel.setArticle(article as Article)
+            if (article) this.feedModel.setArticle(article)
             else this.pageModel.goTo404()
         })
         this.view.on<URLParams>('GO_TO', (path) => {
@@ -57,9 +58,27 @@ export class FeedController {
         })
     }
 
-    private async loadArticle(id: string) {
-        const article = await getDoc(doc(this.db, 'articles', id))
-        return article.exists() ? await article.data() : undefined
+    private async loadArticle(id: string): Promise<Article | undefined> {
+        try {
+            const snapshot = await getDoc<Article>(doc(this.db, 'articles', id) as DocumentReference<Article>)
+            if (!snapshot.exists()) return
+            const article = await this.api.downloadArticleData(await snapshot.data())
+            const imageBlocks = article.blocks.filter((el) => el.imageSrc !== undefined)
+
+            await Promise.all(
+                imageBlocks.map(async (block) => {
+                    try {
+                        block.imageSrc = await getDownloadURL(ref(this.storage, block.imageSrc))
+                    } catch (e) {
+                        console.log(e)
+                        block.imageSrc = ''
+                    }
+                })
+            )
+            return article
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     private async loadArticles() {

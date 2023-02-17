@@ -1,11 +1,11 @@
-import { Article, UserData } from 'types/types'
+import { UserData } from 'types/types'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { collection, FireBaseAPIInstance, FirebaseStorage, Firestore, getDocs, query, where } from '@/utils/FireBaseAPI'
 import { Auth, User } from 'firebase/auth'
 import { ProfileModelInstance } from '../model/ProfileModel'
 import { ProfileViewInstance } from './../view/ProfileView'
 import { limit, orderBy, QueryConstraint } from 'firebase/firestore'
-import { URLParams } from 'types/interfaces'
+import { Article, URLParams } from 'types/interfaces'
 
 export class ProfileController {
     private view: ProfileViewInstance

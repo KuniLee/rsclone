@@ -3,6 +3,7 @@ import { Paths } from 'types/enums'
 import { PageModelInstance } from '../model/PageModel'
 import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
 import preloader from '@/templates/preloader.html'
+import postTemplate from '@/templates/post/post.hbs'
 
 type ArticleEventsName = 'LOAD_POST' | 'GO_TO'
 
@@ -45,16 +46,9 @@ export class ArticleView extends EventEmitter {
 </div>`
     }
 
-    // private setArticles() {
-    //     const articles = this.feedModel.articles
-    //     this.articles = articles.map((el) => new Preview(el))
-    //     this.articles.forEach((el) => el.on('GO_TO', (path) => this.emit('GO_TO', path)))
-    // }
-
     private render() {
         const feedEl = this.mainPageContainer?.querySelector('.post') as HTMLDivElement
-        feedEl.innerHTML = ''
-        console.log(this.feedModel.article)
+        feedEl.innerHTML = postTemplate({ article: this.feedModel.article })
     }
 
     private showPreloader() {

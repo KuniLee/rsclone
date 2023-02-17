@@ -1,0 +1,20 @@
+<article class="p-4 bg-color-light">
+  <div class="mb-1 flex items-center gap-1">
+    <div class="article__user cursor-pointer h-8 w-8 rounded overflow-hidden"><img class="h-full w-full object-cover" src="{{#if article.user.properties.avatar}}{{article.user.properties.avatar}}{{else}}{{/if}}" alt=""></div>
+    <span class="article__user cursor-pointer text-sm font-medium">{{article.user.displayName}}</span>
+    <span class="text-sm text-color-text-light"></span>
+  </div>
+  <h1 class="article__link text-xxl cursor-pointer font-medium">{{article.title}}</h1>
+  <div class="flex mb-4 flex-wrap gap-0.5 text-color-popup-text">
+    {{#each article.habs}}
+      <a href="#" class="article_hab hover:opacity-75 text-sm">{{this}}</a>
+    {{/each}}
+  </div>
+  {{#if article.preview.image}}<img class="w-full mb-4"
+      src="{{article.preview.image}}" alt="preview_image">
+  {{/if}}
+  {{#each article.preview.previewBlocks}}
+    <p>{{{this.value}}}</p>
+  {{/each}}
+  <button class="article__link py-2 px-5 mt-6 text-sm text-sky-900 focus:outline-none bg-white rounded-lg border border-sky-700 hover:border-sky-400 hover:bg-sky-200 hover:border-sky-100 focus:z-10 focus:ring-4 focus:ring-sky-200">{{article.preview.nextBtnText}}</button>
+</article>
