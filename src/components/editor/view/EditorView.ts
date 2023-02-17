@@ -6,10 +6,11 @@ import { Flows, Paths, Sandbox } from 'types/enums'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { Plugins, Sortable } from '@shopify/draggable'
 import { SortableEventNames } from '@shopify/draggable'
+import Dictionary, { getWords } from '@/utils/dictionary'
+import asideTemplate from '@/templates/aside.hbs'
 import 'select-pure'
 import { BlocksType, NewArticleData, ParsedArticle, ParsedPreviewArticle } from 'types/types'
 import authErrorPage from '@/templates/authError.hbs'
-import Dictionary, { getWords } from '@/utils/dictionary'
 import { EditorBlocks } from '@/utils/editorPopupWithBlocks'
 import headingBlockTemplate from '@/templates/textEditorHeaderTemplate.hbs'
 import quoteBlockTemplate from '@/templates/textEditorQuoteTemplate.hbs'
@@ -46,20 +47,34 @@ export class EditorView extends EventEmitter {
         })
     }
 
+    private createAside() {
+        const asideEl = document.createElement('aside')
+        asideEl.className = 'hidden lg:block basis-80 bg-color-light shrink-0 h-fit'
+        asideEl.innerHTML = asideTemplate({
+            words: getWords(Dictionary.Aside, this.pageModel.lang),
+        })
+        return asideEl
+    }
+
     private buildPage() {
         const main = document.querySelector('main')
+        const mainPageWrapperEl = document.createElement('div')
+        mainPageWrapperEl.className = 'flex gap-4'
+        const textEditorWrapperEl = document.createElement('div')
+        textEditorWrapperEl.className = 'w-full flex flex-col gap-4 bg-color-light min-h-[640px] pt-5'
         const flows = Object.keys(Flows)
             .filter((el) => el !== 'All')
             .map((el) => el.toLowerCase())
-        if (main) {
-            main.innerHTML = textEditor({
-                userName: this.pageModel.user.displayName,
-                userAvatar: this.pageModel.user.properties.avatar
-                    ? this.pageModel.user.properties.avatar
-                    : require('@/assets/icons/avatar.svg'),
-                flows,
-            })
-        }
+        textEditorWrapperEl.innerHTML = textEditor({
+            userName: this.pageModel.user.displayName,
+            userAvatar: this.pageModel.user.properties.avatar
+                ? this.pageModel.user.properties.avatar
+                : require('@/assets/icons/avatar.svg'),
+            flows,
+        })
+        const asideEl = this.createAside()
+        mainPageWrapperEl.append(textEditorWrapperEl, asideEl)
+        if (main) main.replaceChildren(mainPageWrapperEl)
         const popupMenu = document.querySelector('.menu') as HTMLElement
         if (popupMenu) {
             popupMenu.innerHTML = ''
