@@ -65,7 +65,7 @@ export class FeedController {
     private async loadArticles() {
         const queryConstants: QueryConstraint[] = [orderBy('createdAt', 'desc'), limit(5)]
         if (this.feedModel.currentFlow !== Flows.All)
-            queryConstants.push(where('flow', '==', this.feedModel.currentFlow?.slice(1)))
+            queryConstants.push(where('flows', 'array-contains', this.feedModel.currentFlow?.slice(1)))
         const ref = collection(this.db, 'articles')
         const querySnapshot = await getDocs(query(ref, ...queryConstants))
         const articles: Array<Article> = []
