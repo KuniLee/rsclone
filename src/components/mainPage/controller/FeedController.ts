@@ -10,11 +10,9 @@ import {
     Firestore,
     getDoc,
     getDocs,
-    getDownloadURL,
     limit,
     orderBy,
     query,
-    ref,
     where,
 } from '@/utils/FireBaseAPI'
 import type { QueryConstraint } from 'firebase/firestore'
@@ -76,26 +74,6 @@ export class FeedController {
             articles.push({ ...article, id: doc.id })
         })
         this.feedModel.latestArticle = querySnapshot.docs[querySnapshot.docs.length - 1]
-        return await Promise.all(articles.map((article) => this.downloadImage(article)))
-    }
-
-    private async downloadImage(article: Article) {
-        const [user, image] = await Promise.all([
-            (await getDoc(doc(this.db, 'users', article.userId))).data(),
-            getDownloadURL(ref(this.storage, article.preview.image)),
-        ])
-        article.preview.image = image
-        article.user = user as UserData
-        return article
-    }
-
-    private async downloadArticleData(article: Article) {
-        const [user, image] = await Promise.all([
-            (await getDoc(doc(this.db, 'users', article.userId))).data(),
-            getDownloadURL(ref(this.storage, article.preview.image)),
-        ])
-        article.preview.image = image
-        article.user = user as UserData
-        return article
+        return await Promise.all(articles.map((article) => this.api.downloadArticleData(article)))
     }
 }

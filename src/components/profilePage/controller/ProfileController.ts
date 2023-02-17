@@ -1,16 +1,6 @@
 import { Article, UserData } from 'types/types'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
-import {
-    collection,
-    FireBaseAPIInstance,
-    FirebaseStorage,
-    Firestore,
-    getDocs,
-    getDownloadURL,
-    query,
-    ref,
-    where,
-} from '@/utils/FireBaseAPI'
+import { collection, FireBaseAPIInstance, FirebaseStorage, Firestore, getDocs, query, where } from '@/utils/FireBaseAPI'
 import { Auth, User } from 'firebase/auth'
 import { ProfileModelInstance } from '../model/ProfileModel'
 import { ProfileViewInstance } from './../view/ProfileView'
@@ -73,14 +63,6 @@ export class ProfileController {
             const article = doc.data() as Article
             articles.push({ ...article, id: doc.id })
         })
-        return await Promise.all(articles.map((article) => this.downloadImage(article)))
-    }
-
-    private async downloadImage(article: Article) {
-        const imageRef = ref(this.storage, article.preview.image)
-        const [user, image] = await Promise.all([this.profileModel.userInfo, getDownloadURL(imageRef)])
-        article.preview.image = image
-        article.user = user
-        return article
+        return await Promise.all(articles.map((article) => this.api.downloadArticleData(article)))
     }
 }
