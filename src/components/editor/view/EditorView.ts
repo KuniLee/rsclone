@@ -61,7 +61,7 @@ export class EditorView extends EventEmitter {
         const mainPageWrapperEl = document.createElement('div')
         mainPageWrapperEl.className = 'flex gap-4'
         const textEditorWrapperEl = document.createElement('div')
-        textEditorWrapperEl.className = 'w-full flex flex-col gap-4 bg-color-light min-h-fit pt-5'
+        textEditorWrapperEl.className = 'w-full flex flex-col gap-4 bg-color-light min-h-[640px] pt-5'
         const flows = Object.keys(Flows)
             .filter((el) => el !== 'All')
             .map((el) => el.toLowerCase())
