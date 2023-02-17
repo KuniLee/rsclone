@@ -89,3 +89,49 @@ h1 {
     color: #4d80aa;
     transition: border-color 0.2s ease-out;
 }
+
+.headerElement[data-type='heading-1'] {
+    font-size: 24px
+}
+
+.headerElement[data-type='heading-1'] .heading-1 {
+    background-color: #eeeeee;
+}
+
+.headerElement[data-type='heading-2'] {
+    font-size: 22px
+}
+
+.headerElement[data-type='heading-2'] .heading-2 {
+    background-color: #eeeeee;
+}
+
+.headerElement[data-type='heading-3'] {
+    font-size: 20px
+}
+
+.headerElement[data-type='heading-3'] .heading-3 {
+    background-color: #eeeeee;
+}
+
+.plus {
+    display: none;
+}
+
+.plus.plusOpen {
+    display: unset
+}
+
+.plus.plusOpen {
+    opacity: 1 !important;
+}
+
+.activeMenu {
+    background-color: rgb(238 238 238);
+}
+
+.flows-input {
+    --border-color: rgb(211,215,219);
+    --select-outline: none;
+    --selected-background-color: #f0f0f0;
+}

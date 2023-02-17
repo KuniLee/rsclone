@@ -2,11 +2,20 @@ import EventEmitter from 'events'
 import type { EditorModel } from '../model/EditorModel'
 import textEditor from '@/templates/textEditor.hbs'
 import newField from '@/templates/textEditorNewField.hbs'
-import { Paths, Sandbox } from 'types/enums'
+import { Flows, Paths, Sandbox } from 'types/enums'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
-import { Sortable } from '@shopify/draggable'
+import { Plugins, Sortable } from '@shopify/draggable'
 import { SortableEventNames } from '@shopify/draggable'
-import { NewArticleData, ParsedArticle, ParsedPreviewArticle } from 'types/types'
+import 'select-pure'
+import { BlocksType, NewArticleData, ParsedArticle, ParsedPreviewArticle } from 'types/types'
+import authErrorPage from '@/templates/authError.hbs'
+import Dictionary, { getWords } from '@/utils/dictionary'
+import { EditorBlocks } from '@/utils/editorPopupWithBlocks'
+import headingBlockTemplate from '@/templates/textEditorHeaderTemplate.hbs'
+import quoteBlockTemplate from '@/templates/textEditorQuoteTemplate.hbs'
+import emptyParagraph from '@/templates/paragraph.hbs'
+import imageBlockTemplate from '@/templates/textEditorImageTemplate.hbs'
+import { SelectPure } from 'select-pure/lib/components'
 
 type ItemViewEventsName = 'GOTO' | 'ARTICLE_PARSED'
 
@@ -17,6 +26,7 @@ export class EditorView extends EventEmitter {
     private pageModel: PageModelInstance
     private isGlobalListener: boolean
     private previewEditorBuilded: boolean
+    private blocksPopup: EditorBlocks
 
     constructor(editorModel: EditorModel, pageModel: PageModelInstance) {
         super()
@@ -24,17 +34,40 @@ export class EditorView extends EventEmitter {
         this.pageModel = pageModel
         this.isGlobalListener = false
         this.previewEditorBuilded = false
+        this.blocksPopup = new EditorBlocks()
         this.pageModel.on('CHANGE_PAGE', () => {
             if (this.pageModel.path[0] === Paths.Sandbox && this.pageModel.path[1] === Sandbox.New) {
-                this.buildPage()
+                if (this.pageModel.user) {
+                    this.buildPage()
+                } else {
+                    this.showAuthFail()
+                }
             }
         })
     }
 
     private buildPage() {
         const main = document.querySelector('main')
+        const flows = Object.keys(Flows)
+            .filter((el) => el !== 'All')
+            .map((el) => el.toLowerCase())
         if (main) {
-            main.innerHTML = textEditor({})
+            main.innerHTML = textEditor({
+                userName: this.pageModel.user.displayName,
+                userAvatar: this.pageModel.user.properties.avatar
+                    ? this.pageModel.user.properties.avatar
+                    : require('@/assets/icons/avatar.svg'),
+                flows,
+            })
+        }
+        const popupMenu = document.querySelector('.menu') as HTMLElement
+        if (popupMenu) {
+            popupMenu.innerHTML = ''
+            const arrayWithBlocks = Array.from(this.blocksPopup.getListOfElements())
+            arrayWithBlocks.forEach((el) => {
+                popupMenu.append(el)
+            })
+            this.addEventListenersToPopup(popupMenu)
         }
         this.addGlobalEventListener()
         const editor = document.querySelector('.textEditor') as HTMLElement
@@ -43,12 +76,11 @@ export class EditorView extends EventEmitter {
             editor.querySelectorAll('.editable')?.forEach((el) => {
                 this.addTextInputListeners(el as HTMLElement, editor)
             })
-            editor.querySelectorAll('.textElement')?.forEach((el) => {
+            editor.querySelectorAll('.editorElement')?.forEach((el) => {
                 this.addTextElementListeners(el as HTMLElement, editor)
             })
             this.addDrag(editor)
         }
-        const hubsInput = document.querySelector('.hubs-input') as HTMLInputElement
         const keywordsInput = document.querySelector('.keywords-input') as HTMLInputElement
         const translateAuthor = document.querySelector('.translate__author') as HTMLInputElement
         const buttonText = document.querySelector('.buttonTextInput') as HTMLInputElement
@@ -66,18 +98,22 @@ export class EditorView extends EventEmitter {
                     this.checkSettings()
                 })
             }
-            const array = [hubsInput, keywordsInput, translateAuthor, translateCheckbox, translateLink, buttonText].map(
-                (el) => {
-                    if (el) {
-                        const element = el as HTMLElement
-                        element.addEventListener('input', () => {
-                            if (hubsInput && keywordsInput && translateAuthor && translateCheckbox && translateLink) {
-                                this.checkSettings()
-                            }
-                        })
-                    }
+            const selectPure = document.querySelector('select-pure') as SelectPure
+            if (selectPure) {
+                selectPure.addEventListener('change', (e) => {
+                    this.checkSettings()
+                })
+            }
+            const array = [keywordsInput, translateAuthor, translateCheckbox, translateLink, buttonText].map((el) => {
+                if (el) {
+                    const element = el as HTMLElement
+                    element.addEventListener('input', () => {
+                        if (keywordsInput && translateAuthor && translateCheckbox && translateLink) {
+                            this.checkSettings()
+                        }
+                    })
                 }
-            )
+            })
             this.addDrag(previewEditor)
         }
         document.querySelector('.isTranslate')?.addEventListener('change', () => {
@@ -102,15 +138,17 @@ export class EditorView extends EventEmitter {
             const submitButton = document.querySelector('.submitArticle') as HTMLButtonElement
             submitButton?.addEventListener('click', (e) => {
                 e.preventDefault()
-                if (hubsInput && keywordsInput && buttonText && translateCheckbox && translateLink && translateAuthor) {
+                if (keywordsInput && buttonText && translateCheckbox && translateLink && translateAuthor) {
                     submitButton.disabled = true
                     const parseMainEditorResult = this.parseArticle(editor)
                     const parsedPreviewResult = this.parseArticle(previewEditor)
+                    const title = String(parseMainEditorResult.blocks[0].value)
+                    parseMainEditorResult.blocks.shift()
                     const translateCheckbox = document.querySelector('.isTranslate-checkbox') as HTMLInputElement
-                    const parsedHubs = hubsInput.value ? hubsInput.value.split(', ') : []
                     const parsedKeywords = keywordsInput.value ? keywordsInput.value.split(', ') : []
                     const lang = (document.querySelector("input[name='lang']:checked") as HTMLInputElement)?.value
                     const image = document.querySelector('.preview-image') as HTMLImageElement
+                    const selectFlowInput = document.querySelector('select-pure') as SelectPure
                     const imageSrc = image ? image.getAttribute('src') : ''
                     const imageSrcResult = imageSrc ?? ''
                     const textButtonValue = buttonText.value
@@ -121,12 +159,12 @@ export class EditorView extends EventEmitter {
                     }
                     const result: NewArticleData = {
                         blocks: parseMainEditorResult.blocks,
-                        title: parseMainEditorResult.blocks[0].value,
-                        habs: parsedHubs,
+                        title: title,
                         keywords: parsedKeywords,
+                        flows: selectFlowInput.values,
                         lang: lang,
                         preview: preview,
-                        userId: '',
+                        userId: this.pageModel.user.uid,
                         translateAuthor: translateAuthor.value,
                         translateLink: translateLink.value,
                         isTranslate: translateCheckbox.checked,
@@ -147,38 +185,70 @@ export class EditorView extends EventEmitter {
                     if (!target.files.length) {
                         return
                     } else {
-                        const fileReader = new FileReader()
-                        fileReader.onload = () => {
-                            const previewImage = document.querySelector('.preview-image') as HTMLImageElement
-                            if (previewImage) {
-                                if (typeof fileReader.result === 'string') {
-                                    previewImage.src = fileReader.result
-                                    previewImage.classList.remove('hidden')
-                                    const textPreview = document.querySelector('.load-image-preview-text')
-                                    if (textPreview) {
-                                        textPreview.classList.add('hidden')
+                        const fileTypes = ['jpg', 'jpeg', 'png', 'gif']
+                        const extension = target.files[0].name.split('.').pop()?.toLowerCase()
+                        if (extension && fileTypes.indexOf(extension)) {
+                            const fileReader = new FileReader()
+                            fileReader.readAsDataURL(target.files[0])
+                            fileReader.onload = () => {
+                                const previewImage = document.querySelector('.preview-image') as HTMLImageElement
+                                if (previewImage) {
+                                    if (typeof fileReader.result === 'string') {
+                                        previewImage.src = fileReader.result
+                                        previewImage.classList.remove('hidden')
+                                        const textPreview = document.querySelector('.load-image-preview-text')
+                                        if (textPreview) {
+                                            textPreview.classList.add('hidden')
+                                        }
                                     }
                                 }
                             }
+                        } else {
+                            alert('wrong type of file')
                         }
-                        fileReader.readAsDataURL(target.files[0])
                     }
                 }
             }
         })
+        const dropZone = document.querySelector('.dropZone') as HTMLElement
+        if (dropZone) {
+            this.addDropZoneEvents(dropZone)
+        }
+        const dropZoneText = document.querySelector('.load-image-preview-text') as HTMLElement
+        if (dropZoneText) {
+            this.addDropZoneEvents(dropZoneText)
+        }
     }
 
     addDrag(list: HTMLElement) {
         const sortable = new Sortable<SortableEventNames | 'drag:stopped'>(list, {
-            draggable: '.textElement',
-            delay: {
-                mouse: 100,
-                drag: 100,
-                touch: 100,
+            draggable: '.editorElement',
+            mirror: {
+                constrainDimensions: true,
             },
+            delay: {
+                mouse: 0,
+                drag: 0,
+                touch: 0,
+            },
+            plugins: [Plugins.SortAnimation],
+            swapAnimation: {
+                duration: 200,
+                horizontal: false,
+                easingFunction: 'ease-in-out',
+            },
+        })
+        sortable.on('drag:start', (event) => {
+            const target = event.source
+            if (target) {
+                if (!target.querySelector('.startDrag')) {
+                    event.cancel()
+                }
+            }
         })
         sortable.on('drag:stopped', () => {
             this.hidePlaceholder(list)
+            this.removeStartDragClass()
         })
     }
 
@@ -194,7 +264,8 @@ export class EditorView extends EventEmitter {
     addGlobalEventListener() {
         if (!this.isGlobalListener) {
             this.isGlobalListener = true
-            document.addEventListener('click', () => {
+            const menu = document.querySelector('.menu') as HTMLElement
+            document.addEventListener('click', (el) => {
                 const modalOptionsList = document.querySelectorAll('.options__drop-menu')
                 modalOptionsList.forEach((el) => {
                     const element = el as HTMLElement
@@ -203,43 +274,93 @@ export class EditorView extends EventEmitter {
                         element.classList.remove('open')
                     }
                 })
+                if (menu) {
+                    menu.hidden = true
+                    document.querySelectorAll('.focused')?.forEach((el) => el.classList.remove('focused'))
+                }
+            })
+
+            document.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    if (menu && !menu.hidden) {
+                        const menuItemActive = menu.querySelector('.activeMenu') as HTMLButtonElement
+                        if (menuItemActive) {
+                            menuItemActive.click()
+                        }
+                    }
+                }
+            })
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                    if (menu && !menu.hidden) {
+                        this.navigateInMenu(e.key)
+                    }
+                }
             })
         }
     }
 
     addTextInputListeners(el: HTMLElement, editor: HTMLElement) {
+        const parent = el.parentNode as HTMLElement
+        const menu = document.querySelector('.menu') as HTMLElement
         el.addEventListener('keypress', (e) => {
-            e.preventDefault()
             const event = e as KeyboardEvent
-            const item = editor.querySelector('.focused')
-            if (event.key !== 'Enter' && item) {
-                const eventD = new KeyboardEvent('input', {
-                    key: event.key,
-                })
-                el.dispatchEvent(eventD)
-            }
+            const value = el.textContent
             if (event.key === 'Enter') {
-                this.addNewField(editor)
+                e.preventDefault()
+                if (menu && menu.hidden) {
+                    if (!el.closest('.quoteElement')) {
+                        this.addNewField(editor)
+                    }
+                    if (el.closest('.quoteElement')) {
+                        const listParagraphs = el.parentElement as HTMLElement
+                        const item = el.closest('.quoteElement') as HTMLElement
+                        if (value) {
+                            this.addNewParagraph(el)
+                        } else {
+                            if (listParagraphs) {
+                                if (listParagraphs.children.length !== 2) {
+                                    this.deleteElement(el, editor)
+                                } else {
+                                    if (item) {
+                                        this.deleteElement(item, editor)
+                                    }
+                                }
+                            }
+                            this.addNewField(editor)
+                        }
+                    }
+                }
             }
         })
         el.addEventListener('input', (e) => {
-            e.preventDefault()
             const event = e as KeyboardEvent
             const target = el as HTMLElement
-            if (event.key !== undefined) {
-                target.textContent += event.key
-                const sel = window.getSelection()
-                if (sel) {
-                    sel.selectAllChildren(el)
-                    sel.collapseToEnd()
-                }
-            }
             const value = target.textContent
-            const parent = el.parentNode as HTMLElement
             if (parent) {
                 if (value) {
                     parent.classList.add('before:hidden')
+                    const rect = el.getBoundingClientRect()
+                    const parentRect = editor.getBoundingClientRect()
+                    const elComputedStyles = getComputedStyle(el)
+                    parent?.querySelector('.plus')?.classList.remove('plusOpen')
+                    if (value.length === 1 && value === '/' && menu && el.closest('.textElement')) {
+                        menu.style.top = `${rect.top - parentRect.top + parseInt(elComputedStyles.height)}px`
+                        parent.classList.add('focusedItem')
+                        menu.hidden = false
+                    } else {
+                        menu.hidden = true
+                        parent.classList.remove('focusedItem')
+                    }
                 } else {
+                    document.querySelectorAll('.plusOpen')?.forEach((el) => {
+                        el.classList.remove('plusOpen')
+                    })
+                    parent?.querySelector('.plus')?.classList.add('plusOpen')
+                    if (menu) {
+                        menu.hidden = true
+                        parent.classList.remove('focusedItem')
+                    }
                     if (editor.lastElementChild === parent) {
                         parent.classList.remove('before:hidden')
                     }
@@ -251,37 +372,141 @@ export class EditorView extends EventEmitter {
             if (editor.classList.contains('textPreviewEditor')) {
                 this.checkSettings()
             }
+            if (parent && parent.classList.contains('textElement')) {
+                this.changeDragIconState(el)
+            }
         })
         el.addEventListener('keydown', (e) => {
             if (e.key === 'Backspace') {
                 const target = el as HTMLElement
                 const value = target.textContent
-                const parent = target.parentElement
-                const listOfElements = editor.querySelectorAll('.textElement')
-                if (value === '' && parent && parent.classList.contains('textElement') && listOfElements.length !== 1) {
-                    this.deleteElement(parent, editor)
+                const parent = target.closest('.editorElement') as HTMLElement
+                const listOfElements = editor.querySelectorAll('.editorElement')
+                if (value === '' && parent) {
+                    if (
+                        parent.classList.contains('editorElement') &&
+                        listOfElements.length !== 1 &&
+                        !parent.classList.contains('quoteElement')
+                    ) {
+                        this.deleteElement(parent, editor)
+                        e.preventDefault()
+                    }
+                    if (parent.classList.contains('quoteElement')) {
+                        const listParagraphs = el.parentElement as HTMLElement
+                        e.preventDefault()
+                        if (listParagraphs) {
+                            if (listParagraphs.children.length !== 2) {
+                                const elContainer = el.parentElement
+                                if (elContainer) {
+                                    const listOfElements: Array<HTMLElement> = Array.from(
+                                        elContainer.querySelectorAll('.editable')
+                                    )
+                                    const indexOf = listOfElements.indexOf(el)
+                                    if (indexOf) {
+                                        listOfElements[indexOf - 1]?.focus()
+                                    }
+                                    this.deleteElement(el, editor, false)
+                                }
+                            } else {
+                                this.deleteElement(parent, editor)
+                                if (listOfElements.length === 1) {
+                                    this.addNewField(editor)
+                                }
+                            }
+                        }
+                    }
                 }
             }
-        })
-        el.addEventListener('focus', () => {
-            const target = el as HTMLElement
-            const parent = target.parentElement
-            if (parent) {
-                parent.classList.add('focused')
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                if (menu && !menu.hidden) {
+                    e.preventDefault()
+                }
+                setTimeout(() => {
+                    const listOfEditors: Array<HTMLElement> = Array.from(editor.querySelectorAll('.editable'))
+                    const currentItemIndex = listOfEditors.indexOf(el)
+                    if (menu && menu.hidden) {
+                        if (currentItemIndex !== -1) {
+                            const selection = window.getSelection()
+                            if (selection) {
+                                const range = selection.getRangeAt(0).startOffset
+                                if (range === 0) {
+                                    if (e.key === 'ArrowUp') {
+                                        if (listOfEditors[currentItemIndex - 1] !== undefined) {
+                                            listOfEditors[currentItemIndex - 1].focus()
+                                        }
+                                    } else {
+                                        if (listOfEditors[currentItemIndex + 1] !== undefined) {
+                                            listOfEditors[currentItemIndex + 1].focus()
+                                        }
+                                    }
+                                }
+                                if (e.key === 'ArrowDown') {
+                                    if (el.textContent) {
+                                        if (el.textContent.length === range) {
+                                            if (listOfEditors[currentItemIndex + 1] !== undefined) {
+                                                listOfEditors[currentItemIndex + 1].focus()
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }, 0)
             }
         })
-        el.addEventListener('blur', () => {
+        el.addEventListener('focus', (e) => {
+            document.querySelectorAll('.focused')?.forEach((el) => el.classList.remove('focused'))
+            document.querySelectorAll('.focusedItem')?.forEach((el) => el.classList.remove('focusedItem'))
+            document.querySelectorAll('.plusOpen')?.forEach((el) => el.classList.remove('plusOpen'))
             const target = el as HTMLElement
-            const parent = target.parentElement
+            const parent = target.closest('.editorElement')
+            const range = document.createRange()
+            const selection = window.getSelection()
+            range.selectNodeContents(target)
+            range.collapse(false)
+            if (target.textContent === '') {
+                if (target.textContent.length) {
+                    parent?.querySelector('.plus')?.classList.remove('plusOpen')
+                } else {
+                    document.querySelectorAll('.plusOpen')?.forEach((el) => {
+                        el.classList.remove('plusOpen')
+                    })
+                    parent?.querySelector('.plus')?.classList.add('plusOpen')
+                }
+            }
+            if (selection) {
+                selection.removeAllRanges()
+                selection.addRange(range)
+            }
             if (parent) {
-                parent.classList.remove('focused')
+                parent.classList.add('focused')
             }
         })
     }
 
     addTextElementListeners(textElement: HTMLElement, editor: HTMLElement) {
+        'input change'.split(' ').forEach((eventName) => {
+            textElement.querySelector('.image-block__textarea')?.addEventListener(eventName, (e) => {
+                const target = e.target as HTMLElement
+                target.style.height = 22 + 'px'
+                target.style.height = target.scrollHeight + 'px'
+            })
+        })
+        textElement.addEventListener('pointerdown', (e) => {
+            const target = e.target as HTMLElement
+            const closest = target.closest('.drag')
+            if (closest) {
+                closest.classList.add('cursor-grabbing')
+                target.classList.add('startDrag')
+            }
+        })
         textElement.addEventListener('click', (e) => {
             const el = e.target as HTMLElement
+            document.querySelectorAll('.focused')?.forEach((el) => el.classList.remove('focused'))
+            document.querySelectorAll('.focusedItem')?.forEach((el) => el.classList.remove('focusedItem'))
+            el.closest('.editorElement')?.classList.add('focused')
+            el.closest('.editorElement')?.classList.add('focusedItem')
             document.querySelectorAll('.open')?.forEach((el) => {
                 el.classList.remove('open')
                 ;(el as HTMLElement).hidden = true
@@ -295,12 +520,73 @@ export class EditorView extends EventEmitter {
                     e.stopImmediatePropagation()
                 }
             }
+            const plusBlock = el.closest('.plus')
+            if (plusBlock) {
+                const menu = document.querySelector('.menu') as HTMLElement
+                const parent = el.closest('.editorElement')
+                if (menu && parent) {
+                    plusBlock.classList.add('plusOpen')
+                    parent.classList.add('focused')
+                    parent.classList.add('focusedItem')
+                    const rect = el.getBoundingClientRect()
+                    const parentRect = editor.getBoundingClientRect()
+                    const elComputedStyles = getComputedStyle(el)
+                    menu.style.top = `${rect.top - parentRect.top + parseInt(elComputedStyles.height)}px`
+                    menu.hidden = false
+                    e.stopImmediatePropagation()
+                }
+            }
+            if (el.closest('.imageContainer') && !textElement.classList.contains('image-added')) {
+                const inputField = textElement.querySelector('.image-elem__input') as HTMLInputElement
+                const event = new MouseEvent('click', { bubbles: false })
+                inputField?.dispatchEvent(event)
+                inputField?.addEventListener('change', (e) => {
+                    const target = e.target as HTMLInputElement
+                    if (target) {
+                        if (target.files) {
+                            if (!target.files.length) {
+                                return
+                            } else {
+                                const fileTypes = ['jpg', 'jpeg', 'png', 'gif']
+                                const extension = target.files[0].name.split('.').pop()?.toLowerCase()
+                                if (extension && fileTypes.indexOf(extension) !== -1) {
+                                    const fileReader = new FileReader()
+                                    fileReader.readAsDataURL(target.files[0])
+                                    fileReader.onload = () => {
+                                        const imgElement = textElement.querySelector('.image') as HTMLImageElement
+                                        const figureElem = textElement.querySelector('.imageFigureTag') as HTMLElement
+                                        const placeholder = textElement.querySelector(
+                                            '.imageElementPlaceholder'
+                                        ) as HTMLElement
+                                        if (imgElement && placeholder && figureElem) {
+                                            placeholder.hidden = true
+                                            if (typeof fileReader.result === 'string') {
+                                                imgElement.src = fileReader.result
+                                                figureElem.hidden = false
+                                                textElement.classList.add('image-added')
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    alert('wrong type of file')
+                                }
+                            }
+                        }
+                    }
+                })
+            }
         })
         textElement.querySelector('.delete-btn')?.addEventListener('click', (e) => {
             e.preventDefault()
-            if (editor.querySelectorAll('.textElement')?.length !== 1) {
+            if (editor.querySelectorAll('.editorElement')?.length !== 1) {
                 this.deleteElement(textElement, editor)
             }
+        })
+        textElement.querySelector('.choseAnotherImage')?.addEventListener('click', (e) => {
+            e.preventDefault()
+            const inputField = textElement.querySelector('.image-elem__input') as HTMLInputElement
+            const event = new MouseEvent('click', { bubbles: false })
+            inputField?.dispatchEvent(event)
         })
     }
     addNewField(editor: HTMLElement, value?: string) {
@@ -314,6 +600,11 @@ export class EditorView extends EventEmitter {
             if (newElem) {
                 if (editor.classList.contains('textPreviewEditor')) {
                     newElem.dataset.isEmpty = 'Введите текст'
+                    if (value) {
+                        const dragIcon = newElem.querySelector('.drag')
+                        dragIcon?.classList.remove('hidden')
+                    }
+                    newElem.querySelector('.plus')?.remove()
                 }
                 const newElemField = newElem.querySelector('.editable') as HTMLElement
                 if (newElemField) {
@@ -321,24 +612,49 @@ export class EditorView extends EventEmitter {
                     if (value) {
                         newElemField.textContent = value
                     }
-                    this.addTextInputListeners(newElemField, editor)
-                    this.addTextElementListeners(newElem, editor)
+                    this.addEventListenersForNewElement(newElem, newElemField, editor)
+                    document.querySelectorAll('.focused')?.forEach((el) => {
+                        el.classList.remove('focused')
+                    })
+                    document.querySelectorAll('.focusedItem')?.forEach((el) => {
+                        el.classList.remove('focusedItem')
+                    })
                     newElemField.focus()
                 }
             }
         }
         this.hidePlaceholder(editor)
     }
-    deleteElement(element: HTMLElement, editor: HTMLElement) {
+
+    addEventListenersForNewElement(element: HTMLElement, editable: HTMLElement, editor: HTMLElement) {
+        this.addTextInputListeners(editable, editor)
+        this.addTextElementListeners(element, editor)
+    }
+    deleteElement(element: HTMLElement, editor: HTMLElement, focusLastElement = true) {
+        const listOfElements: Array<HTMLElement> = Array.from(editor.querySelectorAll('.editorElement'))
+        const indexOfElement = listOfElements.indexOf(element)
         element.remove()
         if (editor) {
             const lastChild = editor.lastElementChild as HTMLElement
-            const lastChildInputField = lastChild.querySelector('.editable') as HTMLElement
-            if (lastChild && lastChildInputField) {
-                if (lastChildInputField.textContent === '') {
+            const lastChildInputFields = lastChild.querySelectorAll('.editable')
+            const last = lastChildInputFields[lastChildInputFields.length - 1] as HTMLElement
+            if (lastChild && last) {
+                if (last.textContent === '') {
                     lastChild.classList.remove('before:hidden')
                 }
-                lastChildInputField.focus()
+                if (focusLastElement) {
+                    if (indexOfElement) {
+                        const elementToFocus = listOfElements[indexOfElement - 1]?.querySelector(
+                            '.editable'
+                        ) as HTMLElement
+                        elementToFocus?.focus()
+                    } else {
+                        const elementToFocus = listOfElements[indexOfElement + 1]?.querySelector(
+                            '.editable'
+                        ) as HTMLElement
+                        elementToFocus?.focus()
+                    }
+                }
             }
         }
     }
@@ -365,7 +681,7 @@ export class EditorView extends EventEmitter {
 
     checkArticleFields() {
         let charactersCount = 0
-        document.querySelectorAll('.textElement')?.forEach((el) => {
+        document.querySelectorAll('.editorElement')?.forEach((el) => {
             const editableField = el.querySelector('.editable')
             if (editableField) {
                 if (editableField.textContent) {
@@ -377,16 +693,19 @@ export class EditorView extends EventEmitter {
     }
 
     hidePlaceholder(editor: HTMLElement) {
-        const elements = editor.querySelectorAll('.textElement')
+        const elements = editor.querySelectorAll('.editorElement')
         for (let i = 0; i < elements.length; i++) {
-            console.log(elements.length)
             if (elements.length - 1 !== i) {
-                elements[i].classList.add('before:hidden')
+                if (elements[i].classList.contains('textElement')) {
+                    elements[i].classList.add('before:hidden')
+                }
             } else {
-                const elem = elements[i].querySelector('.editable') as HTMLElement
-                if (elem) {
-                    if (elem.textContent?.length === 0) {
-                        elements[i].classList.remove('before:hidden')
+                if (elements[i].classList.contains('textElement')) {
+                    const elem = elements[i].querySelector('.editable') as HTMLElement
+                    if (elem) {
+                        if (elem.textContent?.length === 0) {
+                            elements[i].classList.remove('before:hidden')
+                        }
                     }
                 }
             }
@@ -401,19 +720,14 @@ export class EditorView extends EventEmitter {
                     const textField = el.querySelector('.editable')
                     if (textField && count < 3000) {
                         if (textField.textContent) {
-                            console.log(count + textField.textContent.length)
                             if (count + textField.textContent.length > 3000) {
                                 return
                             } else {
                                 count += textField.textContent.length
                             }
                             this.addNewField(previewEditor, textField.textContent)
-                        } else {
-                            this.addNewField(previewEditor)
                         }
                     }
-                } else {
-                    return
                 }
             })
         }
@@ -432,6 +746,19 @@ export class EditorView extends EventEmitter {
         }
     }
 
+    addNewParagraph(el: HTMLElement) {
+        const template = document.createElement('template')
+        template.innerHTML = emptyParagraph({})
+        el.after(template.content)
+        const newField = document.querySelector('.new') as HTMLElement
+        const editor = document.querySelector('.textEditor') as HTMLElement
+        if (newField && editor) {
+            newField.classList.remove('new')
+            this.addTextInputListeners(newField, editor)
+            newField.focus()
+        }
+    }
+
     parseArticle(editor: HTMLElement): ParsedArticle {
         const header = editor.querySelector('.articleHeader')
         const obj: ParsedArticle = {
@@ -444,15 +771,16 @@ export class EditorView extends EventEmitter {
                         options: {
                             size: 'h1',
                         },
-                        type: 'heading',
+                        type: 'title',
                         value: header.textContent,
                     },
                 ]
             }
         }
         editor.querySelectorAll('.editorElement')?.forEach((el) => {
+            const element = el as HTMLElement
+            const textField = el.querySelector('.editable')
             if (el.classList.contains('textElement')) {
-                const textField = el.querySelector('.editable')
                 if (textField) {
                     if (textField.textContent) {
                         obj.blocks.push({
@@ -460,9 +788,54 @@ export class EditorView extends EventEmitter {
                             value: textField.textContent,
                         })
                     } else {
+                        if (!editor.classList.contains('textPreviewEditor')) {
+                            obj.blocks.push({
+                                type: 'text',
+                                value: '',
+                            })
+                        }
+                    }
+                }
+            }
+            if (el.classList.contains('headerElement')) {
+                if (textField) {
+                    const type = element.dataset.type
+                    if (textField.textContent) {
                         obj.blocks.push({
-                            type: 'delimiter',
+                            type: 'heading',
+                            mod: type,
+                            value: textField.textContent,
+                        })
+                    } else {
+                        obj.blocks.push({
+                            type: 'text',
                             value: '',
+                        })
+                    }
+                }
+            }
+            if (el.classList.contains('quoteElement')) {
+                const quoteInputs: Array<BlocksType> = []
+                const quoteElements = el.querySelectorAll('.editable')?.forEach((el) => {
+                    quoteInputs.push({
+                        type: 'text',
+                        value: el.textContent ?? '',
+                    })
+                })
+                obj.blocks.push({
+                    type: 'quotes',
+                    value: quoteInputs,
+                })
+            }
+            if (el.classList.contains('imageElement')) {
+                const image = el.querySelector('.image') as HTMLImageElement
+                const figcaption = el.querySelector('.image-block__textarea') as HTMLTextAreaElement
+                if (image && figcaption) {
+                    if (image.src) {
+                        obj.blocks.push({
+                            type: 'image',
+                            imageSrc: image.src,
+                            value: figcaption.value,
                         })
                     }
                 }
@@ -472,17 +845,27 @@ export class EditorView extends EventEmitter {
     }
 
     checkSettings() {
-        const hubsInput = document.querySelector('.hubs-input') as HTMLInputElement
         const keywordsInput = document.querySelector('.keywords-input') as HTMLInputElement
         const translateAuthor = document.querySelector('.translate__author') as HTMLInputElement
         const buttonTextInput = document.querySelector('.buttonTextInput') as HTMLInputElement
         const translateCheckbox = document.querySelector('.isTranslate-checkbox') as HTMLInputElement
         const translateLink = document.querySelector('.translate__link') as HTMLInputElement
-        if (hubsInput && keywordsInput && translateAuthor && buttonTextInput && translateCheckbox && translateLink) {
-            const checkHubsResult = this.checkValue(hubsInput.value, new RegExp('[A-zА-я]{5,}'))
-            checkHubsResult
-                ? hubsInput.classList.remove('border-[#ff8d85]')
-                : hubsInput.classList.add('border-[#ff8d85]')
+        const selectFlowInput = document.querySelector('select-pure') as SelectPure
+        if (
+            keywordsInput &&
+            translateAuthor &&
+            buttonTextInput &&
+            translateCheckbox &&
+            translateLink &&
+            selectFlowInput
+        ) {
+            const checkFlowsResult = selectFlowInput.values.length > 0
+            const flowsError = document.querySelector('.flows-error')
+            if (flowsError) {
+                checkFlowsResult
+                    ? flowsError.classList.remove('text-[#ff8d85]')
+                    : flowsError.classList.add('text-[#ff8d85]')
+            }
             const checkKeywordsResult = this.checkValue(keywordsInput.value, new RegExp('[A-zА-я]{5,}'))
             checkKeywordsResult
                 ? keywordsInput.classList.remove('border-[#ff8d85]')
@@ -518,7 +901,6 @@ export class EditorView extends EventEmitter {
             const button = document.querySelector('.submitArticle') as HTMLButtonElement
             if (button) {
                 if (
-                    checkHubsResult &&
                     checkKeywordsResult &&
                     checkTranslateLink &&
                     checkTranslateAuthor &&
@@ -560,6 +942,162 @@ export class EditorView extends EventEmitter {
             })
             return count > 40 && count < 3000
         }
+    }
+
+    removeStartDragClass() {
+        document.querySelectorAll('.startDrag')?.forEach((el) => {
+            el.classList.remove('startDrag')
+        })
+        document.querySelectorAll('.drag')?.forEach((el) => {
+            el.classList.remove('cursor-grabbing')
+        })
+    }
+
+    changeDragIconState(el: HTMLElement) {
+        const value = el.textContent
+        const parent = el.parentElement
+        if (value) {
+            parent?.querySelector('.drag')?.classList.remove('hidden')
+        } else {
+            parent?.querySelector('.drag')?.classList.add('hidden')
+        }
+    }
+    showAuthFail() {
+        const main = document.querySelector('main') as HTMLElement
+        if (main) {
+            main.innerHTML = ''
+            const pageWrapper = document.createElement('div')
+            pageWrapper.className = 'sm:container mx-auto'
+            pageWrapper.innerHTML = authErrorPage({ words: getWords(Dictionary.errorPage, this.pageModel.lang) })
+            const mainPageBtn = pageWrapper.querySelector('button') as HTMLButtonElement
+            mainPageBtn.onclick = () => {
+                this.emit<string>('GOTO', location.origin)
+            }
+            main.append(pageWrapper)
+        }
+    }
+
+    addDropZoneEvents(el: HTMLElement) {
+        el.addEventListener('dragenter', (e) => {
+            e.preventDefault()
+        })
+        el.addEventListener('dragleave', (e) => {
+            e.preventDefault()
+            const target = e.target as HTMLElement
+            if (target) {
+                const parent = target.parentElement
+                if (parent && parent.classList.contains('previewImageBlock')) {
+                    parent.classList.add('border-color-gray-separator')
+                    parent.classList.remove('border-color-button')
+                }
+            }
+        })
+        el.addEventListener('dragover', (e) => {
+            e.preventDefault()
+            const target = e.target as HTMLElement
+            if (target) {
+                const parent = target.parentElement
+                if (parent && parent.classList.contains('previewImageBlock')) {
+                    parent.classList.remove('border-color-gray-separator')
+                    parent.classList.add('border-color-button')
+                }
+            }
+        })
+        el.addEventListener('drop', (e) => {
+            e.preventDefault()
+            const event = e as DragEventInit
+            const dt = event.dataTransfer
+            if (dt) {
+                const inputFile = document.querySelector('.image-preview') as HTMLInputElement
+                if (inputFile) {
+                    const event = new Event('change', { bubbles: true })
+                    inputFile.files = dt.files
+                    inputFile.dispatchEvent(event)
+                }
+            }
+        })
+    }
+
+    navigateInMenu(key: string) {
+        const menuElements = Array.from(document.querySelectorAll('.menuElement'))
+        const currentItem = document.querySelector('.activeMenu')
+        if (!currentItem) {
+            if (menuElements.length) {
+                menuElements[0].classList.add('activeMenu')
+            }
+        } else {
+            const currentIndex = menuElements.indexOf(currentItem)
+            if (key === 'ArrowUp') {
+                if (!menuElements[currentIndex - 1]) {
+                    menuElements.at(-1)?.classList.add('activeMenu')
+                } else {
+                    menuElements[currentIndex - 1].classList.add('activeMenu')
+                }
+            }
+            if (key === 'ArrowDown') {
+                if (!menuElements[currentIndex + 1]) {
+                    menuElements[0].classList.add('activeMenu')
+                } else {
+                    menuElements[currentIndex + 1].classList.add('activeMenu')
+                }
+            }
+            currentItem.classList.remove('activeMenu')
+        }
+    }
+
+    addEventListenersToPopup(popup: HTMLElement) {
+        const popupButtons = Array.from(popup.children)
+        popupButtons.forEach((el) => {
+            const element = el as HTMLElement
+            element.addEventListener('click', () => {
+                const item = document.querySelector('.focusedItem')
+                const editor = document.querySelector('.textEditor') as HTMLElement
+                if (item && editor) {
+                    const template = document.createElement('template')
+                    switch (element.dataset.type) {
+                        case 'heading':
+                            template.innerHTML = headingBlockTemplate({})
+                            break
+                        case 'quote':
+                            template.innerHTML = quoteBlockTemplate({})
+                            break
+                        case 'image':
+                            template.innerHTML = imageBlockTemplate({})
+                    }
+                    item.replaceWith(template.content)
+                    const newItem = document.querySelector('.new') as HTMLElement
+                    if (element.dataset.type === 'heading') {
+                        if (newItem) {
+                            newItem.querySelectorAll('.heading')?.forEach((el) => {
+                                const element = el as HTMLElement
+                                element.addEventListener('click', (e) => {
+                                    const parent = newItem.closest('.editorElement') as HTMLElement
+                                    if (parent) {
+                                        if (element.dataset.name) {
+                                            parent.dataset.type = element.dataset.name
+                                        }
+                                    }
+                                })
+                            })
+                        }
+                    }
+                    if (newItem) {
+                        const newItemField = newItem.querySelector('.editable') as HTMLElement
+                        if (editor && newItem) {
+                            newItem.classList.remove('new')
+                            this.addNewField(editor)
+                            if (newItemField) {
+                                this.addTextInputListeners(newItemField, editor)
+                                setTimeout(() => {
+                                    newItemField.focus()
+                                }, 0)
+                            }
+                            this.addTextElementListeners(newItem, editor)
+                        }
+                    }
+                }
+            })
+        })
     }
 
     emit<T>(event: ItemViewEventsName, arg?: T, articleData?: NewArticleData) {
