@@ -17,6 +17,8 @@ import { ProfileView } from './components/profilePage/view/ProfileView'
 import { ProfileController } from './components/profilePage/controller/ProfileController'
 import { ArticleView } from '@/components/mainPage/views/ArticleView'
 
+import test from '@/templates/test/test.hbs'
+
 const pageModel = new PageModel()
 const editorModel = new EditorModel()
 const feedModel = new FeedModel()
@@ -37,3 +39,5 @@ const feedController = new FeedController({ feedView, articleView }, { feedModel
 const appController = new AppController({ mainView, settingsView }, pageModel, router, api)
 const editorController = new EditorController(editorView, pageModel, editorModel, router, api)
 const profileController = new ProfileController(profileView, { profileModel, pageModel }, api)
+
+console.log(test({ kek: 'lol' }))

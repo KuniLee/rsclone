@@ -41,7 +41,7 @@ export class ArticleView extends EventEmitter {
     private renderPage() {
         this.mainPageContainer = document.querySelector('main') as HTMLElement
         this.mainPageContainer.innerHTML = `<div class="flex gap-4">
-<div class="w-full flex flex-col gap-4 feed"></div><aside class="hidden lg:block min-w-[300px] bg-color-light">Асайд</aside>
+<div class="w-full flex flex-col gap-4 post"></div><aside class="hidden lg:block min-w-[300px] bg-color-light">Асайд</aside>
 </div>`
     }
 
@@ -51,19 +51,14 @@ export class ArticleView extends EventEmitter {
     //     this.articles.forEach((el) => el.on('GO_TO', (path) => this.emit('GO_TO', path)))
     // }
 
-    // renderArticles() {
-    //     const feedEl = this.mainPageContainer?.querySelector('.feed') as HTMLDivElement
-    //     feedEl.innerHTML = ''
-    //     if (this.articles.length === 0) feedEl.innerHTML = 'no articles'
-    //     else feedEl.append(...this.articles.map((el) => el.render()))
-    // }
-
-    private showPreloader() {
-        const feedEl = this.mainPageContainer?.querySelector('.feed') as HTMLDivElement
-        feedEl.innerHTML = preloader
+    private render() {
+        const feedEl = this.mainPageContainer?.querySelector('.post') as HTMLDivElement
+        feedEl.innerHTML = ''
+        console.log(this.feedModel.article)
     }
 
-    private render() {
-        console.log(this.feedModel.article)
+    private showPreloader() {
+        const feedEl = this.mainPageContainer?.querySelector('.post') as HTMLDivElement
+        feedEl.innerHTML = preloader
     }
 }
