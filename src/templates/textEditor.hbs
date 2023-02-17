@@ -70,6 +70,18 @@
         </div>
         <div>
           <div>
+            <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Потоки</h3>
+            <div>
+              <select class="flows-input w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" name="flow-select" id="flow-select" multiple>
+                <option value="" disabled selected>Выберите поток</option>
+                {{#each flows}}
+                  <option value="{{this}}">{{this}}</option>
+                {{/each}}
+              </select>
+            </div>
+            <p class="text-gray-500 text-[12px] mb-4 mt-[9px]">Введите сюда от 1 до 10 ключевых слов, отделяя их запятыми</p>
+          </div>
+          <div>
             <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>Ключевые слова</h3>
             <div>
               <input class="keywords-input w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" placeholder="Введите ключевые слова">

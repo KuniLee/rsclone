@@ -2,7 +2,7 @@ import EventEmitter from 'events'
 import type { EditorModel } from '../model/EditorModel'
 import textEditor from '@/templates/textEditor.hbs'
 import newField from '@/templates/textEditorNewField.hbs'
-import { Paths, Sandbox } from 'types/enums'
+import { Flows, Paths, Sandbox } from 'types/enums'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { Plugins, Sortable } from '@shopify/draggable'
 import { SortableEventNames } from '@shopify/draggable'
@@ -46,12 +46,16 @@ export class EditorView extends EventEmitter {
 
     private buildPage() {
         const main = document.querySelector('main')
+        const flows = Object.keys(Flows)
+            .filter((el) => el !== 'All')
+            .map((el) => el.toLowerCase())
         if (main) {
             main.innerHTML = textEditor({
                 userName: this.pageModel.user.displayName,
                 userAvatar: this.pageModel.user.properties.avatar
                     ? this.pageModel.user.properties.avatar
                     : require('@/assets/icons/avatar.svg'),
+                flows,
             })
         }
         const popupMenu = document.querySelector('.menu') as HTMLElement
@@ -251,7 +255,7 @@ export class EditorView extends EventEmitter {
         if (!this.isGlobalListener) {
             this.isGlobalListener = true
             const menu = document.querySelector('.menu') as HTMLElement
-            document.addEventListener('click', () => {
+            document.addEventListener('click', (el) => {
                 const modalOptionsList = document.querySelectorAll('.options__drop-menu')
                 modalOptionsList.forEach((el) => {
                     const element = el as HTMLElement
@@ -470,9 +474,9 @@ export class EditorView extends EventEmitter {
         el.addEventListener('blur', () => {
             const target = el as HTMLElement
             const parent = target.closest('.editorElement')
-            parent?.querySelector('.plus')?.classList.remove('plusOpen')
             if (parent) {
                 parent.classList.remove('focused')
+                parent.classList.remove('focusedItem')
             }
         })
     }
@@ -495,6 +499,8 @@ export class EditorView extends EventEmitter {
         })
         textElement.addEventListener('click', (e) => {
             const el = e.target as HTMLElement
+            el.closest('.editorElement')?.classList.add('focused')
+            el.closest('.editorElement')?.classList.add('focusedItem')
             document.querySelectorAll('.open')?.forEach((el) => {
                 el.classList.remove('open')
                 ;(el as HTMLElement).hidden = true
@@ -508,7 +514,7 @@ export class EditorView extends EventEmitter {
                     e.stopImmediatePropagation()
                 }
             }
-            const plusBlock = el.querySelector('.plus')
+            const plusBlock = el.closest('.plus')
             if (plusBlock) {
                 const menu = document.querySelector('.menu') as HTMLElement
                 const parent = el.closest('.editorElement')
