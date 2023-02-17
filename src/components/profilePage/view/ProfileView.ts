@@ -9,7 +9,7 @@ import preloader from '@/templates/preloader.html'
 import { User } from 'firebase/auth'
 import { Preview } from '@/utils/previewBuilder'
 
-type ProfileViewEventsName = 'GOTO' | 'LOAD_USER_INFO' | 'LOAD_ARTICLES'
+type ProfileViewEventsName = 'GOTO' | 'LOAD_USER_INFO' | 'LOAD_ARTICLES' | 'GO_TO'
 
 export type ProfileViewInstance = InstanceType<typeof ProfileView>
 
@@ -88,6 +88,7 @@ export class ProfileView extends EventEmitter {
     private createArticles() {
         const articles = this.profileModel.articles
         this.articles = articles.map((article) => new Preview(article))
+        this.articles.forEach((el) => el.on('GO_TO', (path) => this.emit('GO_TO', path)))
     }
 
     private renderArticles() {
