@@ -54,7 +54,7 @@ export class EditorController {
                     for (const el of blocks) {
                         if (el.type === 'image') {
                             const image = el.imageSrc
-                            const imageRef = ref(this.storage, `articles/${docId}/${index}`)
+                            const imageRef = ref(this.storage, `articles/${docId}/image${index}`)
                             if (image != null) {
                                 await uploadString(imageRef, image, 'data_url')
                                 el.imageSrc = imageRef.fullPath
