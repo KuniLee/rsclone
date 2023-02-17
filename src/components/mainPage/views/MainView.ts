@@ -409,11 +409,9 @@ export class MainView extends EventEmitter {
     private createSidebarUserMenu() {
         const sidebarWrapper = document.createElement('div')
         sidebarWrapper.className = 'fixed inset-0 sidebar__body z-20'
-        const buttons = Object.keys(dictionary.buttons)
-            .slice(1)
-            .reduce((acc, key) => {
-                return { ...acc, [key]: dictionary.buttons[key][this.model.lang] }
-            }, {})
+        const buttons = Object.keys(dictionary.buttons).reduce((acc, key) => {
+            return { ...acc, [key]: dictionary.buttons[key][this.model.lang] }
+        }, {})
         sidebarWrapper.innerHTML = sidebarUserMenuTemplate({ buttons, user: this.model.user, emptyAvatar })
         return sidebarWrapper
     }
