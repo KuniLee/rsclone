@@ -49,6 +49,7 @@ export {
     where,
 }
 import EventEmitter from 'events'
+import { Article, UserData } from 'types/types'
 
 export type { User, Auth, Firestore, FirebaseStorage }
 
@@ -116,6 +117,23 @@ export class FireBaseAPI extends EventEmitter {
                 const errorMessage = error.message
                 return null
             })
+    }
+
+    async downloadArticleData(article: Article) {
+        try {
+            article.user = (await getDoc(doc(this.db, 'users', article.userId))).data() as UserData
+        } catch (e) {
+            console.log(e)
+        }
+        if (article.preview.image) {
+            try {
+                const image = await getDownloadURL(ref(this.storage, article.preview.image))
+                if (image) article.preview.image = image
+            } catch (e) {
+                console.log(e)
+            }
+        }
+        return article
     }
 
     async signOut() {

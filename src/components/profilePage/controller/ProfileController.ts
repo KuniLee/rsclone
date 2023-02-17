@@ -1,9 +1,11 @@
-import { UserData } from 'types/types'
+import { Article, UserData } from 'types/types'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
-import { collection, FireBaseAPIInstance, Firestore, getDocs, query, where } from '@/utils/FireBaseAPI'
-import { Auth, getAuth, User } from 'firebase/auth'
+import { collection, FireBaseAPIInstance, FirebaseStorage, Firestore, getDocs, query, where } from '@/utils/FireBaseAPI'
+import { Auth, User } from 'firebase/auth'
 import { ProfileModelInstance } from '../model/ProfileModel'
 import { ProfileViewInstance } from './../view/ProfileView'
+import { limit, orderBy, QueryConstraint } from 'firebase/firestore'
+import { URLParams } from 'types/interfaces'
 
 export class ProfileController {
     private view: ProfileViewInstance
@@ -11,6 +13,7 @@ export class ProfileController {
     private pageModel: PageModelInstance
     private db: Firestore
     private auth: Auth
+    private storage: FirebaseStorage
 
     constructor(
         view: ProfileViewInstance,
@@ -19,13 +22,23 @@ export class ProfileController {
     ) {
         this.db = api.db
         this.auth = api.auth
+        this.storage = api.storage
         this.view = view
         this.pageModel = models.pageModel
         this.profileModel = models.profileModel
         this.view.on('LOAD_USER_INFO', async (username: User['displayName']) => {
             const userInfo = await this.getUserInfo(username)
             if (!userInfo) this.pageModel.goTo404()
-            else this.profileModel.setUserInfo = userInfo
+            else this.profileModel.userInfo = userInfo
+        })
+        this.view.on('LOAD_ARTICLES', async () => {
+            if (this.profileModel.userInfo) {
+                const uid = this.profileModel.userInfo.uid
+                this.profileModel.articles = await this.loadArticles(uid)
+            }
+        })
+        this.view.on<URLParams>('GO_TO', (path) => {
+            this.pageModel.changePage(path)
         })
     }
 
@@ -33,9 +46,23 @@ export class ProfileController {
         try {
             const q = query(collection(this.db, 'users'), where('displayName', '==', username))
             const querySnapshot = await getDocs(q)
-            if (!querySnapshot.empty) return querySnapshot.docs[0].data() as UserData
+            if (!querySnapshot.empty)
+                return { uid: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as UserData
         } catch (error) {
             console.log('Error fetching user data:', error)
         }
+    }
+
+    private async loadArticles(id: User['uid']) {
+        const queryConstants: QueryConstraint[] = [where('userId', '==', id), orderBy('createdAt', 'desc'), limit(5)]
+        const articlesRef = collection(this.db, 'articles')
+        const q = query(articlesRef, ...queryConstants)
+        const querySnapshot = await getDocs(q)
+        const articles: Array<Article> = []
+        querySnapshot.forEach((doc) => {
+            const article = doc.data() as Article
+            articles.push({ ...article, id: doc.id })
+        })
+        return await Promise.all(articles.map((article) => this.api.downloadArticleData(article)))
     }
 }

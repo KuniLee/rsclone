@@ -44,12 +44,7 @@ export class PageModel extends EventEmitter {
                 this.path = [Paths.All]
                 this.goToFlows()
                 break
-            case Paths.News:
-                this.goToNews()
-                break
             case Paths.All:
-                this.goToFlows()
-                break
             case Paths.Flows:
                 this.goToFlows()
                 break
@@ -58,6 +53,9 @@ export class PageModel extends EventEmitter {
                 break
             case Paths.Auth:
                 this.goToAuth()
+                break
+            case Paths.Post:
+                this.emit('CHANGE_PAGE')
                 break
             case Paths.Search:
                 this.goToSearch()
@@ -102,11 +100,6 @@ export class PageModel extends EventEmitter {
     public goTo404() {
         console.log('страница 404')
         this.emit('404')
-    }
-
-    private goToNews() {
-        console.log('страница news')
-        this.emit('CHANGE_PAGE')
     }
 
     private goToAuth() {
