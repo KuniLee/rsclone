@@ -1,5 +1,6 @@
 import { Timestamp } from 'firebase/firestore'
 import type { StorageReference } from 'firebase/storage'
+import { Flows } from 'types/enums'
 
 export type FirebaseConfigType = {
     storageBucket: string
@@ -22,6 +23,7 @@ export type AuthViewTypes = {
 export type Article = {
     createdAt: Timestamp
     id: string
+    flows: Array<Flows>
     title: string
     userId: string
     images: StorageReference
