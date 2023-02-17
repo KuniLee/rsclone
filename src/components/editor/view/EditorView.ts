@@ -130,6 +130,8 @@ export class EditorView extends EventEmitter {
                     submitButton.disabled = true
                     const parseMainEditorResult = this.parseArticle(editor)
                     const parsedPreviewResult = this.parseArticle(previewEditor)
+                    const title = String(parseMainEditorResult.blocks[0].value)
+                    parseMainEditorResult.blocks.shift()
                     const translateCheckbox = document.querySelector('.isTranslate-checkbox') as HTMLInputElement
                     const parsedKeywords = keywordsInput.value ? keywordsInput.value.split(', ') : []
                     const lang = (document.querySelector("input[name='lang']:checked") as HTMLInputElement)?.value
@@ -144,7 +146,7 @@ export class EditorView extends EventEmitter {
                     }
                     const result: NewArticleData = {
                         blocks: parseMainEditorResult.blocks,
-                        title: String(parseMainEditorResult.blocks[0].value),
+                        title: title,
                         keywords: parsedKeywords,
                         lang: lang,
                         preview: preview,
