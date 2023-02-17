@@ -68,6 +68,14 @@ const ProfilePage: Record<string, language> = {
     Posts: { ru: 'Публикации', en: 'Posts' },
 }
 
+const PageNotFound: Record<string, language> = {
+    Title: { ru: 'Страница не найдена', en: 'Page not found' },
+    Message: {
+        ru: 'Страница устарела, была удалена или не существовала вовсе',
+        en: 'Page is outdated, was removed or never existed at all',
+    },
+}
+
 export function getWords(wordObj: Record<string, language>, lang: keyof language) {
     const result: Record<string, string> = {}
     for (const wordObjKey in wordObj) {
@@ -76,4 +84,4 @@ export function getWords(wordObj: Record<string, language>, lang: keyof language
     return result
 }
 
-export default { flowsNames, buttons, popupSettings, logo, ProfileSettings, errorPage, ProfilePage }
+export default { flowsNames, buttons, popupSettings, logo, ProfileSettings, errorPage, ProfilePage, PageNotFound }

@@ -24,7 +24,7 @@ export class MainView extends EventEmitter {
         super()
         this.model = model
         this.mainPageContainer = document.createElement('main')
-        this.mainPageContainer.classList.add('main', 'sm:mt-3', 'mb-10')
+        this.mainPageContainer.className = 'main sm:mt-3 mb-10 container mx-auto'
         this.footerEl = this.createFooter()
         this.showPreloader()
         this.model.on('404', () => {
@@ -35,11 +35,16 @@ export class MainView extends EventEmitter {
             this.emit('PAGE_BUILD')
         })
         this.model.on('CHANGE_PAGE', () => {
-            const path = this.model.path
-            if (path.join('') === Paths.All) {
-                const flowsLinksEl = document.querySelectorAll('.nav__link')
-                if (flowsLinksEl[0] instanceof HTMLElement) this.setActiveLink(flowsLinksEl, flowsLinksEl[0])
-            }
+            const path = this.model.path.join('').slice(1)
+            const flowsLinksEl = document.querySelectorAll('.nav__link')
+            flowsLinksEl.forEach((flowLinkEl) => {
+                if (flowLinkEl instanceof HTMLAnchorElement) {
+                    let flowLinkHref = flowLinkEl.href.split('/').slice(-2).join('/')
+                    const allFlowLinkHref = Paths.Flows.slice(1) + Flows.All
+                    if (flowLinkHref === allFlowLinkHref) flowLinkHref = flowLinkHref.split('/').slice(1).join('')
+                    if (flowLinkHref === path) this.setActiveLink(flowsLinksEl, flowLinkEl)
+                }
+            })
         })
     }
 
@@ -181,7 +186,16 @@ export class MainView extends EventEmitter {
     }
 
     show404page() {
-        this.mainPageContainer.innerText = '404'
+        const pageNotFoundWrapper = document.createElement('div')
+        pageNotFoundWrapper.className = 'p-4'
+        const errorTitle = document.createElement('h2')
+        errorTitle.className = 'text-xl font-semibold text-color-text-dark mb-3'
+        errorTitle.textContent = dictionary.PageNotFound.Title[this.model.lang]
+        const errorMessage = document.createElement('p')
+        errorMessage.className = 'text-color-text-dark'
+        errorMessage.textContent = dictionary.PageNotFound.Message[this.model.lang]
+        pageNotFoundWrapper.append(errorTitle, errorMessage)
+        this.mainPageContainer.replaceChildren(pageNotFoundWrapper)
     }
 
     private openSidebarUserMenu({

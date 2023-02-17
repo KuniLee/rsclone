@@ -40,27 +40,6 @@
   filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
 }
 
-.ico_bell {
-  background: url(../assets/icons/ico-bell.svg) center no-repeat;
-  background-size: contain;
-  width: 24px;
-  height: 24px;
-}
-
-.ico_bell:hover {
-  filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
-}
-
-.ico_bell-light {
-  background: url(../assets/icons/ico-bell1.svg) center no-repeat;
-  background-size: contain;
-}
-
-.ico_bell-light:hover {
-  filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
-}
-
-
 .ico_pen {
   background: url(../assets/icons/ico-pen.svg) center no-repeat;
   background-size: contain;
