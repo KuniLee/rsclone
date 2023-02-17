@@ -276,6 +276,7 @@ export class EditorView extends EventEmitter {
                 })
                 if (menu) {
                     menu.hidden = true
+                    document.querySelectorAll('.focused')?.forEach((el) => el.classList.remove('focused'))
                 }
             })
 
@@ -434,7 +435,6 @@ export class EditorView extends EventEmitter {
                                             listOfEditors[currentItemIndex - 1].focus()
                                         }
                                     } else {
-                                        console.log(listOfEditors[currentItemIndex + 1])
                                         if (listOfEditors[currentItemIndex + 1] !== undefined) {
                                             listOfEditors[currentItemIndex + 1].focus()
                                         }
@@ -456,6 +456,9 @@ export class EditorView extends EventEmitter {
             }
         })
         el.addEventListener('focus', (e) => {
+            document.querySelectorAll('.focused')?.forEach((el) => el.classList.remove('focused'))
+            document.querySelectorAll('.focusedItem')?.forEach((el) => el.classList.remove('focusedItem'))
+            document.querySelectorAll('.plusOpen')?.forEach((el) => el.classList.remove('plusOpen'))
             const target = el as HTMLElement
             const parent = target.closest('.editorElement')
             const range = document.createRange()
@@ -464,7 +467,6 @@ export class EditorView extends EventEmitter {
             range.collapse(false)
             if (target.textContent === '') {
                 if (target.textContent.length) {
-                    console.log(parent?.querySelector('.plus'))
                     parent?.querySelector('.plus')?.classList.remove('plusOpen')
                 } else {
                     document.querySelectorAll('.plusOpen')?.forEach((el) => {
@@ -479,14 +481,6 @@ export class EditorView extends EventEmitter {
             }
             if (parent) {
                 parent.classList.add('focused')
-            }
-        })
-        el.addEventListener('blur', () => {
-            const target = el as HTMLElement
-            const parent = target.closest('.editorElement')
-            if (parent) {
-                parent.classList.remove('focused')
-                parent.classList.remove('focusedItem')
             }
         })
     }
@@ -509,6 +503,8 @@ export class EditorView extends EventEmitter {
         })
         textElement.addEventListener('click', (e) => {
             const el = e.target as HTMLElement
+            document.querySelectorAll('.focused')?.forEach((el) => el.classList.remove('focused'))
+            document.querySelectorAll('.focusedItem')?.forEach((el) => el.classList.remove('focusedItem'))
             el.closest('.editorElement')?.classList.add('focused')
             el.closest('.editorElement')?.classList.add('focusedItem')
             document.querySelectorAll('.open')?.forEach((el) => {
@@ -531,12 +527,12 @@ export class EditorView extends EventEmitter {
                 if (menu && parent) {
                     plusBlock.classList.add('plusOpen')
                     parent.classList.add('focused')
+                    parent.classList.add('focusedItem')
                     const rect = el.getBoundingClientRect()
                     const parentRect = editor.getBoundingClientRect()
                     const elComputedStyles = getComputedStyle(el)
                     menu.style.top = `${rect.top - parentRect.top + parseInt(elComputedStyles.height)}px`
                     menu.hidden = false
-                    parent.classList.add('focusedItem')
                     e.stopImmediatePropagation()
                 }
             }
@@ -557,7 +553,6 @@ export class EditorView extends EventEmitter {
                                     const fileReader = new FileReader()
                                     fileReader.readAsDataURL(target.files[0])
                                     fileReader.onload = () => {
-                                        console.log(fileReader.result)
                                         const imgElement = textElement.querySelector('.image') as HTMLImageElement
                                         const figureElem = textElement.querySelector('.imageFigureTag') as HTMLElement
                                         const placeholder = textElement.querySelector(
@@ -591,7 +586,6 @@ export class EditorView extends EventEmitter {
             e.preventDefault()
             const inputField = textElement.querySelector('.image-elem__input') as HTMLInputElement
             const event = new MouseEvent('click', { bubbles: false })
-            console.log(inputField)
             inputField?.dispatchEvent(event)
         })
     }
@@ -619,6 +613,12 @@ export class EditorView extends EventEmitter {
                         newElemField.textContent = value
                     }
                     this.addEventListenersForNewElement(newElem, newElemField, editor)
+                    document.querySelectorAll('.focused')?.forEach((el) => {
+                        el.classList.remove('focused')
+                    })
+                    document.querySelectorAll('.focusedItem')?.forEach((el) => {
+                        el.classList.remove('focusedItem')
+                    })
                     newElemField.focus()
                 }
             }
@@ -841,7 +841,6 @@ export class EditorView extends EventEmitter {
                 }
             }
         })
-        console.log(obj)
         return obj
     }
 
@@ -1055,7 +1054,6 @@ export class EditorView extends EventEmitter {
                 const editor = document.querySelector('.textEditor') as HTMLElement
                 if (item && editor) {
                     const template = document.createElement('template')
-                    console.log(element)
                     switch (element.dataset.type) {
                         case 'heading':
                             template.innerHTML = headingBlockTemplate({})
@@ -1087,12 +1085,14 @@ export class EditorView extends EventEmitter {
                         const newItemField = newItem.querySelector('.editable') as HTMLElement
                         if (editor && newItem) {
                             newItem.classList.remove('new')
+                            this.addNewField(editor)
                             if (newItemField) {
                                 this.addTextInputListeners(newItemField, editor)
-                                newItemField.focus()
+                                setTimeout(() => {
+                                    newItemField.focus()
+                                }, 0)
                             }
                             this.addTextElementListeners(newItem, editor)
-                            setTimeout(() => this.addNewField(editor))
                         }
                     }
                 }
