@@ -77,6 +77,7 @@ export type ParsedPreviewArticle = {
 export type NewArticleData = {
     blocks: Array<BlocksType>
     title: string
+    flows: Array<string>
     keywords: Array<string>
     lang: string
     preview: ParsedPreviewArticle

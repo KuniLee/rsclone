@@ -129,3 +129,8 @@ h1 {
 .activeMenu {
     background-color: rgb(238 238 238);
 }
+
+.flows-input {
+    --border-color: rgb(211,215,219);
+    --select-outline: none;
+}

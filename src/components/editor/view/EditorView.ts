@@ -15,6 +15,7 @@ import headingBlockTemplate from '@/templates/textEditorHeaderTemplate.hbs'
 import quoteBlockTemplate from '@/templates/textEditorQuoteTemplate.hbs'
 import emptyParagraph from '@/templates/paragraph.hbs'
 import imageBlockTemplate from '@/templates/textEditorImageTemplate.hbs'
+import { SelectPure } from 'select-pure/lib/components'
 
 type ItemViewEventsName = 'GOTO' | 'ARTICLE_PARSED'
 
@@ -97,6 +98,12 @@ export class EditorView extends EventEmitter {
                     this.checkSettings()
                 })
             }
+            const selectPure = document.querySelector('select-pure') as SelectPure
+            if (selectPure) {
+                selectPure.addEventListener('change', (e) => {
+                    this.checkSettings()
+                })
+            }
             const array = [keywordsInput, translateAuthor, translateCheckbox, translateLink, buttonText].map((el) => {
                 if (el) {
                     const element = el as HTMLElement
@@ -141,6 +148,7 @@ export class EditorView extends EventEmitter {
                     const parsedKeywords = keywordsInput.value ? keywordsInput.value.split(', ') : []
                     const lang = (document.querySelector("input[name='lang']:checked") as HTMLInputElement)?.value
                     const image = document.querySelector('.preview-image') as HTMLImageElement
+                    const selectFlowInput = document.querySelector('select-pure') as SelectPure
                     const imageSrc = image ? image.getAttribute('src') : ''
                     const imageSrcResult = imageSrc ?? ''
                     const textButtonValue = buttonText.value
@@ -153,6 +161,7 @@ export class EditorView extends EventEmitter {
                         blocks: parseMainEditorResult.blocks,
                         title: title,
                         keywords: parsedKeywords,
+                        flows: selectFlowInput.values,
                         lang: lang,
                         preview: preview,
                         userId: this.pageModel.user.uid,
@@ -822,11 +831,13 @@ export class EditorView extends EventEmitter {
                 const image = el.querySelector('.image') as HTMLImageElement
                 const figcaption = el.querySelector('.image-block__textarea') as HTMLTextAreaElement
                 if (image && figcaption) {
-                    obj.blocks.push({
-                        type: 'image',
-                        imageSrc: image.src,
-                        value: figcaption.value,
-                    })
+                    if (image.src) {
+                        obj.blocks.push({
+                            type: 'image',
+                            imageSrc: image.src,
+                            value: figcaption.value,
+                        })
+                    }
                 }
             }
         })
@@ -840,7 +851,22 @@ export class EditorView extends EventEmitter {
         const buttonTextInput = document.querySelector('.buttonTextInput') as HTMLInputElement
         const translateCheckbox = document.querySelector('.isTranslate-checkbox') as HTMLInputElement
         const translateLink = document.querySelector('.translate__link') as HTMLInputElement
-        if (keywordsInput && translateAuthor && buttonTextInput && translateCheckbox && translateLink) {
+        const selectFlowInput = document.querySelector('select-pure') as SelectPure
+        if (
+            keywordsInput &&
+            translateAuthor &&
+            buttonTextInput &&
+            translateCheckbox &&
+            translateLink &&
+            selectFlowInput
+        ) {
+            const checkFlowsResult = selectFlowInput.values.length > 0
+            const flowsError = document.querySelector('.flows-error')
+            if (flowsError) {
+                checkFlowsResult
+                    ? flowsError.classList.remove('text-[#ff8d85]')
+                    : flowsError.classList.add('text-[#ff8d85]')
+            }
             const checkKeywordsResult = this.checkValue(keywordsInput.value, new RegExp('[A-zА-я]{5,}'))
             checkKeywordsResult
                 ? keywordsInput.classList.remove('border-[#ff8d85]')
