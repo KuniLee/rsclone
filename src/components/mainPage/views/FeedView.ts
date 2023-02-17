@@ -1,9 +1,11 @@
+import dictionary, { getWords } from '@/utils/dictionary'
 import EventEmitter from 'events'
 import { Flows, Paths } from 'types/enums'
 import { PageModelInstance } from '../model/PageModel'
 import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
 import preloader from '@/templates/preloader.html'
 import { Preview } from '@/utils/previewBuilder'
+import asideTemplate from '@/templates/aside.hbs'
 
 type FeedViewEventsName = 'LOAD_ARTICLES' | 'DOWNLOAD_IMAGE' | 'UPLOAD_IMAGE' | 'GO_TO'
 
@@ -43,9 +45,22 @@ export class FeedView extends EventEmitter {
 
     private renderPage() {
         this.mainPageContainer = document.querySelector('main') as HTMLElement
-        this.mainPageContainer.innerHTML = `<div class="flex gap-4">
-<div class="w-full flex flex-col gap-4 feed"></div><aside class="hidden lg:block min-w-[300px] bg-color-light">Асайд</aside>
-</div>`
+        const mainPageWrapperEl = document.createElement('div')
+        mainPageWrapperEl.className = 'flex gap-4'
+        const feedEl = document.createElement('div')
+        feedEl.className = 'w-full flex flex-col gap-4 feed'
+        const asideEl = this.createAside()
+        mainPageWrapperEl.append(feedEl, asideEl)
+        this.mainPageContainer.replaceChildren(mainPageWrapperEl)
+    }
+
+    private createAside() {
+        const asideEl = document.createElement('aside')
+        asideEl.className = 'hidden lg:block basis-80 bg-color-light shrink-0 h-fit'
+        asideEl.innerHTML = asideTemplate({
+            words: getWords(dictionary.Aside, this.pageModel.lang),
+        })
+        return asideEl
     }
 
     private setArticles() {

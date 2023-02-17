@@ -95,6 +95,14 @@
   height: 20px;
 }
 
+.rs-sloth {
+  margin: auto;
+  background: url(../assets/icons/rs-sloth.svg) center no-repeat;
+  background-size: contain;
+  width: 10rem;
+  height: 10rem;
+}
+
 .drop-down-menu__body {
   position: absolute;
   right: 0;

@@ -7,6 +7,8 @@ import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { Sortable } from '@shopify/draggable'
 import { SortableEventNames } from '@shopify/draggable'
 import { NewArticleData, ParsedArticle, ParsedPreviewArticle } from 'types/types'
+import dictionary, { getWords } from '@/utils/dictionary'
+import asideTemplate from '@/templates/aside.hbs'
 
 type ItemViewEventsName = 'GOTO' | 'ARTICLE_PARSED'
 
@@ -31,10 +33,26 @@ export class EditorView extends EventEmitter {
         })
     }
 
+    private createAside() {
+        const asideEl = document.createElement('aside')
+        asideEl.className = 'hidden lg:block basis-80 bg-color-light shrink-0 h-fit'
+        asideEl.innerHTML = asideTemplate({
+            words: getWords(dictionary.Aside, this.pageModel.lang),
+        })
+        return asideEl
+    }
+
     private buildPage() {
         const main = document.querySelector('main')
+        const mainPageWrapperEl = document.createElement('div')
+        mainPageWrapperEl.className = 'flex gap-4'
+        const textEditorWrapperEl = document.createElement('div')
+        textEditorWrapperEl.className = 'w-full flex flex-col gap-4 bg-color-light min-h-fit pt-5'
+        textEditorWrapperEl.innerHTML = textEditor({})
+        const asideEl = this.createAside()
+        mainPageWrapperEl.append(textEditorWrapperEl, asideEl)
         if (main) {
-            main.innerHTML = textEditor({})
+            main.replaceChildren(mainPageWrapperEl)
         }
         this.addGlobalEventListener()
         const editor = document.querySelector('.textEditor') as HTMLElement
