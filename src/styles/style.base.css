@@ -133,4 +133,5 @@ h1 {
 .flows-input {
     --border-color: rgb(211,215,219);
     --select-outline: none;
+    --selected-background-color: #f0f0f0;
 }
