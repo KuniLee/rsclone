@@ -57,9 +57,6 @@ export class PageModel extends EventEmitter {
             case Paths.Post:
                 this.emit('CHANGE_PAGE')
                 break
-            case Paths.Search:
-                this.goToSearch()
-                break
             case Paths.Settings:
                 if (Object.values(SettingsPaths).includes(this.path[1] as SettingsPaths)) this.emit('CHANGE_PAGE')
                 else this.goTo404()
@@ -110,11 +107,6 @@ export class PageModel extends EventEmitter {
     private goToProfile() {
         if (this.path.length === 2 && this.path[0] === Paths.UsersPage) this.emit('CHANGE_PAGE')
         else this.goTo404()
-    }
-
-    private goToSearch() {
-        console.log('страница search')
-        this.emit('CHANGE_PAGE')
     }
 
     changeAuth(userData?: UserData) {

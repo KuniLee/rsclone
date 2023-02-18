@@ -13,9 +13,6 @@
     {{#if flows}}
     <div class="gap-5 flex header__user-menu user-menu md:hidden ml-auto items-center px-3 md:px-0">
       {{#if user}}
-      <a href="/search" class="h-6 header__link">
-        <span class="ico ico_search ico_search-light"></span>
-      </a>
       <a href="/sandbox/new" class="flex items-center header__link">
         <span class="ico ico_pen ico_pen-light"></span>
       </a>
@@ -32,9 +29,6 @@
         </div>
       </div>
       {{else}}
-      <a href="/search" class="flex items-center header__link">
-        <span class="ico ico_search ico_search-light"></span>
-      </a>
       <div class="user-menu__item">
         <div class="sidebar h-8">
           <div class="sidebar__header h-full flex items-center">
@@ -62,9 +56,6 @@
       {{/each}}
     </nav>
     <div class="md:flex gap-5 header__user-menu user-menu hidden items-center">
-      <a href="/search" class="flex items-center header__link">
-        <span class="ico ico_search"></span>
-      </a>
       {{#if user}}
       <a href="/sandbox/new" class="flex items-center header__link">
         <span class="ico ico_pen"></span>

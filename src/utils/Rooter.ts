@@ -36,7 +36,7 @@ export class Router extends EventEmitter {
 
     getPathArray(url: string) {
         const pathname = new URL(url).pathname
-        return Array.from(pathname.match(/\/[a-z0-9]+/gi) || ['/'])
+        return Array.from(pathname.match(/\/[A-z0-9_-]+/gi) || ['/'])
     }
 
     getParsedSearch(url: string) {
