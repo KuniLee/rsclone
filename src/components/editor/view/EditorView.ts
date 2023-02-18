@@ -226,7 +226,7 @@ export class EditorView extends EventEmitter {
                     } else {
                         const fileTypes = ['jpg', 'jpeg', 'png', 'gif']
                         const extension = target.files[0].name.split('.').pop()?.toLowerCase()
-                        if (extension && fileTypes.indexOf(extension)) {
+                        if (extension && fileTypes.includes(extension)) {
                             const fileReader = new FileReader()
                             fileReader.readAsDataURL(target.files[0])
                             fileReader.onload = () => {
@@ -588,7 +588,7 @@ export class EditorView extends EventEmitter {
                             } else {
                                 const fileTypes = ['jpg', 'jpeg', 'png', 'gif']
                                 const extension = target.files[0].name.split('.').pop()?.toLowerCase()
-                                if (extension && fileTypes.indexOf(extension) !== -1) {
+                                if (extension && fileTypes.includes(extension)) {
                                     const fileReader = new FileReader()
                                     fileReader.readAsDataURL(target.files[0])
                                     fileReader.onload = () => {
