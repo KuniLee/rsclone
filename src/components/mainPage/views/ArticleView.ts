@@ -4,6 +4,7 @@ import { PageModelInstance } from '../model/PageModel'
 import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
 import preloader from '@/templates/preloader.html'
 import postTemplate from '@/templates/post/post.hbs'
+import dictionary, { getWords } from '@/utils/dictionary'
 
 type ArticleEventsName = 'LOAD_POST' | 'GO_TO'
 
@@ -48,7 +49,10 @@ export class ArticleView extends EventEmitter {
 
     private render() {
         const feedEl = this.mainPageContainer?.querySelector('.post') as HTMLDivElement
-        feedEl.innerHTML = postTemplate({ article: this.feedModel.article })
+        feedEl.innerHTML = postTemplate({
+            article: this.feedModel.article,
+            words: getWords(dictionary.PostPage, this.pageModel.lang),
+        })
     }
 
     private showPreloader() {

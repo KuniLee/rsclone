@@ -96,6 +96,10 @@ const Aside: Record<string, language> = {
     },
 }
 
+const PostPage: Record<string, language> = {
+    keywords: { ru: 'Теги', en: 'Tags' },
+}
+
 export function getWords(wordObj: Record<string, language>, lang: keyof language) {
     const result: Record<string, string> = {}
     for (const wordObjKey in wordObj) {
@@ -114,4 +118,5 @@ export default {
     ProfilePage,
     PageNotFound,
     Aside,
+    PostPage,
 }
