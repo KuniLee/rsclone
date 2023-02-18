@@ -9,26 +9,6 @@
   filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
 }
 
-.ico_search {
-  background: url(../assets/icons/ico-search.svg) center no-repeat;
-  background-size: contain;
-  width: 24px;
-  height: 24px;
-}
-
-.ico_search:hover {
-  filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
-}
-
-.ico_search-light {
-  background: url(../assets/icons/ico-search1.svg) center no-repeat;
-  background-size: contain;
-}
-
-.ico_search-light:hover {
-  filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
-}
-
 .ico_user-light {
   background: url(../assets/icons/ico-user1.svg) center no-repeat;
   background-size: contain;
