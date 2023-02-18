@@ -53,6 +53,13 @@ export class ArticleView extends EventEmitter {
             article: this.feedModel.article,
             words: getWords(dictionary.PostPage, this.pageModel.lang),
         })
+        feedEl.querySelectorAll('a').forEach((el) => {
+            console.log(el)
+            el.addEventListener('click', (ev) => {
+                ev.preventDefault()
+                this.emit<string>('GO_TO', (ev.target as HTMLAnchorElement).href)
+            })
+        })
     }
 
     private showPreloader() {

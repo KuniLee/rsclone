@@ -19,7 +19,7 @@ const blocks: Record<BlocksType['type'], (arg0: BlocksType) => string> = {
     },
     heading(block) {
         const el = document.createElement(`h${block.mod?.at(-1) || 1}`)
-        el.className = 'mt-10'
+        el.className = 'mt-10 font-medium'
         if (typeof block.value === 'string') {
             el.innerText = block.value
         }

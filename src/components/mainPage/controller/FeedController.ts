@@ -21,6 +21,7 @@ import type { QueryConstraint, DocumentReference } from 'firebase/firestore'
 import { Flows } from 'types/enums'
 import { Article, URLParams } from 'types/interfaces'
 import { ArticleViewInstance } from '@/components/mainPage/views/ArticleView'
+import { RouterInstance } from '@/utils/Rooter'
 
 export class FeedController {
     private view: FeedViewInstance
@@ -34,6 +35,7 @@ export class FeedController {
     constructor(
         views: { feedView: FeedViewInstance; articleView: ArticleViewInstance },
         models: { pageModel: PageModelInstance; feedModel: FeedModelInstance },
+        private router: RouterInstance,
         private api: FireBaseAPIInstance
     ) {
         this.pageModel = models.pageModel
@@ -56,6 +58,7 @@ export class FeedController {
         this.view.on<URLParams>('GO_TO', (path) => {
             this.pageModel.changePage(path)
         })
+        this.articleView.on<string>('GO_TO', this.goTo.bind(this))
     }
 
     private async loadArticle(id: string): Promise<Article | undefined> {
@@ -94,5 +97,12 @@ export class FeedController {
         })
         this.feedModel.latestArticle = querySnapshot.docs[querySnapshot.docs.length - 1]
         return await Promise.all(articles.map((article) => this.api.downloadArticleData(article)))
+    }
+
+    private goTo(path: string) {
+        this.pageModel.changePage({
+            path: this.router.getPathArray(path),
+            search: this.router.getParsedSearch(path),
+        })
     }
 }

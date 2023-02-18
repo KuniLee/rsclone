@@ -1,17 +1,30 @@
 <article class="p-4 bg-color-light">
   <div class="mb-1 flex items-center gap-1">
-    <div class="article__user cursor-pointer h-8 w-8 rounded overflow-hidden"><img class="h-full w-full object-cover" src="{{#if article.user.properties.avatar}}{{article.user.properties.avatar}}{{else}}{{emptyAvatar}}{{/if}}" alt=""></div>
-    <span class="article__user cursor-pointer text-sm font-medium">{{article.user.displayName}}</span>
-    <span class="text-sm text-color-text-light"></span>
+    <a href="/users/{{article.user.displayName}}" class="article__user cursor-pointer h-8 w-8 rounded overflow-hidden"><img class="h-full w-full object-cover" src="{{#if article.user.properties.avatar}}{{article.user.properties.avatar}}{{else}}{{emptyAvatar}}{{/if}}" alt=""></a>
+    <a href="/users/{{article.user.displayName}}" class="article__user cursor-pointer text-sm font-medium">{{article.user.displayName}}</a>
   </div>
-  <h1 class="article__link text-xxl cursor-pointer font-medium">{{article.title}}</h1>
-    {{#each article.blocks}}
-  {{{builder this}}}
-    {{/each}}
+  <h1 class="article__link text-3xl font-medium">{{article.title}}</h1>
+    {{#each article.blocks}}{{{builder this}}}{{/each}}
   <div class="flex mb-4 flex-wrap gap-0.5 text-color-popup-text">
-    <span class="text-black font-bold">{{words.keywords}}:</span>
+    <span class="text-black font-bold mr-1.5">{{words.keywords}}:</span>
     {{#each article.keywords}}
-      <span class="article_hab hover:opacity-75">{{this}}</span>
+      <span class="article_tag hover:opacity-75">{{this}}</span>
     {{/each}}
   </div>
 </article>
+<div class="user-card bg-color-light mb-3">
+  <div class="mb-6 px-5 pt-4">
+    <div class="w-12 h-12 rounded-sm overflow-hidden mb-2.5">
+      <a href="/users/{{article.user.displayName}}">
+        {{#if article.user.properties.avatar}}
+          <img class="object-contain w-full h-full" src="{{article.user.properties.avatar}}" alt="user-avatar" />
+        {{else}}
+          <img class="object-cover w-full h-full rounded border-2" src="{{emptyAvatar}}" alt="user-avatar" />
+        {{/if}}
+      </a>
+    </div>
+    <span class="text-color-text-dark text-xl font-bold">{{article.user.properties.fullName}}</span>
+    <a href="/users/{{article.user.displayName}}" class="text-color-button text-xl username">@{{article.user.displayName}}</a>
+    <p class="text-color-text-dark">{{article.user.properties.about}}</p>
+  </div>
+</div>
