@@ -69,5 +69,6 @@ export class ArticleView extends EventEmitter {
     private showPreloader() {
         const feedEl = this.mainPageContainer?.querySelector('.post') as HTMLDivElement
         feedEl.innerHTML = preloader
+        window.scrollTo(0, 0)
     }
 }
