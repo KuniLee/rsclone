@@ -291,6 +291,19 @@ export class EditorView extends EventEmitter {
                     if (!target.files.length) {
                         return
                     } else {
+                        const coverMessage = document.querySelector('.add-cover-message') as HTMLElement
+                        const coverErrorMessage = document.querySelector('.preview-error-cover') as HTMLElement
+                        if (target.files[0].size > 1048576) {
+                            if (coverMessage && coverErrorMessage) {
+                                coverMessage.hidden = true
+                                coverErrorMessage.hidden = false
+                            }
+                            return
+                        }
+                        if (coverMessage && coverErrorMessage) {
+                            coverMessage.hidden = false
+                            coverErrorMessage.hidden = true
+                        }
                         const fileTypes = ['jpg', 'jpeg', 'png', 'gif']
                         const extension = target.files[0].name.split('.').pop()?.toLowerCase()
                         if (extension && fileTypes.includes(extension)) {
