@@ -190,11 +190,14 @@ export class EditorView extends EventEmitter {
                     const image = document.querySelector('.preview-image') as HTMLImageElement
                     const selectFlowInput = document.querySelector('select-pure') as SelectPure
                     const imageSrc = image ? image.getAttribute('src') : ''
+                    const objectPosition = image.style.objectPosition?.split(' ')
+                    console.log(objectPosition)
                     const imageSrcResult = imageSrc ?? ''
                     const textButtonValue = buttonText.value
                     const preview: ParsedPreviewArticle = {
                         image: imageSrcResult,
                         nextBtnText: textButtonValue,
+                        imagePosition: objectPosition,
                         previewBlocks: parsedPreviewResult.blocks,
                     }
                     const result: NewArticleData = {
@@ -209,7 +212,8 @@ export class EditorView extends EventEmitter {
                         translateLink: translateLink.value,
                         isTranslate: translateCheckbox.checked,
                     }
-                    this.emit('ARTICLE_PARSED', undefined, result)
+                    console.log(result)
+                    // this.emit('ARTICLE_PARSED', undefined, result)
                 }
             })
             this.toggleEditorView()
@@ -220,14 +224,20 @@ export class EditorView extends EventEmitter {
         })
         const previewImage = document.querySelector('.preview-image') as HTMLImageElement
         const previewControls = document.querySelector('.preview-image-controls') as HTMLElement
+        const deletePreview = document.querySelector('.delete-preview-btn') as HTMLElement
+        const changePosition = document.querySelector('.change-position-preview-btn') as HTMLElement
+        const savePosition = document.querySelector('.save-position') as HTMLElement
         const textPreview = document.querySelector('.load-image-preview-text')
         const previewImageInput = document.querySelector('.image-preview') as HTMLInputElement
-        document.querySelector('.delete-preview-btn')?.addEventListener('click', (e) => {
+        const previewImageBlock = document.querySelector('.previewImageBlock') as HTMLElement
+        deletePreview?.addEventListener('click', (e) => {
             e.preventDefault()
             if (previewImage) {
                 previewImage.classList.add('hidden')
                 previewImage.src = ''
-                previewImage.classList.add('hidden')
+                delete previewImage.dataset.objectX
+                delete previewImage.dataset.objectY
+                previewImage.style.removeProperty('object-position')
                 previewControls.hidden = true
                 if (previewImageInput) {
                     previewImageInput.value = ''
@@ -236,6 +246,43 @@ export class EditorView extends EventEmitter {
                     textPreview.classList.remove('hidden')
                 }
             }
+        })
+        changePosition?.addEventListener('click', (e) => {
+            e.preventDefault()
+            if (savePosition && changePosition && deletePreview) {
+                changePosition.hidden = true
+                deletePreview.hidden = true
+                savePosition.hidden = false
+                previewImageBlock?.addEventListener('pointerdown', () => {
+                    if (!savePosition.hidden) {
+                        previewImageBlock.classList.add('cursor-move')
+                        document.body.addEventListener('pointermove', this.changePreviewPosition)
+                    }
+                })
+                previewImageBlock?.addEventListener('pointerup', () => {
+                    previewImageBlock.classList.remove('cursor-move')
+                    document.body.removeEventListener('pointermove', this.changePreviewPosition)
+                })
+                previewImageBlock?.addEventListener('pointerleave', () => {
+                    previewImageBlock.classList.remove('cursor-move')
+                    document.body.removeEventListener('pointermove', this.changePreviewPosition)
+                })
+            }
+        })
+        savePosition?.addEventListener('click', (e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            const [objectX, objectY] = previewImage.style.objectPosition.split(' ')
+            previewImage.dataset.objectX = objectX
+            previewImage.dataset.objectY = objectY
+            if (savePosition && changePosition && deletePreview) {
+                changePosition.hidden = false
+                deletePreview.hidden = false
+                savePosition.hidden = true
+            }
+        })
+        savePosition?.addEventListener('pointermove', (e) => {
+            e.stopPropagation()
         })
         previewImageInput?.addEventListener('change', (e) => {
             const target = e.target as HTMLInputElement
@@ -1173,6 +1220,35 @@ export class EditorView extends EventEmitter {
                 }
             })
         })
+    }
+
+    async changePreviewPosition(event: PointerEvent) {
+        const previewImage = document.querySelector('.preview-image') as HTMLElement
+        const previewBlock = document.querySelector('.previewImageBlock') as HTMLElement
+        if (previewImage && previewBlock) {
+            const previewBlockStyles = getComputedStyle(previewBlock)
+            const rect = previewBlock.getBoundingClientRect()
+            const previewBlockHeight = parseFloat(previewBlockStyles.height)
+            const previewBlockWidth = parseFloat(previewBlockStyles.width)
+            const clickCoordinateX = event.clientX
+            const clickCoordinateY = event.clientY
+            let coordinateX = ((clickCoordinateX - rect.left) / previewBlockWidth) * 100
+            let coordinateY = ((clickCoordinateY - rect.top) / previewBlockHeight) * 100
+            if (coordinateX < 0) {
+                coordinateX = 0
+            }
+            if (coordinateX > 100) {
+                coordinateX = 0
+            }
+            if (coordinateY < 0) {
+                coordinateY = 0
+            }
+            if (coordinateY > 100) {
+                coordinateY = 100
+            }
+            await new Promise((r) => requestAnimationFrame(r))
+            previewImage.style.objectPosition = `${coordinateX}% ${coordinateY}%`
+        }
     }
 
     emit<T>(event: ItemViewEventsName, arg?: T, articleData?: NewArticleData) {

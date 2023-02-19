@@ -73,6 +73,7 @@ export type ParsedArticle = {
 export type ParsedPreviewArticle = {
     image: string
     nextBtnText: string
+    imagePosition?: Array<string>
     previewBlocks: Array<BlocksType>
 }
 
