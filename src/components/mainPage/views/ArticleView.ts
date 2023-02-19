@@ -3,6 +3,9 @@ import { Paths } from 'types/enums'
 import { PageModelInstance } from '../model/PageModel'
 import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
 import preloader from '@/templates/preloader.html'
+import postTemplate from '@/templates/post/post.hbs'
+import dictionary, { getWords } from '@/utils/dictionary'
+import aside from '@/templates/aside.hbs'
 
 type ArticleEventsName = 'LOAD_POST' | 'GO_TO'
 
@@ -41,24 +44,31 @@ export class ArticleView extends EventEmitter {
     private renderPage() {
         this.mainPageContainer = document.querySelector('main') as HTMLElement
         this.mainPageContainer.innerHTML = `<div class="flex gap-4">
-<div class="w-full flex flex-col gap-4 post"></div><aside class="hidden lg:block min-w-[300px] bg-color-light">Асайд</aside>
+<div class="w-full flex flex-col gap-4 post"></div><aside class="hidden lg:block max-w-[300px] h-fit bg-color-light">${aside(
+            {
+                words: getWords(dictionary.Aside, this.pageModel.lang),
+            }
+        )}</aside>
 </div>`
     }
 
-    // private setArticles() {
-    //     const articles = this.feedModel.articles
-    //     this.articles = articles.map((el) => new Preview(el))
-    //     this.articles.forEach((el) => el.on('GO_TO', (path) => this.emit('GO_TO', path)))
-    // }
-
     private render() {
         const feedEl = this.mainPageContainer?.querySelector('.post') as HTMLDivElement
-        feedEl.innerHTML = ''
-        console.log(this.feedModel.article)
+        feedEl.innerHTML = postTemplate({
+            article: this.feedModel.article,
+            words: getWords(dictionary.PostPage, this.pageModel.lang),
+        })
+        feedEl.querySelectorAll('a').forEach((el) => {
+            el.addEventListener('click', (ev) => {
+                ev.preventDefault()
+                this.emit<string>('GO_TO', el.href)
+            })
+        })
     }
 
     private showPreloader() {
         const feedEl = this.mainPageContainer?.querySelector('.post') as HTMLDivElement
         feedEl.innerHTML = preloader
+        window.scrollTo(0, 0)
     }
 }

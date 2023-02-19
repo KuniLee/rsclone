@@ -1,5 +1,6 @@
-import { Article, UserData } from 'types/types'
+import { UserData } from 'types/types'
 import EventEmitter from 'events'
+import { Article } from 'types/interfaces'
 export type ProfileModelInstance = InstanceType<typeof ProfileModel>
 
 type ProfileModelEventsName = 'USER_INFO_LOADED' | 'ARTICLES_LOADED'

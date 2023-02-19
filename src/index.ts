@@ -33,7 +33,7 @@ const settingsView = new SettingsView(pageModel)
 const profileView = new ProfileView({ profileModel, pageModel })
 const articleView = new ArticleView({ feedModel, pageModel })
 
-const feedController = new FeedController({ feedView, articleView }, { feedModel, pageModel }, api)
+const feedController = new FeedController({ feedView, articleView }, { feedModel, pageModel }, router, api)
 const appController = new AppController({ mainView, settingsView }, pageModel, router, api)
 const editorController = new EditorController(editorView, pageModel, editorModel, router, api)
 const profileController = new ProfileController(profileView, { profileModel, pageModel }, api)

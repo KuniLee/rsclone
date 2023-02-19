@@ -1,5 +1,9 @@
 import { ParsedQuery } from 'query-string'
 import EventEmitter from 'events'
+import { Timestamp } from 'firebase/firestore'
+import { Flows } from 'types/enums'
+import { StorageReference } from 'firebase/storage'
+import { NewArticleData, Preview, UserData } from 'types/types'
 
 export type URLParams = {
     path: string[]
@@ -34,4 +38,15 @@ export interface SidebarUserMenuElements {
     overlay: HTMLElement
     popupSettings: HTMLElement
     navLinksEl: NodeListOf<Element>
+}
+
+export interface Article extends NewArticleData {
+    createdAt: Timestamp
+    id: string
+    flows: Array<Flows>
+    title: string
+    userId: string
+    images: StorageReference
+    preview: Preview
+    user?: UserData
 }

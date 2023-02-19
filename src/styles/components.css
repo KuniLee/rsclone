@@ -146,3 +146,7 @@
   position: absolute;
   width: 100%;
 }
+
+.article_tag:not(:last-child)::after{
+  content: ',';
+}

@@ -70,7 +70,7 @@ export class ProfileView extends EventEmitter {
     private createPage() {
         const profilePageWrapper = document.createElement('div')
         const registeredDate = this.profileModel.userInfo?.createdAt.toDate().toLocaleDateString()
-        profilePageWrapper.className = 'profile sm:container mx-auto'
+        profilePageWrapper.className = 'profile'
         profilePageWrapper.innerHTML = profilePageTemplate({
             words: getWords(Dictionary.ProfilePage, this.pageModel.lang),
             user: this.profileModel.userInfo,

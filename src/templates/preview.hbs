@@ -5,11 +5,6 @@
     <span class="text-sm text-color-text-light">{{time}}</span>
   </div>
     <h1 class="article__link text-xxl cursor-pointer font-medium">{{article.title}}</h1>
-  <div class="flex mb-4 flex-wrap gap-0.5 text-color-popup-text">
-    {{#each article.habs}}
-      <a href="#" class="article_hab hover:opacity-75 text-sm">{{this}}</a>
-    {{/each}}
-  </div>
   {{#if article.preview.image}}<img class="w-full mb-4"
       src="{{article.preview.image}}" alt="preview_image">
   {{/if}}
