@@ -213,7 +213,7 @@ export class EditorView extends EventEmitter {
                         isTranslate: translateCheckbox.checked,
                     }
                     console.log(result)
-                    // this.emit('ARTICLE_PARSED', undefined, result)
+                    this.emit('ARTICLE_PARSED', undefined, result)
                 }
             })
             this.toggleEditorView()
