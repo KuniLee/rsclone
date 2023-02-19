@@ -52,6 +52,7 @@ export class EditorView extends EventEmitter {
     }
 
     private buildPage() {
+        console.log(this.pageModel.user)
         const main = document.querySelector('main')
         const flows = Object.keys(Flows)
             .filter((el) => el !== 'All')
@@ -217,7 +218,26 @@ export class EditorView extends EventEmitter {
             e.preventDefault()
             this.toggleEditorView()
         })
-        document.querySelector('.image-preview')?.addEventListener('change', (e) => {
+        const previewImage = document.querySelector('.preview-image') as HTMLImageElement
+        const previewControls = document.querySelector('.preview-image-controls') as HTMLElement
+        const textPreview = document.querySelector('.load-image-preview-text')
+        const previewImageInput = document.querySelector('.image-preview') as HTMLInputElement
+        document.querySelector('.delete-preview-btn')?.addEventListener('click', (e) => {
+            e.preventDefault()
+            if (previewImage) {
+                previewImage.classList.add('hidden')
+                previewImage.src = ''
+                previewImage.classList.add('hidden')
+                previewControls.hidden = true
+                if (previewImageInput) {
+                    previewImageInput.value = ''
+                }
+                if (textPreview) {
+                    textPreview.classList.remove('hidden')
+                }
+            }
+        })
+        previewImageInput?.addEventListener('change', (e) => {
             const target = e.target as HTMLInputElement
             if (target) {
                 if (target.files) {
@@ -230,12 +250,11 @@ export class EditorView extends EventEmitter {
                             const fileReader = new FileReader()
                             fileReader.readAsDataURL(target.files[0])
                             fileReader.onload = () => {
-                                const previewImage = document.querySelector('.preview-image') as HTMLImageElement
-                                if (previewImage) {
+                                if (previewImage && previewControls) {
                                     if (typeof fileReader.result === 'string') {
                                         previewImage.src = fileReader.result
                                         previewImage.classList.remove('hidden')
-                                        const textPreview = document.querySelector('.load-image-preview-text')
+                                        previewControls.hidden = false
                                         if (textPreview) {
                                             textPreview.classList.add('hidden')
                                         }
