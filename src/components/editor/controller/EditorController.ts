@@ -78,7 +78,10 @@ export class EditorController {
             }
         })
         view.on('SAVE_ARTICLE_TO_LOCALSTORAGE', (arg, articleData, blocks) => {
-            this.editorModel.saveArticleToLocalStorage(blocks)
+            const result = this.editorModel.saveArticleToLocalStorage(blocks)
+            if (result) {
+                this.editorModel.updateTimeLocalSaved()
+            }
         })
     }
 }

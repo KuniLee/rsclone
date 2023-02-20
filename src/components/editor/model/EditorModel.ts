@@ -4,7 +4,7 @@ import { Flows, Paths } from 'types/enums'
 import { URLParams } from 'types/interfaces'
 import { ParsedQuery } from 'query-string'
 
-type EditorModelEventsName = 'CHANGE_PAGE' | '404'
+type EditorModelEventsName = 'CHANGE_PAGE' | '404' | 'ARTICLE_SAVED'
 export type EditorModelInstance = InstanceType<typeof EditorModel>
 
 export class EditorModel extends EventEmitter {
@@ -16,30 +16,37 @@ export class EditorModel extends EventEmitter {
 
     saveArticleToLocalStorage(obj: ParsedArticle) {
         if (obj) {
-            const openRequest = indexedDB.open('localSavedArticle', 2)
-            openRequest.onupgradeneeded = function () {
-                const db = openRequest.result
-                if (!db.objectStoreNames.contains('article')) {
-                    db.createObjectStore('article')
+            return new Promise((resolve) => {
+                const openRequest = indexedDB.open('localSavedArticle', 2)
+                openRequest.onupgradeneeded = function () {
+                    const db = openRequest.result
+                    if (!db.objectStoreNames.contains('article')) {
+                        db.createObjectStore('article')
+                    }
                 }
-            }
-            openRequest.onsuccess = function () {
-                console.log(openRequest.result)
-                const db = openRequest.result
-                const transaction = db.transaction('article', 'readwrite')
-                const article = transaction.objectStore('article')
-                const request = article.put(obj, 0)
-                request.onsuccess = () => {
-                    console.log('data base updated')
+                openRequest.onsuccess = function () {
+                    console.log(openRequest.result)
+                    const db = openRequest.result
+                    const transaction = db.transaction('article', 'readwrite')
+                    const article = transaction.objectStore('article')
+                    const request = article.put(obj, 0)
+                    request.onsuccess = () => {
+                        console.log('data base updated')
+                        resolve(true)
+                    }
+                    request.onerror = (e) => {
+                        console.log(e)
+                    }
                 }
-                request.onerror = (e) => {
+                openRequest.onerror = (e) => {
                     console.log(e)
                 }
-            }
-            openRequest.onerror = (e) => {
-                console.log(e)
-            }
+            })
         }
+    }
+
+    updateTimeLocalSaved() {
+        this.emit('ARTICLE_SAVED', Date.now())
     }
 
     async getSavedArticle(): Promise<ParsedArticle | null> {
@@ -69,7 +76,7 @@ export class EditorModel extends EventEmitter {
         return super.on(event, callback)
     }
 
-    emit<T>(event: EditorModelEventsName) {
-        return super.emit(event)
+    emit<T>(event: EditorModelEventsName, arg?: T) {
+        return super.emit(event, arg)
     }
 }

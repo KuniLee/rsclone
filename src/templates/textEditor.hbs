@@ -1,7 +1,7 @@
 <div class="container mx-auto flex justify-between mt-[12px] mb-[12px]">
   <div class="w-2/3">
     {{#if date}}
-    <div class="pr-[20px] mb-[20px] py-[20px] bg-[#d3f2bf] border border-transparent">
+    <div class="save-information-block pr-[20px] mb-[20px] py-[20px] bg-[#d3f2bf] border border-transparent">
       <p class="ml-[20px]">У вас есть сохранение от <span class="date">{{date}}</span> в <span class="time">{{dateTime}}</span> <a class="restore-save-article text-color-button underline decoration-dotted underline-offset-4" href="#">Восстановить</a></p>
     </div>
     {{/if}}
@@ -47,8 +47,11 @@
         </div>
 
       </div>
-      <div class="mb-4 before:content-[''] before:w-full before:h-[1px] before:bg-color-gray-separator before:absolute before:left-0 pl-[20px]">
-        <button class="toSettings mt-[16px] border-color-button text-color-button border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-btn-hover hover:border-color-btn-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white" disabled>{{toSettings}}</button>
+      <div class="before:content-[''] before:w-full before:h-[1px] before:bg-color-gray-separator before:absolute before:left-0">
+        <div class="w-full p-[20px] gap-[12px] flex items-center">
+          <button class="toSettings border-color-button text-color-button border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-btn-hover hover:border-color-btn-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white" disabled>{{toSettings}}</button>
+          <p class="last-time-save-message" hidden>Сохранено локально в <span class="saved-message-time"></span></p>
+        </div>
       </div>
     </div>
     <div class="editorSettings px-[16px] bg-color-light pt-[20px] flex flex-col relative flex-grow relative hidden">

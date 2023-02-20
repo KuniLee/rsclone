@@ -31,6 +31,7 @@ export class EditorView extends EventEmitter {
     private dictionary: Record<string, language>
     private lang: 'ru' | 'en'
     private isSaveStart: boolean
+    private savedBlocks: Array<BlocksType>
 
     constructor(editorModel: EditorModel, pageModel: PageModelInstance) {
         super()
@@ -41,6 +42,7 @@ export class EditorView extends EventEmitter {
         this.isSaveStart = false
         this.dictionary = dictionary.EditorPage
         this.lang = this.pageModel.lang
+        this.savedBlocks = [] as Array<BlocksType>
         this.blocksPopup = new EditorBlocks(this.lang)
         this.pageModel.on('CHANGE_PAGE', () => {
             if (this.pageModel.path[0] === Paths.Sandbox && this.pageModel.path[1] === Sandbox.New) {
@@ -49,6 +51,11 @@ export class EditorView extends EventEmitter {
                 } else {
                     this.showAuthFail()
                 }
+            }
+        })
+        this.editorModel.on('ARTICLE_SAVED', (arg) => {
+            if (typeof arg === 'number') {
+                this.showLastArticleSaveMessage(arg)
             }
         })
     }
@@ -75,6 +82,8 @@ export class EditorView extends EventEmitter {
             let date = ''
             if (savedArticle) {
                 const fullDate = new Date(Number(savedArticle.time))
+                this.savedBlocks = savedArticle.blocks
+                console.log(this.savedBlocks)
                 dateTime =
                     (fullDate.getHours() < 10 ? '0' : '') +
                     fullDate.getHours() +
@@ -133,20 +142,6 @@ export class EditorView extends EventEmitter {
             })
         }
         const popupMenu = document.querySelector('.menu') as HTMLElement
-        document.querySelectorAll('.editable')?.forEach((el) => {
-            const element = el as HTMLElement
-            element.addEventListener(
-                'input',
-                () => {
-                    if (!this.isSaveStart) {
-                        this.isSaveStart = true
-                        console.log('save start')
-                        this.savePageToLocalStorage()
-                    }
-                },
-                { once: true }
-            )
-        })
         if (popupMenu) {
             popupMenu.innerHTML = ''
             const arrayWithBlocks = Array.from(this.blocksPopup.getListOfElements())
@@ -267,6 +262,11 @@ export class EditorView extends EventEmitter {
             })
             this.toggleEditorView()
         })
+        document.querySelector('.restore-save-article')?.addEventListener('click', (e) => {
+            e.preventDefault()
+            document.querySelector('.save-information-block')?.remove()
+            this.restoreArticle(this.savedBlocks)
+        })
         document.querySelector('.backToEditor')?.addEventListener('click', (e) => {
             e.preventDefault()
             this.toggleEditorView()
@@ -385,6 +385,7 @@ export class EditorView extends EventEmitter {
         if (dropZoneText) {
             this.addDropZoneEvents(dropZoneText)
         }
+        this.startAutoSave()
     }
 
     addDrag(list: HTMLElement) {
@@ -720,18 +721,8 @@ export class EditorView extends EventEmitter {
                                     const fileReader = new FileReader()
                                     fileReader.readAsDataURL(target.files[0])
                                     fileReader.onload = () => {
-                                        const imgElement = textElement.querySelector('.image') as HTMLImageElement
-                                        const figureElem = textElement.querySelector('.imageFigureTag') as HTMLElement
-                                        const placeholder = textElement.querySelector(
-                                            '.imageElementPlaceholder'
-                                        ) as HTMLElement
-                                        if (imgElement && placeholder && figureElem) {
-                                            placeholder.hidden = true
-                                            if (typeof fileReader.result === 'string') {
-                                                imgElement.src = fileReader.result
-                                                figureElem.hidden = false
-                                                textElement.classList.add('image-added')
-                                            }
+                                        if (typeof fileReader.result === 'string') {
+                                            this.addImageToImageBlock(textElement, fileReader.result)
                                         }
                                     }
                                 } else {
@@ -755,6 +746,18 @@ export class EditorView extends EventEmitter {
             const event = new MouseEvent('click', { bubbles: false })
             inputField?.dispatchEvent(event)
         })
+    }
+
+    addImageToImageBlock(textElement: HTMLElement, result: string) {
+        const imgElement = textElement.querySelector('.image') as HTMLImageElement
+        const figureElem = textElement.querySelector('.imageFigureTag') as HTMLElement
+        const placeholder = textElement.querySelector('.imageElementPlaceholder') as HTMLElement
+        if (imgElement && placeholder && figureElem) {
+            placeholder.hidden = true
+            imgElement.src = result
+            figureElem.hidden = false
+            textElement.classList.add('image-added')
+        }
     }
     addNewField(editor: HTMLElement, value?: string) {
         let el: Element | null = editor.querySelector('.focused') as HTMLElement
@@ -916,7 +919,7 @@ export class EditorView extends EventEmitter {
         }
     }
 
-    addNewParagraph(el: HTMLElement) {
+    addNewParagraph(el: HTMLElement, value?: string) {
         const template = document.createElement('template')
         template.innerHTML = emptyParagraph({})
         el.after(template.content)
@@ -924,6 +927,9 @@ export class EditorView extends EventEmitter {
         const editor = document.querySelector('.textEditor') as HTMLElement
         if (newField && editor) {
             newField.classList.remove('new')
+            if (value) {
+                newField.textContent = value
+            }
             this.addTextInputListeners(newField, editor)
             newField.focus()
         }
@@ -1223,64 +1229,190 @@ export class EditorView extends EventEmitter {
                 const item = document.querySelector('.focusedItem')
                 const editor = document.querySelector('.textEditor') as HTMLElement
                 if (item && editor) {
-                    const template = document.createElement('template')
-                    switch (element.dataset.type) {
-                        case 'heading':
-                            template.innerHTML = headingBlockTemplate({
-                                heading: this.dictionary.Heading[this.lang],
-                                delete: this.dictionary.Delete[this.lang],
-                                heading1: this.dictionary.Heading1[this.lang],
-                                heading2: this.dictionary.Heading2[this.lang],
-                                heading3: this.dictionary.Heading3[this.lang],
-                            })
-                            break
-                        case 'quote':
-                            template.innerHTML = quoteBlockTemplate({
-                                delete: this.dictionary.Delete[this.lang],
-                                quote: this.dictionary.Quote[this.lang],
-                            })
-                            break
-                        case 'image':
-                            template.innerHTML = imageBlockTemplate({
-                                addImageText: this.dictionary.AddImageText[this.lang],
-                                figcaptionText: this.dictionary.AddFigcaptionText[this.lang],
-                                delete: this.dictionary.Delete[this.lang],
-                                uploadAnother: this.dictionary.LoadAnotherImage[this.lang],
-                            })
-                    }
+                    const template = this.getTemplateBlock(String(element.dataset.type))
                     item.replaceWith(template.content)
                     const newItem = document.querySelector('.new') as HTMLElement
                     if (element.dataset.type === 'heading') {
                         if (newItem) {
-                            newItem.querySelectorAll('.heading')?.forEach((el) => {
-                                const element = el as HTMLElement
-                                element.addEventListener('click', (e) => {
-                                    const parent = newItem.closest('.editorElement') as HTMLElement
-                                    if (parent) {
-                                        if (element.dataset.name) {
-                                            parent.dataset.type = element.dataset.name
-                                        }
-                                    }
-                                })
-                            })
+                            this.addListenerToHeadingElement(newItem)
                         }
                     }
                     if (newItem) {
-                        const newItemField = newItem.querySelector('.editable') as HTMLElement
-                        if (editor && newItem) {
-                            newItem.classList.remove('new')
-                            this.addNewField(editor)
-                            if (newItemField) {
-                                this.addTextInputListeners(newItemField, editor)
-                                setTimeout(() => {
-                                    newItemField.focus()
-                                }, 0)
-                            }
-                            this.addTextElementListeners(newItem, editor)
-                        }
+                        this.addListenerToNewItem(newItem, editor)
                     }
                 }
             })
+        })
+    }
+
+    addListenerToHeadingElement(newItem: HTMLElement) {
+        newItem.querySelectorAll('.heading')?.forEach((el) => {
+            const element = el as HTMLElement
+            element.addEventListener('click', (e) => {
+                const parent = newItem.closest('.editorElement') as HTMLElement
+                if (parent) {
+                    if (element.dataset.name) {
+                        parent.dataset.type = element.dataset.name
+                    }
+                }
+            })
+        })
+    }
+
+    getTemplateBlock(elementType: string) {
+        const template = document.createElement('template')
+        switch (elementType) {
+            case 'heading':
+                template.innerHTML = headingBlockTemplate({
+                    heading: this.dictionary.Heading[this.lang],
+                    delete: this.dictionary.Delete[this.lang],
+                    heading1: this.dictionary.Heading1[this.lang],
+                    heading2: this.dictionary.Heading2[this.lang],
+                    heading3: this.dictionary.Heading3[this.lang],
+                })
+                break
+            case 'quote':
+                template.innerHTML = quoteBlockTemplate({
+                    delete: this.dictionary.Delete[this.lang],
+                    quote: this.dictionary.Quote[this.lang],
+                })
+                break
+            case 'image':
+                template.innerHTML = imageBlockTemplate({
+                    addImageText: this.dictionary.AddImageText[this.lang],
+                    figcaptionText: this.dictionary.AddFigcaptionText[this.lang],
+                    delete: this.dictionary.Delete[this.lang],
+                    uploadAnother: this.dictionary.LoadAnotherImage[this.lang],
+                })
+                break
+            case 'text':
+                template.innerHTML = newField({
+                    menuCall: this.dictionary.MenuCall[this.lang],
+                    delete: this.dictionary.Delete[this.lang],
+                })
+                break
+        }
+        return template
+    }
+
+    addListenerToNewItem(newItem: HTMLElement, editor: HTMLElement, isLast = true) {
+        const newItemField = newItem.querySelector('.editable') as HTMLElement
+        if (editor && newItem) {
+            newItem.classList.remove('new')
+            if (isLast) {
+                this.addNewField(editor)
+            }
+            if (newItemField) {
+                this.addTextInputListeners(newItemField, editor)
+                setTimeout(() => {
+                    newItemField.focus()
+                }, 0)
+            }
+            this.addTextElementListeners(newItem, editor)
+        }
+    }
+
+    restoreArticle(blocks: Array<BlocksType>) {
+        const editor = document.querySelector('.textEditor') as HTMLElement
+        editor.querySelectorAll('.editorElement')?.forEach((el) => {
+            el.remove()
+        })
+        blocks.forEach((el, index) => {
+            if (editor) {
+                console.log(el)
+                if (el.type === 'title') {
+                    const header = document.querySelector('.articleHeader') as HTMLElement
+                    if (header) {
+                        header.textContent = ''
+                        header.textContent = el.value && typeof el.value === 'string' ? el.value : ''
+                        const parent = header.parentElement
+                        if (parent) {
+                            if (el.value) {
+                                parent.classList.add('before:hidden')
+                            }
+                        }
+                    }
+                } else {
+                    const type = el.type === 'quotes' ? 'quote' : el.type
+                    const template = this.getTemplateBlock(type)
+                    editor.append(template.content)
+                    const newItem = document.querySelector('.new') as HTMLElement
+                    newItem.classList.remove('new')
+                    if (newItem) {
+                        if (!newItem.classList.contains('quoteElement')) {
+                            const editableField = newItem.querySelector('.editable') as HTMLElement
+                            if (editableField) {
+                                editableField.textContent = el.value && typeof el.value === 'string' ? el.value : ''
+                                if (el.value) {
+                                    newItem.classList.add('before:hidden')
+                                }
+                            }
+                        }
+                        if (newItem.classList.contains('quoteElement')) {
+                            if (Array.isArray(el.value)) {
+                                const elementsList = newItem.querySelector('.quote-elements-container')
+                                el.value.forEach((el) => {
+                                    if (elementsList) {
+                                        const lastChild = elementsList.lastElementChild as HTMLElement
+                                        if (lastChild) {
+                                            console.log(lastChild, elementsList, el.value)
+                                            this.addNewParagraph(
+                                                lastChild,
+                                                el.value && typeof el.value === 'string' ? el.value : ''
+                                            )
+                                        }
+                                    }
+                                })
+                                elementsList?.firstElementChild?.remove()
+                            }
+                        }
+                        if (newItem.classList.contains('imageElement')) {
+                            if (el.imageSrc) {
+                                this.addImageToImageBlock(newItem, el.imageSrc)
+                            }
+                            if (el.value && typeof el.value === 'string') {
+                                const textarea = newItem.querySelector('.image-block__textarea') as HTMLTextAreaElement
+                                if (textarea) {
+                                    textarea.value = el.value
+                                }
+                            }
+                        }
+                        if (index !== blocks.length - 1) {
+                            if (el.type === 'heading') {
+                                this.addListenerToHeadingElement(newItem)
+                            }
+                            this.addListenerToNewItem(newItem, editor, false)
+                        } else {
+                            this.addListenerToNewItem(newItem, editor, true)
+                        }
+                        const ev = new KeyboardEvent('input')
+                        newItem?.querySelector('.editable')?.dispatchEvent(ev)
+                    } else {
+                        console.log('Cant find new item')
+                    }
+                }
+            } else {
+                console.log("editor didn't find")
+            }
+        })
+        this.checkArticle()
+        this.startAutoSave()
+    }
+
+    startAutoSave() {
+        document.querySelectorAll('.editable')?.forEach((el) => {
+            const element = el as HTMLElement
+            element.addEventListener(
+                'input',
+                () => {
+                    if (!this.isSaveStart) {
+                        this.isSaveStart = true
+                        console.log('save start')
+                        this.savePageToLocalStorage()
+                    }
+                },
+                { once: true }
+            )
         })
     }
 
@@ -1310,6 +1442,21 @@ export class EditorView extends EventEmitter {
             }
             await new Promise((r) => requestAnimationFrame(r))
             previewImage.style.objectPosition = `${coordinateX}% ${coordinateY}%`
+        }
+    }
+
+    showLastArticleSaveMessage(time: number) {
+        const messageElement = document.querySelector('.last-time-save-message') as HTMLElement
+        const timeElement = messageElement.querySelector('.saved-message-time') as HTMLElement
+        if (messageElement && time) {
+            messageElement.hidden = false
+            const fullDate = new Date(time)
+            timeElement.textContent =
+                (fullDate.getHours() < 10 ? '0' : '') +
+                fullDate.getHours() +
+                ':' +
+                (fullDate.getMinutes() < 10 ? '0' : '') +
+                fullDate.getMinutes()
         }
     }
 
