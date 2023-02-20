@@ -100,9 +100,11 @@ export class FeedController {
     }
 
     private goTo(path: string) {
-        this.pageModel.changePage({
-            path: this.router.getPathArray(path),
-            search: this.router.getParsedSearch(path),
-        })
+        if (this.router.isSameDomain(path))
+            this.pageModel.changePage({
+                path: this.router.getPathArray(path),
+                search: this.router.getParsedSearch(path),
+            })
+        else this.router.push(path)
     }
 }
