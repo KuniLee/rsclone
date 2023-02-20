@@ -64,19 +64,38 @@ export class EditorView extends EventEmitter {
         }, 15000)
     }
 
-    private buildPage() {
-        console.log(this.pageModel.user)
+    private async buildPage() {
         const main = document.querySelector('main')
         const flows = Object.keys(Flows)
             .filter((el) => el !== 'All')
             .map((el) => el.toLowerCase())
         if (main) {
+            const savedArticle = await this.editorModel.getSavedArticle()
+            let dateTime = ''
+            let date = ''
+            if (savedArticle) {
+                const fullDate = new Date(Number(savedArticle.time))
+                dateTime =
+                    (fullDate.getHours() < 10 ? '0' : '') +
+                    fullDate.getHours() +
+                    ':' +
+                    (fullDate.getMinutes() < 10 ? '0' : '') +
+                    fullDate.getMinutes()
+                date =
+                    (fullDate.getDate() < 10 ? '0' : '') +
+                    fullDate.getDate() +
+                    '/' +
+                    (fullDate.getMonth() + 1 < 10 ? '0' : '') +
+                    (fullDate.getMonth() + 1)
+            }
             main.innerHTML = textEditor({
                 userName: this.pageModel.user.displayName,
                 userAvatar: this.pageModel.user.properties.avatar
                     ? this.pageModel.user.properties.avatar
                     : require('@/assets/icons/avatar.svg'),
                 flows,
+                dateTime: dateTime,
+                date: date,
                 neverPublish: this.dictionary.NeverPublish[this.lang],
                 title: this.dictionary.Title[this.lang],
                 menuCall: this.dictionary.MenuCall[this.lang],
