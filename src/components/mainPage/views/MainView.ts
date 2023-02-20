@@ -35,14 +35,16 @@ export class MainView extends EventEmitter {
             this.emit('PAGE_BUILD')
         })
         this.model.on('CHANGE_PAGE', () => {
-            const path = this.model.path.join('').slice(1)
+            const path = this.model.path
+            const pathWithoutSlash = this.model.path.join('').slice(1)
             const flowsLinksEl = document.querySelectorAll('.nav__link')
+            this.removeActiveLink(path, flowsLinksEl)
             flowsLinksEl.forEach((flowLinkEl) => {
                 if (flowLinkEl instanceof HTMLAnchorElement) {
                     let flowLinkHref = flowLinkEl.href.split('/').slice(-2).join('/')
                     const allFlowLinkHref = Paths.Flows.slice(1) + Flows.All
                     if (flowLinkHref === allFlowLinkHref) flowLinkHref = flowLinkHref.split('/').slice(1).join('')
-                    if (flowLinkHref === path) this.setActiveLink(flowsLinksEl, flowLinkEl)
+                    if (flowLinkHref === pathWithoutSlash) this.setActiveLink(flowsLinksEl, flowLinkEl)
                 }
             })
         })
@@ -88,7 +90,6 @@ export class MainView extends EventEmitter {
                 linkEl.addEventListener('click', (ev) => {
                     ev.preventDefault()
                     this.emit<string>('GOTO', linkEl.href)
-                    this.removeActiveLink(navLinksEl)
                 })
             }
         })
@@ -218,7 +219,6 @@ export class MainView extends EventEmitter {
                         sidebarChildEl.addEventListener('click', (ev) => {
                             ev.preventDefault()
                             this.emit<string>('GOTO', sidebarChildEl.href)
-                            this.removeActiveLink(navLinksEl)
                         })
                     }
                 })
@@ -254,7 +254,6 @@ export class MainView extends EventEmitter {
                         dropdownMenuChildEl.addEventListener('click', (ev) => {
                             ev.preventDefault()
                             this.emit<string>('GOTO', dropdownMenuChildEl.href)
-                            this.removeActiveLink(navLinksEl)
                         })
                     }
                 })
@@ -272,7 +271,6 @@ export class MainView extends EventEmitter {
                 linkEl.addEventListener('click', (ev) => {
                     ev.preventDefault()
                     this.emit<string>('GOTO', linkEl.href)
-                    this.removeActiveLink(navLinksEl)
                 })
             }
         })
@@ -373,10 +371,12 @@ export class MainView extends EventEmitter {
         })
     }
 
-    private removeActiveLink(links: NodeListOf<Element>) {
-        Array.from(links).forEach((link) => {
-            link.classList.replace('text-color-text-dark', 'text-color-text-light')
-        })
+    private removeActiveLink(path: Array<string>, links: NodeListOf<Element>) {
+        if (!path.includes(Paths.Flows) || !path.includes(Paths.Flows)) {
+            Array.from(links).forEach((link) => {
+                link.classList.replace('text-color-text-dark', 'text-color-text-light')
+            })
+        }
     }
 
     private createHeader() {
