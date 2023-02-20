@@ -1,9 +1,9 @@
 <div class="container mx-auto flex justify-between mt-[12px] mb-[12px]">
-  <div class="w-2/3 min-h-[640px] bg-color-light flex flex-col pt-[20px]">
-    <div>
-      <p>У вас есть сохранение</p>
+  <div class="w-2/3">
+    <div class="pr-[20px] mb-[20px] py-[20px] bg-[#d3f2bf] border border-transparent">
+      <p class="ml-[20px]">У вас есть сохранение от <span class="time"></span> <a class="restore-save-article text-color-button underline decoration-dotted underline-offset-4" href="#">Восстановить</a></p>
     </div>
-    <div class="mainEditor flex flex-col relative flex-grow">
+    <div class="mainEditor min-h-[640px] bg-color-light flex flex-col pt-[20px] flex flex-col relative flex-grow">
       <div class="flex px-[25px]">
         <div class="w-[24px] h-[24px] rounded-sm border-2 mr-2">
           <img class='object-cover w-full h-full rounded' src="{{userAvatar}}" alt="">
@@ -49,7 +49,7 @@
         <button class="toSettings mt-[16px] border-color-button text-color-button border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-btn-hover hover:border-color-btn-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white" disabled>{{toSettings}}</button>
       </div>
     </div>
-    <div class="editorSettings px-[16px] relative hidden">
+    <div class="editorSettings px-[16px] bg-color-light pt-[20px] flex flex-col relative flex-grow relative hidden">
       <h2 class="border-b border-color-gray-separator text-xl font-medium pb-[24px] mb-[12px]">{{postSettings}}</h2>
       <form action="#">
         <div class="flex mb-4">
@@ -112,7 +112,7 @@
         <div class="mb-4">
           <h3 class="text-m mb-4 font-semibold">{{difficult}}</h3>
           <div class="flex text-[14px]">
-            <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity" value="no" checked>{{difficultNone}}</label>
+            <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity" value="none" checked>{{difficultNone}}</label>
             <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity" value="easy">{{difficultEasy}}</label>
             <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity" value="medium">{{difficultMedium}}</label>
             <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity" value="hard">{{difficultHard}}</label>

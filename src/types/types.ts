@@ -86,6 +86,7 @@ export type NewArticleData = {
     keywords: Array<string>
     lang: string
     preview: ParsedPreviewArticle
+    difficult: string
     userId: string
     isTranslate?: boolean
     translateAuthor?: string

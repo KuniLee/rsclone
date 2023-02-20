@@ -216,6 +216,8 @@ export class EditorView extends EventEmitter {
                     const lang = (document.querySelector("input[name='lang']:checked") as HTMLInputElement)?.value
                     const image = document.querySelector('.preview-image') as HTMLImageElement
                     const selectFlowInput = document.querySelector('select-pure') as SelectPure
+                    const difficult = (document.querySelector('input[name="сomplexity"]:checked') as HTMLInputElement)
+                        ?.value
                     const imageSrc = image ? image.getAttribute('src') : ''
                     const objectPosition = image.style.objectPosition?.split(' ')
                     console.log(objectPosition)
@@ -230,6 +232,7 @@ export class EditorView extends EventEmitter {
                     const result: NewArticleData = {
                         blocks: parseMainEditorResult.blocks,
                         title: title,
+                        difficult: difficult,
                         keywords: parsedKeywords,
                         flows: selectFlowInput.values,
                         lang: lang,
