@@ -30,6 +30,7 @@ export class EditorView extends EventEmitter {
     private blocksPopup: EditorBlocks
     private dictionary: Record<string, language>
     private lang: 'ru' | 'en'
+    private isSaveStart: boolean
 
     constructor(editorModel: EditorModel, pageModel: PageModelInstance) {
         super()
@@ -37,6 +38,7 @@ export class EditorView extends EventEmitter {
         this.pageModel = pageModel
         this.isGlobalListener = false
         this.previewEditorBuilded = false
+        this.isSaveStart = false
         this.dictionary = dictionary.EditorPage
         this.lang = this.pageModel.lang
         this.blocksPopup = new EditorBlocks(this.lang)
@@ -56,7 +58,7 @@ export class EditorView extends EventEmitter {
         setInterval(() => {
             if (editor) {
                 const obj = this.parseArticle(editor)
-                console.log(obj)
+                obj.time = Date.now()
                 this.emit('SAVE_ARTICLE_TO_LOCALSTORAGE', undefined, undefined, obj)
             }
         }, 15000)
@@ -112,6 +114,20 @@ export class EditorView extends EventEmitter {
             })
         }
         const popupMenu = document.querySelector('.menu') as HTMLElement
+        document.querySelectorAll('.editable')?.forEach((el) => {
+            const element = el as HTMLElement
+            element.addEventListener(
+                'input',
+                () => {
+                    if (!this.isSaveStart) {
+                        this.isSaveStart = true
+                        console.log('save start')
+                        this.savePageToLocalStorage()
+                    }
+                },
+                { once: true }
+            )
+        })
         if (popupMenu) {
             popupMenu.innerHTML = ''
             const arrayWithBlocks = Array.from(this.blocksPopup.getListOfElements())
@@ -347,7 +363,6 @@ export class EditorView extends EventEmitter {
         if (dropZoneText) {
             this.addDropZoneEvents(dropZoneText)
         }
-        this.savePageToLocalStorage()
     }
 
     addDrag(list: HTMLElement) {
