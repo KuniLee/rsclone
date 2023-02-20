@@ -72,6 +72,7 @@ export class EditorController {
                     articleData.preview.image = imageRef.fullPath
                 }
                 const newArticle = await setDoc(docRef, Object.assign(articleData, { createdAt: serverTimestamp() }))
+                await this.editorModel.deleteArticle()
                 alert('Удачно!')
             } catch (e) {
                 console.log(e)

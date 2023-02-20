@@ -72,6 +72,29 @@ export class EditorModel extends EventEmitter {
         })
     }
 
+    async deleteArticle() {
+        return new Promise((resolve) => {
+            const openRequest = indexedDB.open('localSavedArticle', 2)
+            openRequest.onsuccess = function () {
+                const db = openRequest.result
+                const transaction = db.transaction('article', 'readwrite')
+                const article = transaction.objectStore('article')
+                const request = article.delete(0)
+                request.onsuccess = () => {
+                    resolve(request.result)
+                }
+                request.onerror = () => {
+                    console.log('delete error')
+                    resolve(null)
+                }
+            }
+            openRequest.onerror = () => {
+                console.log('open indexedDB error')
+                resolve(null)
+            }
+        })
+    }
+
     on<T>(event: EditorModelEventsName, callback: (arg: T) => void) {
         return super.on(event, callback)
     }
