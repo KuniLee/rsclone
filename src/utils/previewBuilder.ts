@@ -1,5 +1,5 @@
 import { Article } from 'types/types'
-import articleTemplate from '@/templates/preview.hbs'
+import articleTemplate from '@/templates/preview/preview.hbs'
 import EventEmitter from 'events'
 import { Paths } from 'types/enums'
 import { URLParams } from 'types/interfaces'

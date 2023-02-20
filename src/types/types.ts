@@ -34,6 +34,7 @@ export type Article = {
 export type Preview = {
     image: string
     nextBtnText: string
+    imagePosition: [string, string]
     previewBlocks: Array<{ type: 'text'; value: string }>
 }
 
