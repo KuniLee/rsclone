@@ -100,6 +100,9 @@ const PostPage: Record<string, language> = {
     keywords: { ru: 'Теги', en: 'Tags' },
     isTranslate: { ru: 'Перевод', en: 'Translate' },
     TransAuthor: { ru: 'Автор оригинала:', en: 'Original author:' },
+    hard: { ru: 'Сложно', en: 'Hard' },
+    medium: { ru: 'Средне', en: 'Medium' },
+    easy: { ru: 'Просто', en: 'Easy' },
 }
 
 export function getWords(wordObj: Record<string, language>, lang: keyof language) {

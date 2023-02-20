@@ -3,7 +3,7 @@
     <div class="w-8 h-8 rounded-sm overflow-hidden">
       <a href="/users/{{article.user.displayName}}">
         {{#if article.user.properties.avatar}}
-          <img class="object-contain w-full h-full" src="{{article.user.properties.avatar}}" alt="user-avatar" />
+          <img class="object-cover w-full h-full" src="{{article.user.properties.avatar}}" alt="user-avatar" />
         {{else}}
           <img class="object-cover w-full h-full rounded border-2" src="{{emptyAvatar}}" alt="user-avatar" />
         {{/if}}
@@ -12,6 +12,7 @@
     <a href="/users/{{article.user.displayName}}" class="article__user cursor-pointer text-sm font-medium">{{article.user.displayName}}</a>
   </div>
   <h1 class="article__link text-3xl font-medium">{{article.title}}</h1>
+  {{{difficult article.difficult}}}
   {{#if article.isTranslate}}<div class="mt-2"><span class="inline-block border-[#b0b0e2] text-[#6667a3] text-sm border rounded p-1">{{words.isTranslate}}</span></div>{{/if}}
   {{#if article.translateAuthor}}<div class="text-[#6864a3] mt-2 bg-[#f5f3f8] text-sm py-2"><a href="{{article.translateLink}}">{{words.TransAuthor}} {{article.translateAuthor}}</a></div>{{/if}}
     {{#each article.blocks}}{{{builder this}}}{{/each}}
@@ -27,7 +28,7 @@
     <div class="w-12 h-12 rounded-sm overflow-hidden mb-2.5">
       <a href="/users/{{article.user.displayName}}">
         {{#if article.user.properties.avatar}}
-          <img class="object-contain w-full h-full" src="{{article.user.properties.avatar}}" alt="user-avatar" />
+          <img class="object-cover w-full h-full" src="{{article.user.properties.avatar}}" alt="user-avatar" />
         {{else}}
           <img class="object-cover w-full h-full rounded border-2" src="{{emptyAvatar}}" alt="user-avatar" />
         {{/if}}
