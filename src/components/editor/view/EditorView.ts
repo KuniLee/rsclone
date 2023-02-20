@@ -32,6 +32,7 @@ export class EditorView extends EventEmitter {
     private lang: 'ru' | 'en'
     private isSaveStart: boolean
     private savedBlocks: Array<BlocksType>
+    private onSettingsPage: boolean
 
     constructor(editorModel: EditorModel, pageModel: PageModelInstance) {
         super()
@@ -40,6 +41,7 @@ export class EditorView extends EventEmitter {
         this.isGlobalListener = false
         this.previewEditorBuilded = false
         this.isSaveStart = false
+        this.onSettingsPage = false
         this.dictionary = dictionary.EditorPage
         this.lang = this.pageModel.lang
         this.savedBlocks = [] as Array<BlocksType>
@@ -64,9 +66,11 @@ export class EditorView extends EventEmitter {
         const editor = document.querySelector('.textEditor') as HTMLElement
         setInterval(() => {
             if (editor) {
-                const obj = this.parseArticle(editor)
-                obj.time = Date.now()
-                this.emit('SAVE_ARTICLE_TO_LOCALSTORAGE', undefined, undefined, obj)
+                if (!this.onSettingsPage) {
+                    const obj = this.parseArticle(editor)
+                    obj.time = Date.now()
+                    this.emit('SAVE_ARTICLE_TO_LOCALSTORAGE', undefined, undefined, obj)
+                }
             }
         }, 15000)
     }
@@ -260,6 +264,7 @@ export class EditorView extends EventEmitter {
                     this.emit('ARTICLE_PARSED', undefined, result)
                 }
             })
+            this.onSettingsPage = true
             this.toggleEditorView()
         })
         document.querySelector('.restore-save-article')?.addEventListener('click', (e) => {
@@ -269,6 +274,7 @@ export class EditorView extends EventEmitter {
         })
         document.querySelector('.backToEditor')?.addEventListener('click', (e) => {
             e.preventDefault()
+            this.onSettingsPage = false
             this.toggleEditorView()
         })
         const previewImage = document.querySelector('.preview-image') as HTMLImageElement
@@ -1046,6 +1052,12 @@ export class EditorView extends EventEmitter {
             checkKeywordsResult
                 ? keywordsInput.classList.remove('border-[#ff8d85]')
                 : keywordsInput.classList.add('border-[#ff8d85]')
+            const keywordsError = document.querySelector('.keywords-error')
+            if (keywordsError) {
+                checkKeywordsResult
+                    ? keywordsError.classList.remove('text-[#ff8d85]')
+                    : keywordsError.classList.add('text-[#ff8d85]')
+            }
             const checkButtonTextResult = this.checkValue(buttonTextInput.value, new RegExp('[A-zА-я]{2,}'))
             checkButtonTextResult
                 ? buttonTextInput.classList.remove('border-[#ff8d85]')

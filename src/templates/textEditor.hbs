@@ -93,7 +93,7 @@
             <div>
               <input class="keywords-input w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" placeholder="Введите ключевые слова">
             </div>
-            <p class="text-gray-500 text-[12px] mb-4 mt-[9px]">{{keywordsHint}}</p>
+            <p class="keywords-error text-gray-500 text-[12px] mb-4 mt-[9px]">{{keywordsHint}}</p>
           </div>
         </div>
         <div>
@@ -136,10 +136,10 @@
                 </svg>
               </div>
               <div>
-                <p class="text-[#444] text-[14px] font-semibold mb-[12px] text-center"><span class="add-cover-message">{{addCover}}</span><span class="preview-error-cover text-[#ff8d85]" hidden>Размер изображения слишком большой. Максимальный размер изображения не должен превышать 1 Мб</span></p>
+                <p class="text-[#444444] text-[14px] font-semibold mb-[12px] text-center"><span class="add-cover-message">{{addCover}}</span><span class="preview-error-cover text-[#ff8d85]" hidden>Размер изображения слишком большой. Максимальный размер изображения не должен превышать 1 Мб</span></p>
               </div>
               <div>
-                <p class="text-[#777] text-[12px] mb-[9px] text-center">{{coverInfo}}</p>
+                <p class="text-[#777777] text-[12px] mb-[9px] text-center">{{coverInfo}}</p>
               </div>
               <div>
                 <label class="border inline-block border-[#c9c9c9] rounded-[3px] bg-[#f4f4f4] text-[#464646] text-[12px] h-[30px] leading-[30px] px-[12px] cursor-pointer">
@@ -178,7 +178,7 @@
               </div>
             </div>
           </div>
-          <p class="previewEditorError text-[#777] text-[12px] mb-[9px]">{{previewHint}}</p>
+          <p class="previewEditorError text-gray-500 text-[12px] mb-[9px]">{{previewHint}}</p>
         </div>
         <div class="mb-4">
           <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>{{readMoreText}}</h3>
