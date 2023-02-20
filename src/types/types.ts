@@ -69,6 +69,7 @@ export type BlocksType = {
 
 export type ParsedArticle = {
     blocks: Array<BlocksType>
+    time?: number
 }
 
 export type ParsedPreviewArticle = {

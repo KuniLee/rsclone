@@ -77,5 +77,8 @@ export class EditorController {
                 console.log(e)
             }
         })
+        view.on('SAVE_ARTICLE_TO_LOCALSTORAGE', (arg, articleData, blocks) => {
+            this.editorModel.saveArticleToLocalStorage(blocks)
+        })
     }
 }

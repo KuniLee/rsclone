@@ -1,3 +1,4 @@
+import { BlocksType, ParsedArticle } from './../../../types/types'
 import EventEmitter from 'events'
 import { Flows, Paths } from 'types/enums'
 import { URLParams } from 'types/interfaces'
@@ -11,6 +12,34 @@ export class EditorModel extends EventEmitter {
 
     constructor() {
         super()
+    }
+
+    saveArticleToLocalStorage(obj: ParsedArticle) {
+        if (obj) {
+            const openRequest = indexedDB.open('localSavedArticle', 2)
+            openRequest.onupgradeneeded = function () {
+                const db = openRequest.result
+                if (!db.objectStoreNames.contains('article')) {
+                    db.createObjectStore('article')
+                }
+            }
+            openRequest.onsuccess = function () {
+                console.log(openRequest.result)
+                const db = openRequest.result
+                const transaction = db.transaction('article', 'readwrite')
+                const article = transaction.objectStore('article')
+                const request = article.put(obj, 0)
+                request.onsuccess = () => {
+                    console.log('data base updated')
+                }
+                request.onerror = (e) => {
+                    console.log(e)
+                }
+            }
+            openRequest.onerror = (e) => {
+                console.log(e)
+            }
+        }
     }
 
     on<T>(event: EditorModelEventsName, callback: (arg: T) => void) {

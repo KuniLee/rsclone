@@ -18,7 +18,7 @@ import imageBlockTemplate from '@/templates/textEditorImageTemplate.hbs'
 import { SelectPure } from 'select-pure/lib/components'
 import dictionary from '@/utils/dictionary'
 
-type ItemViewEventsName = 'GOTO' | 'ARTICLE_PARSED'
+type ItemViewEventsName = 'GOTO' | 'ARTICLE_PARSED' | 'SAVE_ARTICLE_TO_LOCALSTORAGE'
 
 export type EditorViewInstance = InstanceType<typeof EditorView>
 
@@ -49,6 +49,17 @@ export class EditorView extends EventEmitter {
                 }
             }
         })
+    }
+
+    private savePageToLocalStorage() {
+        const editor = document.querySelector('.textEditor') as HTMLElement
+        setInterval(() => {
+            if (editor) {
+                const obj = this.parseArticle(editor)
+                console.log(obj)
+                this.emit('SAVE_ARTICLE_TO_LOCALSTORAGE', undefined, undefined, obj)
+            }
+        }, 15000)
     }
 
     private buildPage() {
@@ -336,6 +347,7 @@ export class EditorView extends EventEmitter {
         if (dropZoneText) {
             this.addDropZoneEvents(dropZoneText)
         }
+        this.savePageToLocalStorage()
     }
 
     addDrag(list: HTMLElement) {
@@ -1264,11 +1276,11 @@ export class EditorView extends EventEmitter {
         }
     }
 
-    emit<T>(event: ItemViewEventsName, arg?: T, articleData?: NewArticleData) {
-        return super.emit(event, arg, articleData)
+    emit<T>(event: ItemViewEventsName, arg?: T, articleData?: NewArticleData, blocks?: ParsedArticle) {
+        return super.emit(event, arg, articleData, blocks)
     }
 
-    on<T>(event: ItemViewEventsName, callback: (arg: T, articleData: NewArticleData) => void) {
+    on<T>(event: ItemViewEventsName, callback: (arg: T, articleData: NewArticleData, blocks: ParsedArticle) => void) {
         return super.on(event, callback)
     }
 }
