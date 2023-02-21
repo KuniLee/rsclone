@@ -10,6 +10,7 @@
       </a>
     </div>
     <a href="/users/{{article.user.displayName}}" class="article__user cursor-pointer text-sm font-medium">{{article.user.displayName}}</a>
+    {{{toLocateDate article.createdAt}}}
   </div>
   <h1 class="article__link text-3xl font-medium">{{article.title}}</h1>
   {{{difficult article.difficult}}}

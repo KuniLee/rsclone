@@ -53,7 +53,6 @@ export class ArticleView extends EventEmitter {
     }
 
     private render() {
-        console.log(this.feedModel.article)
         const feedEl = this.mainPageContainer?.querySelector('.post') as HTMLDivElement
         feedEl.innerHTML = postTemplate({
             article: this.feedModel.article,
