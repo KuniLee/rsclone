@@ -69,7 +69,6 @@ export class FeedView extends EventEmitter {
     }
 
     renderArticles() {
-        console.log(this.articles)
         const feedEl = this.mainPageContainer?.querySelector('.feed') as HTMLDivElement
         feedEl.innerHTML = ''
         if (this.articles.length === 0) feedEl.innerHTML = 'no articles'
