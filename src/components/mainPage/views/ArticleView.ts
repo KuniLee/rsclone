@@ -7,7 +7,8 @@ import postTemplate from '@/templates/post/post.hbs'
 import dictionary, { getWords } from '@/utils/dictionary'
 import aside from '@/templates/aside.hbs'
 import { Comment } from '@/utils/commentBuilder'
-import commentsBlocksTemplate from '@/templates/commentsBlocks.hbs'
+import commentsBlocksTemplate from '@/templates/comments/commentsBlocks.hbs'
+import commentEditorNewParagraphTemplate from '@/templates/comments/commentEditorNewParagraph.hbs'
 
 type ArticleEventsName = 'LOAD_POST' | 'GO_TO'
 
@@ -51,6 +52,12 @@ export class ArticleView extends EventEmitter {
         return super.on(event, callback)
     }
 
+    private showPreloader() {
+        const feedEl = this.mainPageContainer?.querySelector('.post') as HTMLDivElement
+        feedEl.innerHTML = preloader
+        window.scrollTo(0, 0)
+    }
+
     private renderPage() {
         this.mainPageContainer = document.querySelector('main') as HTMLElement
         this.mainPageContainer.innerHTML = `<div class="flex gap-4">
@@ -79,18 +86,147 @@ export class ArticleView extends EventEmitter {
         return template.content
     }
 
-    private addListeners(feedWrapperEl: HTMLElement) {
-        feedWrapperEl.querySelectorAll('a').forEach((el) => {
+    private addListeners(feedWrapper: HTMLElement) {
+        const paragraphEditableElements = feedWrapper.querySelectorAll('.editable')
+        const sendBtnEl = feedWrapper.querySelector('.comment-form__button_send')
+        feedWrapper.querySelectorAll('a').forEach((el) => {
             el.addEventListener('click', (ev) => {
                 ev.preventDefault()
                 this.emit<string>('GO_TO', el.href)
             })
         })
+        paragraphEditableElements.forEach((paragraphEditableEl) => {
+            if (paragraphEditableEl instanceof HTMLElement) this.addInputListeners(paragraphEditableEl, feedWrapper)
+        })
+        if (sendBtnEl) {
+            sendBtnEl.addEventListener('click', () => {
+                console.log('Send')
+            })
+        }
     }
 
-    private showPreloader() {
-        const feedEl = this.mainPageContainer?.querySelector('.post') as HTMLDivElement
-        feedEl.innerHTML = preloader
-        window.scrollTo(0, 0)
+    private addInputListeners(paragraphEditable: HTMLElement, feedWrapper: HTMLElement) {
+        const sendBtn = feedWrapper.querySelector('.comment-form__button_send')
+        const commentEditorEl = feedWrapper.querySelector('.comment-editor')
+        paragraphEditable.addEventListener('input', (ev) => {
+            const target = ev.target
+            const paragraph = paragraphEditable.parentElement
+            if (sendBtn instanceof HTMLButtonElement) sendBtn.disabled = this.checkCommentLength(paragraphEditable)
+            if (target instanceof HTMLElement && paragraph) {
+                if (target.textContent) {
+                    paragraph.classList.add('before:hidden')
+                } else {
+                    paragraph.classList.remove('before:hidden')
+                }
+            }
+        })
+        paragraphEditable.addEventListener('keypress', (ev) => {
+            if (ev instanceof KeyboardEvent && commentEditorEl instanceof HTMLElement) {
+                if (ev.key === 'Enter') {
+                    ev.preventDefault()
+                    this.addParagraph(commentEditorEl, feedWrapper)
+                }
+            }
+        })
+        paragraphEditable.addEventListener('keydown', (ev) => {
+            if (ev instanceof KeyboardEvent) {
+                if (ev.key === 'Backspace' || ev.key === 'Delete') {
+                    const paragraph = paragraphEditable.parentElement
+                    if (paragraph && commentEditorEl instanceof HTMLElement) {
+                        const paragraphs = [...commentEditorEl.children]
+                        if (paragraphEditable.textContent === '' && paragraphs.length !== 1) {
+                            this.removeParagraph(paragraph, commentEditorEl)
+                        }
+                    }
+                }
+            }
+        })
+        paragraphEditable.addEventListener('focus', () => {
+            if (commentEditorEl) {
+                const paragraphs = [...commentEditorEl.children]
+                const paragraph = paragraphEditable.parentElement
+                this.setCaret(paragraphEditable)
+                paragraphs.forEach((paragraphEl, i) => {
+                    if (paragraph && paragraphEl instanceof HTMLElement) {
+                        if (i === paragraphs.indexOf(paragraph)) {
+                            this.showPlusIcon(paragraphEl)
+                        } else {
+                            this.hidePlusIcon(paragraphEl)
+                        }
+                    }
+                })
+            }
+        })
+    }
+
+    private setCaret(element: HTMLElement) {
+        const range = document.createRange()
+        const selection = window.getSelection()
+        range.selectNodeContents(element)
+        range.collapse(false)
+        if (selection) {
+            selection.removeAllRanges()
+            selection.addRange(range)
+        }
+    }
+
+    private checkCommentLength(commentEditor: HTMLElement) {
+        const content = commentEditor.textContent
+        if (content && content.length) return false
+        return true
+    }
+
+    private addParagraph(commentEditor: HTMLElement, feedWrapper: HTMLElement) {
+        const template = document.createElement('template')
+        template.innerHTML = commentEditorNewParagraphTemplate({
+            words: getWords(dictionary.Comments, this.pageModel.lang),
+        })
+        const content = template.content
+        commentEditor.append(content)
+        const paragraphEl = commentEditor.querySelector('.new')
+        if (paragraphEl) {
+            const editableParagraphEl = paragraphEl.querySelector('.editable')
+            if (editableParagraphEl instanceof HTMLElement) {
+                editableParagraphEl.focus()
+                paragraphEl.classList.remove('new')
+                this.addInputListeners(editableParagraphEl, feedWrapper)
+            }
+        }
+        this.hidePlaceholder(commentEditor)
+    }
+
+    private removeParagraph(paragraph: HTMLElement, commentEditor: HTMLElement) {
+        paragraph.remove()
+        const paragraphs = [...commentEditor.children]
+        const lastParagraph = paragraphs[paragraphs.length - 1]
+        const lastEditableParagraph = paragraphs[paragraphs.length - 1].querySelector('.editable')
+        const plusIcon = paragraphs[paragraphs.length - 1].querySelector('.ico_plus')
+        if (lastEditableParagraph instanceof HTMLElement && plusIcon) {
+            lastEditableParagraph.focus()
+            if (lastEditableParagraph.textContent === '') {
+                lastParagraph.classList.remove('before:hidden')
+            }
+        }
+    }
+
+    private hidePlaceholder(commentEditor: HTMLElement) {
+        const paragraphs = [...commentEditor.children]
+        const lastParagraph = paragraphs[paragraphs.length - 1]
+        paragraphs.forEach((paragraph, i) => {
+            if (i !== paragraphs.indexOf(lastParagraph) && paragraph instanceof HTMLElement) {
+                paragraph.classList.add('before:hidden')
+                this.hidePlusIcon(paragraph)
+            }
+        })
+    }
+
+    private hidePlusIcon(paragraph: HTMLElement) {
+        const plusIcon = paragraph.querySelector('.ico_plus')
+        if (plusIcon) plusIcon.classList.add('hidden')
+    }
+
+    private showPlusIcon(paragraph: HTMLElement) {
+        const plusIcon = paragraph.querySelector('.ico_plus')
+        if (plusIcon) plusIcon.classList.remove('hidden')
     }
 }

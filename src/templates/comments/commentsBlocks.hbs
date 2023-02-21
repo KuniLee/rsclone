@@ -12,20 +12,18 @@
 <div class="comment-form">
   <div class="mb-4">
     <p class="text-sm leading-4 font-bold text-color-text-dark mb-5">{{words.CommentField}}</p>
-    <div class="comment-form__editor bg-color-light">
-      <div class="comment-editor">
-        <div class="block-menu"></div>
-        <div class="comment-editor__content">
-          <div contenteditable="true" class="editable outline-0 min-h-[52px]">
-            <p data-empty-text="{{CommentPlaceholder}}"></p>
-          </div>
-        </div>
+    <div class="comment-editor outline-0 min-h-[5rem] relative bg-color-light">
+      <div
+        class="paragraph relative outline-0 pl-9 mt-3 leading-5 min-h-[1.375em] before:content-[attr(data-empty-text)] before:absolute before:text-color-editor-placeholder before:pointer-events-none before:h-0"
+        data-empty-text="{{words.CommentPlaceholder}}">
+        <p contenteditable="true" class="editable outline-0 whitespace-pre-wrap flex-grow max-w-[96.6%]"></p>
+        <span class="ico ico_plus"></span>
       </div>
     </div>
   </div>
   <div>
     <button
-      class="bg-color-button text-color-light disabled:cursor-not-allowed	disabled:bg-transparent disabled:text-color-text-button-comment-form disabled:border-color-border-button-comment-form border-solid border-[1px] rounded px-3 text-xs leading-8"
+      class="comment-form__button_send comment-form__button bg-color-button text-color-light disabled:cursor-not-allowed	disabled:bg-transparent disabled:text-color-text-button-comment-form disabled:border-color-border-button-comment-form border-solid border-[1px] rounded px-3 text-xs leading-8"
       disabled="disabled">{{words.SendButton}}</button>
   </div>
 </div>

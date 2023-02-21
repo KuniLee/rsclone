@@ -37,6 +37,7 @@ module.exports = {
                 'color-border-button-comment-form': '#d2d2d2',
                 'color-text-button-comment-form': '#737d81',
                 'color-comments-notice': '#71992e',
+                'color-editor-placeholder': '#c0c0c0'
             },
         },
         fontFamily: {
