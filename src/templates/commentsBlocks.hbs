@@ -1,0 +1,40 @@
+<div class="bg-color-light">
+  <div class="px-4 py-3.5">
+    <h3 class="text-sm leading-4 font-bold text-color-text-dark m-0">{{words.CommentsTitle}}</h3>
+  </div>
+  <div class="comments-wrapper">
+    <div class="comments-wrapper__empty text-color-text-light px-4 pt-3.5 pb-5">
+      <span class="block text-center">{{words.CommentsEmpty}}</span>
+    </div>
+  </div>
+</div>
+{{#if user}}
+<div class="comment-form">
+  <div class="mb-4">
+    <p class="text-sm leading-4 font-bold text-color-text-dark mb-5">{{words.CommentField}}</p>
+    <div class="comment-form__editor bg-color-light">
+      <div class="comment-editor">
+        <div class="block-menu"></div>
+        <div class="comment-editor__content">
+          <div contenteditable="true" class="editable outline-0 min-h-[52px]">
+            <p data-empty-text="{{CommentPlaceholder}}"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <button
+      class="bg-color-button text-color-light disabled:cursor-not-allowed	disabled:bg-transparent disabled:text-color-text-button-comment-form disabled:border-color-border-button-comment-form border-solid border-[1px] rounded px-3 text-xs leading-8"
+      disabled="disabled">{{words.SendButton}}</button>
+  </div>
+</div>
+{{else}}
+<div
+  class="bg-color-light relative p-8 before::content-['*'] before:absolute before:left-0 before:w-4 before:top-0 before:bg-color-comments-notice before:h-full">
+  <span>{{words.CommentsNoticePartOne}}
+    <a href="{{loginHref}}"
+      class="text-color-link-hover">{{words.CommentsNoticePartTwo}}</a>{{words.CommentsNoticePartThree}}
+  </span>
+</div>
+{{/if}}

@@ -6,6 +6,8 @@ import preloader from '@/templates/preloader.html'
 import postTemplate from '@/templates/post/post.hbs'
 import dictionary, { getWords } from '@/utils/dictionary'
 import aside from '@/templates/aside.hbs'
+import { Comment } from '@/utils/commentBuilder'
+import commentsBlocksTemplate from '@/templates/commentsBlocks.hbs'
 
 type ArticleEventsName = 'LOAD_POST' | 'GO_TO'
 
@@ -29,7 +31,15 @@ export class ArticleView extends EventEmitter {
             }
         })
         this.feedModel.on('POST_LOADED', () => {
-            this.render()
+            if (this.mainPageContainer) {
+                const feedEl = this.mainPageContainer.querySelector('.post')
+                if (feedEl instanceof HTMLElement) {
+                    this.renderPost(feedEl)
+                    const commentsBlockEl = this.createCommentsBlocks()
+                    feedEl.append(commentsBlockEl)
+                    this.addListeners(feedEl)
+                }
+            }
         })
     }
 
@@ -52,13 +62,25 @@ export class ArticleView extends EventEmitter {
 </div>`
     }
 
-    private render() {
-        const feedEl = this.mainPageContainer?.querySelector('.post') as HTMLDivElement
-        feedEl.innerHTML = postTemplate({
+    private renderPost(feedWrapperEl: HTMLElement) {
+        feedWrapperEl.innerHTML = postTemplate({
             article: this.feedModel.article,
             words: getWords(dictionary.PostPage, this.pageModel.lang),
         })
-        feedEl.querySelectorAll('a').forEach((el) => {
+    }
+
+    private createCommentsBlocks() {
+        const template = document.createElement('template')
+        template.innerHTML = commentsBlocksTemplate({
+            user: this.pageModel.user,
+            words: getWords(dictionary.Comments, this.pageModel.lang),
+            loginHref: Paths.Auth,
+        })
+        return template.content
+    }
+
+    private addListeners(feedWrapperEl: HTMLElement) {
+        feedWrapperEl.querySelectorAll('a').forEach((el) => {
             el.addEventListener('click', (ev) => {
                 ev.preventDefault()
                 this.emit<string>('GO_TO', el.href)

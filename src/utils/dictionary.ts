@@ -84,20 +84,37 @@ const Aside: Record<string, language> = {
     },
     FirstParagraphPartTwo: {
         ru: 'для тех, кто хочет получить знания и опыт, достаточные для трудоустройства.',
-        en: 'developer community for those who want to gain knowledge and experience sufficient for employment',
+        en: 'developer community for those who want to gain knowledge and experience sufficient for employment.',
     },
     SecondParagraphPartOne: {
         ru: 'В',
         en: 'Everyone can study at',
     },
     SecondParagraphPartTwo: {
-        ru: 'может учиться каждый, независимо от возраста, профессиональной занятости и места жительства.',
+        ru: ' может учиться каждый, независимо от возраста, профессиональной занятости и места жительства.',
         en: ', regardless of age, professional employment, or place of residence.',
     },
 }
 
 const PostPage: Record<string, language> = {
     keywords: { ru: 'Теги', en: 'Tags' },
+}
+
+const Comments: Record<string, language> = {
+    CommentsTitle: { ru: 'Комментарии', en: 'Comments' },
+    CommentsEmpty: {
+        ru: 'Здесь пока нет ни одного комментария, вы можете стать первым!',
+        en: 'There are no comments yet, you can be the first one!',
+    },
+    CommentsNoticePartOne: {
+        ru: 'Только полноправные пользователи могут оставлять комментарии.',
+        en: 'Only those users with full accounts are able to leave comments.',
+    },
+    CommentsNoticePartTwo: { ru: 'Войдите', en: 'Log in' },
+    CommentsNoticePartThree: { ru: ', пожалуйста.', en: ', please.' },
+    SendButton: { ru: 'Отправить', en: 'Send' },
+    CommentField: { ru: 'Ваш комментарий', en: 'Your comment' },
+    CommentPlaceholder: { ru: 'Нажмите "/" для вызова меню', en: 'Press "/" to access menu' },
 }
 
 export function getWords(wordObj: Record<string, language>, lang: keyof language) {
@@ -119,4 +136,5 @@ export default {
     PageNotFound,
     Aside,
     PostPage,
+    Comments,
 }
