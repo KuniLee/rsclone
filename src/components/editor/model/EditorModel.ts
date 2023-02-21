@@ -17,7 +17,7 @@ export class EditorModel extends EventEmitter {
     saveArticleToLocalStorage(obj: ParsedArticle) {
         if (obj) {
             return new Promise((resolve) => {
-                const openRequest = indexedDB.open('localSavedArticle', 2)
+                const openRequest = indexedDB.open('localSavedArticle', 1)
                 openRequest.onupgradeneeded = function () {
                     const db = openRequest.result
                     if (!db.objectStoreNames.contains('article')) {
@@ -51,7 +51,16 @@ export class EditorModel extends EventEmitter {
 
     async getSavedArticle(): Promise<ParsedArticle | null> {
         return new Promise((resolve) => {
-            const openRequest = indexedDB.open('localSavedArticle', 2)
+            const openRequest = indexedDB.open('localSavedArticle', 1)
+            openRequest.onupgradeneeded = function () {
+                console.log('upgrade')
+                const db = openRequest.result
+                if (!db.objectStoreNames.contains('article')) {
+                    db.createObjectStore('article')
+                    resolve(null)
+                    return
+                }
+            }
             openRequest.onsuccess = function () {
                 const db = openRequest.result
                 const transaction = db.transaction('article', 'readwrite')
