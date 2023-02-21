@@ -143,6 +143,7 @@ export class EditorView extends EventEmitter {
                 readMoreTextPlaceholder: this.dictionary.ReadMoreTextPlaceholder[this.lang],
                 backToPublication: this.dictionary.BackToPublication[this.lang],
                 sendArticle: this.dictionary.SendArticle[this.lang],
+                words: getWords(Dictionary.Aside, this.pageModel.lang),
             })
         }
         const popupMenu = document.querySelector('.menu') as HTMLElement

@@ -137,6 +137,26 @@ const EditorPage: Record<string, language> = {
     LoadAnotherImage: { ru: 'Загрузить другую', en: 'Upload new one' },
 }
 
+const Aside: Record<string, language> = {
+    Title: { ru: 'Об RS School', en: 'About RS School' },
+    FirstParagraphPartOne: {
+        ru: 'Бесплатные курсы от сообщества',
+        en: 'RS School is free-of-charge and community-based education program conducted by',
+    },
+    FirstParagraphPartTwo: {
+        ru: 'для тех, кто хочет получить знания и опыт, достаточные для трудоустройства.',
+        en: 'developer community for those who want to gain knowledge and experience sufficient for employment',
+    },
+    SecondParagraphPartOne: {
+        ru: 'В',
+        en: 'Everyone can study at',
+    },
+    SecondParagraphPartTwo: {
+        ru: 'может учиться каждый, независимо от возраста, профессиональной занятости и места жительства.',
+        en: ', regardless of age, professional employment, or place of residence.',
+    },
+}
+
 export function getWords(wordObj: Record<string, language>, lang: keyof language) {
     const result: Record<string, string> = {}
     for (const wordObjKey in wordObj) {
@@ -154,5 +174,6 @@ export default {
     errorPage,
     ProfilePage,
     PageNotFound,
+    Aside,
     EditorPage,
 }
