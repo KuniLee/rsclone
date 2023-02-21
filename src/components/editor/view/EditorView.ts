@@ -1470,6 +1470,10 @@ export class EditorView extends EventEmitter {
                 (fullDate.getMinutes() < 10 ? '0' : '') +
                 fullDate.getMinutes()
         }
+        const lastSaveWindow = document.querySelector('.save-information-block') as HTMLElement
+        if (lastSaveWindow) {
+            lastSaveWindow.remove()
+        }
     }
 
     emit<T>(event: ItemViewEventsName, arg?: T, articleData?: NewArticleData, blocks?: ParsedArticle) {
