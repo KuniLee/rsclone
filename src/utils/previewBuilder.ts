@@ -4,6 +4,7 @@ import { Paths } from 'types/enums'
 import { Article, URLParams } from 'types/interfaces'
 import { getTimeAgo } from '@/utils/getTimeAgo'
 import emptyAvatar from '@/assets/icons/avatar.svg'
+import dictionary, { getWords } from '@/utils/dictionary'
 
 type PreviewEventsName = 'GO_TO' | 'DOWNLOAD_IMAGE' | 'UPLOAD_IMAGE'
 
@@ -18,6 +19,7 @@ export class Preview extends EventEmitter {
         const template = document.createElement('template')
         template.innerHTML = articleTemplate({
             time: getTimeAgo(this.article.createdAt.toDate(), localStorage.lang),
+            words: getWords(dictionary.PostPage, localStorage.lang),
             article: this.article,
             emptyAvatar,
         })
