@@ -5,7 +5,7 @@
     <span class="text-sm text-color-text-light">{{time}}</span>
   </div>
     <h1 class="article__link text-xxl cursor-pointer font-medium">{{article.title}}</h1>
-  {{{[./post/difficult] article.difficult}}}
+  {{{[../post/difficult] article.difficult}}}
   {{#if article.isTranslate}}<div class="my-2"><span class="inline-block border-[#b0b0e2] text-[#6667a3] text-sm border rounded p-1">{{words.isTranslate}}</span></div>{{/if}}
   {{#if article.preview.image}}
     <div class="w-full mb-4 pb-[56.4103%] relative z-1"> <img class="w-full h-full absolute select-none object-cover" style="object-position: {{join article.preview.imagePosition}}"
