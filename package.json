@@ -22,6 +22,7 @@
   "homepage": "https://github.com/KuniLee/rsclone#readme",
   "devDependencies": {
     "@types/jest": "^29.2.5",
+    "@types/luxon": "^3.2.0",
     "@types/node": "^18.11.15",
     "@types/parse": "^3.0.1",
     "@typescript-eslint/eslint-plugin": "^5.46.1",
@@ -64,6 +65,7 @@
     "@types/grecaptcha": "^3.0.4",
     "handlebars-loader": "^1.7.3",
     "history": "^5.3.0",
+    "luxon": "^3.2.1",
     "parse": "^4.0.0",
     "query-string": "^8.0.3"
   }
