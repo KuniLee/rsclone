@@ -18,7 +18,7 @@ import {
     where,
 } from '@/utils/FireBaseAPI'
 import type { QueryConstraint, DocumentReference } from 'firebase/firestore'
-import { Flows } from 'types/enums'
+import { Flows, Paths } from 'types/enums'
 import { Article, URLParams } from 'types/interfaces'
 import { ArticleViewInstance } from '@/components/mainPage/views/ArticleView'
 import { RouterInstance } from '@/utils/Rooter'
@@ -100,11 +100,15 @@ export class FeedController {
     }
 
     private goTo(path: string) {
-        if (this.router.isSameDomain(path))
+        const lastHref = '/' + path.split('/').slice(-1).join('')
+        if (this.router.isSameDomain(path) && lastHref !== Paths.Auth) {
             this.pageModel.changePage({
                 path: this.router.getPathArray(path),
                 search: this.router.getParsedSearch(path),
             })
-        else this.router.push(path)
+        } else {
+            this.router.push(path)
+            location.reload()
+        }
     }
 }
