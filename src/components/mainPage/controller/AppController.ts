@@ -63,6 +63,7 @@ export class AppController {
     private async uploadUserData(userData: UserData) {
         const newData = { ...userData }
         Reflect.deleteProperty(newData, 'uid')
+        Reflect.deleteProperty(newData, 'createdAt')
         try {
             await updateDoc(doc(this.db, `users/${userData.uid}`), newData)
             this.model.changeAuth(userData)

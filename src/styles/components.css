@@ -9,26 +9,6 @@
   filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
 }
 
-.ico_search {
-  background: url(../assets/icons/ico-search.svg) center no-repeat;
-  background-size: contain;
-  width: 24px;
-  height: 24px;
-}
-
-.ico_search:hover {
-  filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
-}
-
-.ico_search-light {
-  background: url(../assets/icons/ico-search1.svg) center no-repeat;
-  background-size: contain;
-}
-
-.ico_search-light:hover {
-  filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
-}
-
 .ico_user-light {
   background: url(../assets/icons/ico-user1.svg) center no-repeat;
   background-size: contain;
@@ -91,8 +71,16 @@
 .ico_rs {
   background: url(../assets/icons/ico-rs.svg) center no-repeat;
   background-size: contain;
-  width: 60px;
-  height: 30px;
+  width: 50px;
+  height: 20px;
+}
+
+.rs-sloth {
+  margin: auto;
+  background: url(../assets/icons/rs-sloth.svg) center no-repeat;
+  background-size: contain;
+  width: 10rem;
+  height: 10rem;
 }
 
 .drop-down-menu__body {
@@ -157,4 +145,8 @@
   height: 2px;
   position: absolute;
   width: 100%;
+}
+
+.article_tag:not(:last-child)::after{
+  content: ',';
 }

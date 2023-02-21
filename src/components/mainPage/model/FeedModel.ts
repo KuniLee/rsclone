@@ -1,8 +1,7 @@
 import EventEmitter from 'events'
-import { Article } from 'types/types'
-
 import type { QueryDocumentSnapshot } from 'firebase/firestore'
 import { Flows } from 'types/enums'
+import { Article } from 'types/interfaces'
 
 type FeedModelEventsName = 'LOADED' | 'POST_LOADED'
 export type FeedModelInstance = InstanceType<typeof FeedModel>

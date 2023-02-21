@@ -166,7 +166,7 @@ export class AuthView extends EventEmitter {
         })
         const nickname = document.querySelector('.nickname-input') as HTMLInputElement
         nickname?.addEventListener('input', () => {
-            const reg = new RegExp('[A-z0-9]{4,}')
+            const reg = new RegExp('^[A-z0-9_-]{3,15}$')
             const result = this.validateInputs(nickname, reg)
             const nickError = document.querySelector('.nick-error') as HTMLElement
             if (nickError) {
@@ -240,7 +240,7 @@ export class AuthView extends EventEmitter {
         const pass = document.querySelector('.password-input') as HTMLInputElement
         const passRepeat = document.querySelector('.password-repeat-input') as HTMLInputElement
         const emailReg = new RegExp('[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')
-        const nickReg = new RegExp('[A-z0-9]{4,}')
+        const nickReg = new RegExp('^[A-z0-9_-]{3,15}$')
         const passReg = new RegExp('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,16}')
         const emailCheckResult = this.validateInputs(email, emailReg)
         const nickCheckResult = this.validateInputs(nick, nickReg)

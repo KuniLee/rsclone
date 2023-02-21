@@ -1,6 +1,4 @@
 import { Timestamp } from 'firebase/firestore'
-import type { StorageReference } from 'firebase/storage'
-import { Flows } from 'types/enums'
 
 export type FirebaseConfigType = {
     storageBucket: string
@@ -20,17 +18,6 @@ export type AuthViewTypes = {
     query?: string
 }
 
-export type Article = {
-    createdAt: Timestamp
-    id: string
-    flows: Array<Flows>
-    title: string
-    userId: string
-    images: StorageReference
-    preview: Preview
-    user?: UserData
-}
-
 export type Preview = {
     image: string
     nextBtnText: string
@@ -40,11 +27,7 @@ export type Preview = {
 
 export type UserData = {
     uid: string
-    createdAt: {
-        toDate: () => Date
-        seconds: number
-        nanoseconds: number
-    }
+    createdAt: Timestamp
     email: string
     displayName: string
     properties: Partial<UserProps>

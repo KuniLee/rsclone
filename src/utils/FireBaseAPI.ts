@@ -49,7 +49,8 @@ export {
     where,
 }
 import EventEmitter from 'events'
-import { Article, UserData } from 'types/types'
+import { UserData } from 'types/types'
+import { Article } from 'types/interfaces'
 
 export type { User, Auth, Firestore, FirebaseStorage }
 
@@ -142,7 +143,7 @@ export class FireBaseAPI extends EventEmitter {
                 return true
             })
             .catch((error) => {
-                // An error happened.
+                console.log(error)
             })
     }
 
