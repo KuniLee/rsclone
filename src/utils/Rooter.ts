@@ -71,4 +71,8 @@ export class Router extends EventEmitter {
     replace(pathQuery: string) {
         history.replace(pathQuery)
     }
+
+    isSameDomain(link: string) {
+        return new URL(link).hostname === location.hostname
+    }
 }

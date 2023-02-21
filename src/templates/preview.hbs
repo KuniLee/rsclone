@@ -5,6 +5,8 @@
     <span class="text-sm text-color-text-light">{{time}}</span>
   </div>
     <h1 class="article__link text-xxl cursor-pointer font-medium">{{article.title}}</h1>
+  {{{[./post/difficult] article.difficult}}}
+  {{#if article.isTranslate}}<div class="my-2"><span class="inline-block border-[#b0b0e2] text-[#6667a3] text-sm border rounded p-1">{{words.isTranslate}}</span></div>{{/if}}
   {{#if article.preview.image}}<img class="w-full mb-4"
       src="{{article.preview.image}}" alt="preview_image">
   {{/if}}
