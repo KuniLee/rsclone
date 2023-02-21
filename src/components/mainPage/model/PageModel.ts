@@ -71,21 +71,23 @@ export class PageModel extends EventEmitter {
     }
 
     private goToFlows() {
-        if (this.path[0] === Paths.All) {
-            console.log(`страница all`)
+        if (this.path.length === 1 && this.path[0] === Paths.All) this.emit('CHANGE_PAGE')
+        else if (this.path.length === 2 && this.path[0] === Paths.All && /\/page\d+/.test(this.path[1]))
             this.emit('CHANGE_PAGE')
-            return
-        }
-        if (Object.values(Flows).includes(this.path[1] as Flows)) {
+        else if (this.path.length === 2 && Object.values(Flows).includes(this.path[1] as Flows)) {
             if (this.path[1] === Paths.All) {
                 this.path = [Paths.All]
                 console.log(`страница all`)
-                this.emit('CHANGE_PAGE')
-                return
             }
-            console.log(`страница flows${this.path[1]}`)
             this.emit('CHANGE_PAGE')
-        } else this.goTo404()
+        } else if (
+            this.path.length === 3 &&
+            this.path[0] === Paths.Flows &&
+            Object.values(Flows).includes(this.path[1] as Flows) &&
+            /\/page\d+/.test(this.path[2])
+        )
+            this.emit('CHANGE_PAGE')
+        else this.goTo404()
     }
 
     private goToSandbox() {
