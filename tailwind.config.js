@@ -7,6 +7,7 @@ module.exports = {
                 padding: {
                     DEFAULT: '0rem',
                     sm: '2rem',
+                    xl: '0rem',
                 },
             },
             colors: {

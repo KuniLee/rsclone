@@ -1,4 +1,4 @@
-<div class="textElement group editorElement before:content-[attr(data-is-empty)] before:absolute before:text-[#c0c0c0] before:pointer-events-none text-xl flex new items-center w-full px-[25px]" data-is-empty="Нажмите '/' для вызова меню">
+<div class="textElement group editorElement before:content-[attr(data-is-empty)] before:absolute before:text-[#c0c0c0] before:pointer-events-none text-xl flex new items-center w-full px-[25px]" data-is-empty="{{menuCall}}">
   <div class="plus absolute left-0 hidden cursor-pointer plusOpen">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
       <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -18,7 +18,7 @@
     </button>
     <div class="options__drop-menu absolute w-[220px] shadow right-0 bg-color-light z-10" hidden>
       <div class="py-[5px]">
-        <button class="delete-btn py-[10px] hover:bg-[rgba] w-full text-[13px] hover:bg-color-gray-light transition">Удалить</button>
+        <button class="delete-btn py-[10px] hover:bg-[rgba] w-full text-[13px] hover:bg-color-gray-light transition">{{delete}}</button>
       </div>
     </div>
   </div>
