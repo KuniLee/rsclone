@@ -50,7 +50,7 @@ export type BlocksType = {
     value: string | Array<BlocksType>
 }
 
-export type ParsedArticle = {
+export type ParsedData = {
     blocks: Array<BlocksType>
     time?: number
 }

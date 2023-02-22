@@ -9,8 +9,9 @@ import aside from '@/templates/aside.hbs'
 import { Comment } from '@/utils/commentBuilder'
 import commentsBlocksTemplate from '@/templates/comments/commentsBlocks.hbs'
 import commentEditorNewParagraphTemplate from '@/templates/comments/commentEditorNewParagraph.hbs'
+import { ParsedData } from '@/types/types'
 
-type ArticleEventsName = 'LOAD_POST' | 'GO_TO'
+type ArticleEventsName = 'LOAD_POST' | 'GO_TO' | 'PARSED_COMMENT'
 
 export type ArticleViewInstance = InstanceType<typeof ArticleView>
 
@@ -100,7 +101,8 @@ export class ArticleView extends EventEmitter {
         })
         if (sendBtnEl) {
             sendBtnEl.addEventListener('click', () => {
-                console.log('Send')
+                const comment = this.parseComment(feedWrapper)
+                this.emit('PARSED_COMMENT', comment)
             })
         }
     }
@@ -228,5 +230,21 @@ export class ArticleView extends EventEmitter {
     private showPlusIcon(paragraph: HTMLElement) {
         const plusIcon = paragraph.querySelector('.ico_plus')
         if (plusIcon) plusIcon.classList.remove('hidden')
+    }
+
+    private parseComment(feedWrapper: HTMLElement) {
+        const comment: ParsedData = {
+            blocks: [],
+        }
+        const paragraphsEditable = feedWrapper.querySelectorAll('.editable')
+        paragraphsEditable.forEach((paragraphEditable) => {
+            if (paragraphEditable.textContent) {
+                comment.blocks.push({
+                    type: 'text',
+                    value: paragraphEditable.textContent,
+                })
+            }
+        })
+        return comment
     }
 }

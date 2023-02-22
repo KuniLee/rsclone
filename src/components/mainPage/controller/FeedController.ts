@@ -17,11 +17,12 @@ import {
     ref,
     where,
 } from '@/utils/FireBaseAPI'
-import type { QueryConstraint, DocumentReference } from 'firebase/firestore'
+import { QueryConstraint, DocumentReference, setDoc, serverTimestamp, updateDoc, arrayUnion } from 'firebase/firestore'
 import { Flows, Paths } from 'types/enums'
 import { Article, URLParams } from 'types/interfaces'
 import { ArticleViewInstance } from '@/components/mainPage/views/ArticleView'
 import { RouterInstance } from '@/utils/Rooter'
+import { ParsedData } from '@/types/types'
 
 export class FeedController {
     private view: FeedViewInstance
@@ -59,6 +60,10 @@ export class FeedController {
             this.pageModel.changePage(path)
         })
         this.articleView.on<string>('GO_TO', this.goTo.bind(this))
+        this.articleView.on<ParsedData>('PARSED_COMMENT', async (comment) => {
+            const article = this.feedModel.article
+            if (article) this.addComment(comment, article.id)
+        })
     }
 
     private async loadArticle(id: string): Promise<Article | undefined> {
@@ -78,7 +83,7 @@ export class FeedController {
                     }
                 })
             )
-            return article
+            return { ...article, id }
         } catch (e) {
             console.log(e)
         }
@@ -109,6 +114,20 @@ export class FeedController {
         } else {
             this.router.push(path)
             location.reload()
+        }
+    }
+
+    private async addComment(comment: ParsedData, articleId: Article['id']) {
+        try {
+            const commentsArticleRef = doc(collection(this.db, `articles/${articleId}/comments`))
+            const commentsUserRef = doc(this.db, `users/${this.pageModel.user.uid}`)
+            await updateDoc(commentsUserRef, { comments: arrayUnion(commentsArticleRef) })
+            await setDoc(
+                commentsArticleRef,
+                Object.assign(comment, { createdAt: serverTimestamp(), user: commentsUserRef })
+            )
+        } catch (e) {
+            console.log(e)
         }
     }
 }

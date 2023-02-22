@@ -1,4 +1,4 @@
-import { BlocksType, ParsedArticle } from './../../../types/types'
+import { BlocksType, ParsedData } from './../../../types/types'
 import EventEmitter from 'events'
 import { Flows, Paths } from 'types/enums'
 import { URLParams } from 'types/interfaces'
@@ -14,7 +14,7 @@ export class EditorModel extends EventEmitter {
         super()
     }
 
-    saveArticleToLocalStorage(obj: ParsedArticle) {
+    saveArticleToLocalStorage(obj: ParsedData) {
         if (obj) {
             return new Promise((resolve) => {
                 const openRequest = indexedDB.open('localSavedArticle', 1)
@@ -49,7 +49,7 @@ export class EditorModel extends EventEmitter {
         this.emit('ARTICLE_SAVED', Date.now())
     }
 
-    async getSavedArticle(): Promise<ParsedArticle | null> {
+    async getSavedArticle(): Promise<ParsedData | null> {
         return new Promise((resolve) => {
             const openRequest = indexedDB.open('localSavedArticle', 1)
             openRequest.onupgradeneeded = function () {
