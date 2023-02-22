@@ -16,6 +16,8 @@ import quoteBlockTemplate from '@/templates/textEditorQuoteTemplate.hbs'
 import emptyParagraph from '@/templates/paragraph.hbs'
 import imageBlockTemplate from '@/templates/textEditorImageTemplate.hbs'
 import delimiterTemplate from '@/templates/textEditorDelimeterTemplate.hbs'
+import numberedListTemplate from '@/templates/textEditorNumberListTemplate.hbs'
+import listElementTemplate from '@/templates/textEditorListElement.hbs'
 import { SelectPure } from 'select-pure/lib/components'
 import dictionary from '@/utils/dictionary'
 
@@ -490,6 +492,27 @@ export class EditorView extends EventEmitter {
         }
     }
 
+    addSubParagraph(el: HTMLElement, editor: HTMLElement) {
+        const listParagraphs = el.parentElement as HTMLElement
+        const item = el.closest('.list') as HTMLElement
+        const value = el.textContent
+        if (value) {
+            console.log(1)
+            this.addNewParagraph(el)
+        } else {
+            if (listParagraphs) {
+                if (listParagraphs.children.length !== 2) {
+                    this.deleteElement(el, editor)
+                } else {
+                    if (item) {
+                        this.deleteElement(item, editor)
+                    }
+                }
+            }
+            this.addNewField(editor)
+        }
+    }
+
     addTextInputListeners(el: HTMLElement, editor: HTMLElement) {
         const parent = el.parentNode as HTMLElement
         const menu = document.querySelector('.menu') as HTMLElement
@@ -499,26 +522,11 @@ export class EditorView extends EventEmitter {
             if (event.key === 'Enter') {
                 e.preventDefault()
                 if (menu && menu.hidden) {
-                    if (!el.closest('.quoteElement')) {
+                    if (!el.closest('.list')) {
                         this.addNewField(editor)
                     }
-                    if (el.closest('.quoteElement')) {
-                        const listParagraphs = el.parentElement as HTMLElement
-                        const item = el.closest('.quoteElement') as HTMLElement
-                        if (value) {
-                            this.addNewParagraph(el)
-                        } else {
-                            if (listParagraphs) {
-                                if (listParagraphs.children.length !== 2) {
-                                    this.deleteElement(el, editor)
-                                } else {
-                                    if (item) {
-                                        this.deleteElement(item, editor)
-                                    }
-                                }
-                            }
-                            this.addNewField(editor)
-                        }
+                    if (el.closest('.list')) {
+                        this.addSubParagraph(el, editor)
                     }
                 }
             }
@@ -576,12 +584,12 @@ export class EditorView extends EventEmitter {
                     if (
                         parent.classList.contains('editorElement') &&
                         listOfElements.length !== 1 &&
-                        !parent.classList.contains('quoteElement')
+                        !parent.classList.contains('list')
                     ) {
                         this.deleteElement(parent, editor)
                         e.preventDefault()
                     }
-                    if (parent.classList.contains('quoteElement')) {
+                    if (parent.classList.contains('list')) {
                         const listParagraphs = el.parentElement as HTMLElement
                         e.preventDefault()
                         if (listParagraphs) {
@@ -943,7 +951,12 @@ export class EditorView extends EventEmitter {
 
     addNewParagraph(el: HTMLElement, value?: string) {
         const template = document.createElement('template')
-        template.innerHTML = emptyParagraph({})
+        if (el.closest('.quoteElement')) {
+            template.innerHTML = emptyParagraph({})
+        }
+        if (el.closest('.numberListElement')) {
+            template.innerHTML = listElementTemplate({})
+        }
         el.after(template.content)
         const newField = document.querySelector('.new') as HTMLElement
         const editor = document.querySelector('.textEditor') as HTMLElement
@@ -1012,8 +1025,12 @@ export class EditorView extends EventEmitter {
                     }
                 }
             }
-            if (el.classList.contains('quoteElement')) {
+            if (el.classList.contains('list')) {
                 const quoteInputs: Array<BlocksType> = []
+                const type = (el as HTMLElement).dataset.type
+                if (!type) {
+                    throw Error('Empty list type')
+                }
                 const quoteElements = el.querySelectorAll('.editable')?.forEach((el) => {
                     quoteInputs.push({
                         type: 'text',
@@ -1021,7 +1038,7 @@ export class EditorView extends EventEmitter {
                     })
                 })
                 obj.blocks.push({
-                    type: 'quotes',
+                    type: type,
                     value: quoteInputs,
                 })
             }
@@ -1329,6 +1346,12 @@ export class EditorView extends EventEmitter {
                 template.innerHTML = delimiterTemplate({
                     delete: this.dictionary.Delete[this.lang],
                 })
+                break
+            case 'numberList':
+                template.innerHTML = numberedListTemplate({
+                    delete: this.dictionary.Delete[this.lang],
+                })
+                break
         }
         return template
     }
@@ -1386,9 +1409,11 @@ export class EditorView extends EventEmitter {
                                 }
                             }
                         }
-                        if (newItem.classList.contains('quoteElement')) {
+                        if (newItem.classList.contains('list')) {
                             if (Array.isArray(el.value)) {
-                                const elementsList = newItem.querySelector('.quote-elements-container')
+                                const elementsList =
+                                    newItem.querySelector('.quote-elements-container') ??
+                                    newItem.querySelector('.list-elements-container')
                                 el.value.forEach((el) => {
                                     if (elementsList) {
                                         const lastChild = elementsList.lastElementChild as HTMLElement

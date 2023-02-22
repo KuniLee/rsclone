@@ -83,6 +83,7 @@ export class EditorController {
                     }
                 }
                 await updateDoc(userRef, userData)
+                console.log('delete')
                 await this.editorModel.deleteArticle()
                 alert('Удачно!')
             } catch (e) {
