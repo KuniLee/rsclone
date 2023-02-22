@@ -200,6 +200,20 @@ export class EditorView extends EventEmitter {
                     })
                 }
             })
+            buttonText.addEventListener('input', (e) => {
+                const value = buttonText.value
+                const readMoreTextLengthNumber = document.querySelector('.read-more-text-length')
+                if (readMoreTextLengthNumber) {
+                    const valueLength = Number(value.length)
+                    if (42 - valueLength >= 0) {
+                        readMoreTextLengthNumber.textContent = String(42 - valueLength)
+                    } else {
+                        buttonText.value
+                    }
+                }
+            })
+            const ev = new Event('input')
+            buttonText.dispatchEvent(ev)
             this.addDrag(previewEditor)
         }
         document.querySelector('.isTranslate')?.addEventListener('change', () => {

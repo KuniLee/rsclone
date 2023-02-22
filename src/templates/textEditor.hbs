@@ -181,9 +181,12 @@
           <p class="previewEditorError text-gray-500 text-[12px] mb-[9px]">{{previewHint}}</p>
         </div>
         <div class="mb-4">
-          <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>{{readMoreText}}</h3>
+          <div class="flex justify-between items-center">
+            <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>{{readMoreText}}</h3>
+            <p class="read-more-text-length text-[12px] font-semibold">40</p>
+          </div>
           <div>
-            <input class="buttonTextInput w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" value="{{readMoreTextPlaceholder}}">
+            <input class="buttonTextInput w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" value="{{readMoreTextPlaceholder}}" maxlength="42">
           </div>
         </div>
         <div class="before:content-[''] before:w-full before:h-[1px] before:bg-color-gray-separator before:absolute before:left-0 mb-4 flex justify-between">
