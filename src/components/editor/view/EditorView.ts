@@ -1271,6 +1271,7 @@ export class EditorView extends EventEmitter {
             }
             currentItem.classList.remove('activeMenu')
         }
+        document.querySelector('.activeMenu')?.scrollIntoView()
     }
 
     addEventListenersToPopup(popup: HTMLElement) {
