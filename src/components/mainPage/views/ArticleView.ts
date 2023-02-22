@@ -43,6 +43,9 @@ export class ArticleView extends EventEmitter {
                 }
             }
         })
+        this.feedModel.on('COMMENTS_LOADED', () => {
+            console.log(this.feedModel.getComments())
+        })
     }
 
     emit<T>(event: ArticleEventsName, arg?: T) {

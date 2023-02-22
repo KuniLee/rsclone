@@ -22,7 +22,7 @@ import { Flows, Paths } from 'types/enums'
 import { Article, URLParams } from 'types/interfaces'
 import { ArticleViewInstance } from '@/components/mainPage/views/ArticleView'
 import { RouterInstance } from '@/utils/Rooter'
-import { ParsedData } from '@/types/types'
+import { CommentInfo, ParsedData } from '@/types/types'
 
 export class FeedController {
     private view: FeedViewInstance
@@ -53,8 +53,13 @@ export class FeedController {
         })
         this.articleView.on<string>('LOAD_POST', async (id) => {
             const article = await this.loadArticle(id)
-            if (article) this.feedModel.setArticle(article)
-            else this.pageModel.goTo404()
+            const comments = await this.loadComments(id)
+            if (article) {
+                this.feedModel.setArticle(article)
+                if (comments) this.feedModel.setComments(comments)
+            } else {
+                this.pageModel.goTo404()
+            }
         })
         this.view.on<URLParams>('GO_TO', (path) => {
             this.pageModel.changePage(path)
@@ -72,7 +77,6 @@ export class FeedController {
             if (!snapshot.exists()) return
             const article = await this.api.downloadArticleData(await snapshot.data())
             const imageBlocks = article.blocks.filter((el) => el.imageSrc !== undefined)
-
             await Promise.all(
                 imageBlocks.map(async (block) => {
                     try {
@@ -126,6 +130,23 @@ export class FeedController {
                 commentsArticleRef,
                 Object.assign(comment, { createdAt: serverTimestamp(), user: commentsUserRef })
             )
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    private async loadComments(articleId: Article['id']) {
+        try {
+            const queryConstants: QueryConstraint[] = [orderBy('createdAt', 'desc'), limit(5)]
+            const commentsArticleRef = collection(this.db, `articles/${articleId}/comments`)
+            const commentsSnapshot = await getDocs(query(commentsArticleRef, ...queryConstants))
+            const comments: Array<CommentInfo> = []
+            commentsSnapshot.forEach((doc) => {
+                const comment = doc.data() as CommentInfo
+                comments.push({ ...comment })
+            })
+            await Promise.all(comments.map((comment) => this.api.loadUsersData(comment)))
+            return comments
         } catch (e) {
             console.log(e)
         }
