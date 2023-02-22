@@ -12,7 +12,7 @@ export class EditorBlocks {
     constructor(lang: 'ru' | 'en') {
         this.dictionary = dictionary.EditorPage
         this.lang = lang
-        this.blocks = [this.getHeader, this.getQuotes, this.getImage]
+        this.blocks = [this.getHeader, this.getQuotes, this.getImage, this.getDelimiter]
     }
 
     getListOfElements() {
@@ -54,6 +54,17 @@ export class EditorBlocks {
             svg: require('../assets/icons/image-icon.svg'),
             blockName: this.dictionary.PopupNameImage[this.lang],
             type: 'image',
+        })
+        return template.content
+    }
+
+    getDelimiter() {
+        const template = document.createElement('template')
+        template.innerHTML = blocksPopup({
+            class: 'delimiterElementPopup',
+            svg: require('../assets/icons/delimiter.svg'),
+            blockName: this.dictionary.Delimiter[this.lang],
+            type: 'delimiter',
         })
         return template.content
     }

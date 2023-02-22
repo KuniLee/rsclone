@@ -84,6 +84,7 @@ const EditorPage: Record<string, language> = {
     Quote: { ru: 'Цитата', en: 'Quote' },
     Delete: { ru: 'Удалить', en: 'Delete' },
     Image: { ru: 'Изображение', en: 'Image' },
+    Delimiter: { ru: 'Разделитель', en: 'Delimiter' },
     ToSettings: { ru: 'Далее к настройкам', en: 'Proceed to settings' },
     Language: { ru: 'Язык публикации', en: 'Language' },
     LanguageRu: { ru: 'Русский', en: 'Russian' },

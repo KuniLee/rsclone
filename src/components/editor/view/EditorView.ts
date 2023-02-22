@@ -15,6 +15,7 @@ import headingBlockTemplate from '@/templates/textEditorHeaderTemplate.hbs'
 import quoteBlockTemplate from '@/templates/textEditorQuoteTemplate.hbs'
 import emptyParagraph from '@/templates/paragraph.hbs'
 import imageBlockTemplate from '@/templates/textEditorImageTemplate.hbs'
+import delimiterTemplate from '@/templates/textEditorDelimeterTemplate.hbs'
 import { SelectPure } from 'select-pure/lib/components'
 import dictionary from '@/utils/dictionary'
 
@@ -1037,6 +1038,12 @@ export class EditorView extends EventEmitter {
                     }
                 }
             }
+            if (el.classList.contains('delimiterElement')) {
+                obj.blocks.push({
+                    type: 'delimiter',
+                    value: '',
+                })
+            }
         })
         return obj
     }
@@ -1318,6 +1325,10 @@ export class EditorView extends EventEmitter {
                     delete: this.dictionary.Delete[this.lang],
                 })
                 break
+            case 'delimiter':
+                template.innerHTML = delimiterTemplate({
+                    delete: this.dictionary.Delete[this.lang],
+                })
         }
         return template
     }
