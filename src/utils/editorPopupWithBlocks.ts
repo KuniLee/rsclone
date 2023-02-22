@@ -12,7 +12,14 @@ export class EditorBlocks {
     constructor(lang: 'ru' | 'en') {
         this.dictionary = dictionary.EditorPage
         this.lang = lang
-        this.blocks = [this.getHeader, this.getQuotes, this.getImage, this.getDelimiter, this.getNumberList]
+        this.blocks = [
+            this.getHeader,
+            this.getQuotes,
+            this.getImage,
+            this.getDelimiter,
+            this.getNumberList,
+            this.getUnorderedList,
+        ]
     }
 
     getListOfElements() {
@@ -76,6 +83,17 @@ export class EditorBlocks {
             svg: require('../assets/icons/numbered-list.svg'),
             blockName: this.dictionary.NumberedList[this.lang],
             type: 'numberList',
+        })
+        return template.content
+    }
+
+    getUnorderedList() {
+        const template = document.createElement('template')
+        template.innerHTML = blocksPopup({
+            class: 'unorderedListElementPopup',
+            svg: require('../assets/icons/unordered-list.svg'),
+            blockName: this.dictionary.NumberedList[this.lang],
+            type: 'unorderedList',
         })
         return template.content
     }

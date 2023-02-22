@@ -83,7 +83,7 @@ export class EditorModel extends EventEmitter {
 
     async deleteArticle() {
         return new Promise((resolve) => {
-            const openRequest = indexedDB.open('localSavedArticle', 2)
+            const openRequest = indexedDB.open('localSavedArticle', 1)
             openRequest.onsuccess = function () {
                 const db = openRequest.result
                 const transaction = db.transaction('article', 'readwrite')

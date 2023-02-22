@@ -17,6 +17,7 @@ import emptyParagraph from '@/templates/paragraph.hbs'
 import imageBlockTemplate from '@/templates/textEditorImageTemplate.hbs'
 import delimiterTemplate from '@/templates/textEditorDelimeterTemplate.hbs'
 import numberedListTemplate from '@/templates/textEditorNumberListTemplate.hbs'
+import unorderedListTemplate from '@/templates/textEditorUnorderedListTemplate.hbs'
 import listElementTemplate from '@/templates/textEditorListElement.hbs'
 import { SelectPure } from 'select-pure/lib/components'
 import dictionary from '@/utils/dictionary'
@@ -954,7 +955,7 @@ export class EditorView extends EventEmitter {
         if (el.closest('.quoteElement')) {
             template.innerHTML = emptyParagraph({})
         }
-        if (el.closest('.numberListElement')) {
+        if (el.closest('.numberListElement') || el.closest('.unorderedListElement')) {
             template.innerHTML = listElementTemplate({})
         }
         el.after(template.content)
@@ -1349,6 +1350,11 @@ export class EditorView extends EventEmitter {
                 break
             case 'numberList':
                 template.innerHTML = numberedListTemplate({
+                    delete: this.dictionary.Delete[this.lang],
+                })
+                break
+            case 'unorderedList':
+                template.innerHTML = unorderedListTemplate({
                     delete: this.dictionary.Delete[this.lang],
                 })
                 break
