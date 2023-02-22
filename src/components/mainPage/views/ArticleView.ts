@@ -6,7 +6,7 @@ import preloader from '@/templates/preloader.html'
 import postTemplate from '@/templates/post/post.hbs'
 import dictionary, { getWords } from '@/utils/dictionary'
 import aside from '@/templates/aside.hbs'
-import { Comment } from '@/utils/commentBuilder'
+import emptyAvatar from '@/assets/icons/avatar.svg'
 import commentsBlocksTemplate from '@/templates/comments/commentsBlocks.hbs'
 import commentEditorNewParagraphTemplate from '@/templates/comments/commentEditorNewParagraph.hbs'
 import { ParsedData } from '@/types/types'
@@ -37,13 +37,18 @@ export class ArticleView extends EventEmitter {
                 const feedEl = this.mainPageContainer.querySelector('.post')
                 if (feedEl instanceof HTMLElement) {
                     this.renderPost(feedEl)
+                }
+            }
+        })
+        this.feedModel.on('COMMENTS_LOADED', () => {
+            if (this.mainPageContainer) {
+                const feedEl = this.mainPageContainer.querySelector('.post')
+                if (feedEl instanceof HTMLElement) {
                     const commentsBlockEl = this.createCommentsBlocks()
                     feedEl.append(commentsBlockEl)
                     this.addListeners(feedEl)
                 }
             }
-        })
-        this.feedModel.on('COMMENTS_LOADED', () => {
             console.log(this.feedModel.getComments())
         })
     }
@@ -86,6 +91,8 @@ export class ArticleView extends EventEmitter {
             user: this.pageModel.user,
             words: getWords(dictionary.Comments, this.pageModel.lang),
             loginHref: Paths.Auth,
+            comments: this.feedModel.getComments(),
+            emptyAvatar,
         })
         return template.content
     }
