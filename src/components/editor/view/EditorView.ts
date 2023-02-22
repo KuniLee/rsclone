@@ -6,19 +6,19 @@ import { Flows, Paths, Sandbox } from 'types/enums'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { Plugins, Sortable } from '@shopify/draggable'
 import { SortableEventNames } from '@shopify/draggable'
-import Dictionary, { getWords } from '@/utils/dictionary'
-import asideTemplate from '@/templates/aside.hbs'
 import 'select-pure'
 import { BlocksType, NewArticleData, ParsedArticle, ParsedPreviewArticle } from 'types/types'
 import authErrorPage from '@/templates/authError.hbs'
+import Dictionary, { getWords, language } from '@/utils/dictionary'
 import { EditorBlocks } from '@/utils/editorPopupWithBlocks'
 import headingBlockTemplate from '@/templates/textEditorHeaderTemplate.hbs'
 import quoteBlockTemplate from '@/templates/textEditorQuoteTemplate.hbs'
 import emptyParagraph from '@/templates/paragraph.hbs'
 import imageBlockTemplate from '@/templates/textEditorImageTemplate.hbs'
 import { SelectPure } from 'select-pure/lib/components'
+import dictionary from '@/utils/dictionary'
 
-type ItemViewEventsName = 'GOTO' | 'ARTICLE_PARSED'
+type ItemViewEventsName = 'GOTO' | 'ARTICLE_PARSED' | 'SAVE_ARTICLE_TO_LOCALSTORAGE'
 
 export type EditorViewInstance = InstanceType<typeof EditorView>
 
@@ -28,6 +28,11 @@ export class EditorView extends EventEmitter {
     private isGlobalListener: boolean
     private previewEditorBuilded: boolean
     private blocksPopup: EditorBlocks
+    private dictionary: Record<string, language>
+    private lang: 'ru' | 'en'
+    private isSaveStart: boolean
+    private savedBlocks: Array<BlocksType>
+    private onSettingsPage: boolean
 
     constructor(editorModel: EditorModel, pageModel: PageModelInstance) {
         super()
@@ -35,7 +40,12 @@ export class EditorView extends EventEmitter {
         this.pageModel = pageModel
         this.isGlobalListener = false
         this.previewEditorBuilded = false
-        this.blocksPopup = new EditorBlocks()
+        this.isSaveStart = false
+        this.onSettingsPage = false
+        this.dictionary = dictionary.EditorPage
+        this.lang = this.pageModel.lang
+        this.savedBlocks = [] as Array<BlocksType>
+        this.blocksPopup = new EditorBlocks(this.lang)
         this.pageModel.on('CHANGE_PAGE', () => {
             if (this.pageModel.path[0] === Paths.Sandbox && this.pageModel.path[1] === Sandbox.New) {
                 if (this.pageModel.user) {
@@ -45,36 +55,97 @@ export class EditorView extends EventEmitter {
                 }
             }
         })
-    }
-
-    private createAside() {
-        const asideEl = document.createElement('aside')
-        asideEl.className = 'hidden lg:block basis-80 bg-color-light shrink-0 h-fit'
-        asideEl.innerHTML = asideTemplate({
-            words: getWords(Dictionary.Aside, this.pageModel.lang),
+        this.editorModel.on('ARTICLE_SAVED', (arg) => {
+            if (typeof arg === 'number') {
+                this.showLastArticleSaveMessage(arg)
+            }
         })
-        return asideEl
     }
 
-    private buildPage() {
+    private savePageToLocalStorage() {
+        const editor = document.querySelector('.textEditor') as HTMLElement
+        setInterval(() => {
+            if (editor) {
+                if (!this.onSettingsPage) {
+                    const obj = this.parseArticle(editor)
+                    obj.time = Date.now()
+                    this.emit('SAVE_ARTICLE_TO_LOCALSTORAGE', undefined, undefined, obj)
+                }
+            }
+        }, 15000)
+    }
+
+    private async buildPage() {
         const main = document.querySelector('main')
-        const mainPageWrapperEl = document.createElement('div')
-        mainPageWrapperEl.className = 'flex gap-4'
-        const textEditorWrapperEl = document.createElement('div')
-        textEditorWrapperEl.className = 'w-full flex flex-col gap-4 bg-color-light min-h-[640px] pt-5'
         const flows = Object.keys(Flows)
             .filter((el) => el !== 'All')
             .map((el) => el.toLowerCase())
-        textEditorWrapperEl.innerHTML = textEditor({
-            userName: this.pageModel.user.displayName,
-            userAvatar: this.pageModel.user.properties.avatar
-                ? this.pageModel.user.properties.avatar
-                : require('@/assets/icons/avatar.svg'),
-            flows,
-        })
-        const asideEl = this.createAside()
-        mainPageWrapperEl.append(textEditorWrapperEl, asideEl)
-        if (main) main.replaceChildren(mainPageWrapperEl)
+        if (main) {
+            const savedArticle = await this.editorModel.getSavedArticle()
+            let dateTime = ''
+            let date = ''
+            if (savedArticle) {
+                const fullDate = new Date(Number(savedArticle.time))
+                this.savedBlocks = savedArticle.blocks
+                console.log(this.savedBlocks)
+                dateTime =
+                    (fullDate.getHours() < 10 ? '0' : '') +
+                    fullDate.getHours() +
+                    ':' +
+                    (fullDate.getMinutes() < 10 ? '0' : '') +
+                    fullDate.getMinutes()
+                date =
+                    (fullDate.getDate() < 10 ? '0' : '') +
+                    fullDate.getDate() +
+                    '/' +
+                    (fullDate.getMonth() + 1 < 10 ? '0' : '') +
+                    (fullDate.getMonth() + 1)
+            }
+            main.innerHTML = textEditor({
+                userName: this.pageModel.user.displayName,
+                userAvatar: this.pageModel.user.properties.avatar
+                    ? this.pageModel.user.properties.avatar
+                    : require('@/assets/icons/avatar.svg'),
+                flows,
+                dateTime: dateTime,
+                date: date,
+                neverPublish: this.dictionary.NeverPublish[this.lang],
+                title: this.dictionary.Title[this.lang],
+                menuCall: this.dictionary.MenuCall[this.lang],
+                delete: this.dictionary.Delete[this.lang],
+                toSettings: this.dictionary.ToSettings[this.lang],
+                postSettings: this.dictionary.PostSettings[this.lang],
+                language: this.dictionary.Language[this.lang],
+                languageButtonRu: this.dictionary.LanguageRu[this.lang],
+                languageButtonEn: this.dictionary.LanguageEn[this.lang],
+                flowsInput: this.dictionary.Flows[this.lang],
+                flowsHint: this.dictionary.FlowsHint[this.lang],
+                keywords: this.dictionary.Keywords[this.lang],
+                keywordsHint: this.dictionary.KeywordsHint[this.lang],
+                translation: this.dictionary.Translation[this.lang],
+                translationCheckText: this.dictionary.TranslationCheckboxText[this.lang],
+                translationAuthor: this.dictionary.TranslationAuthor[this.lang],
+                translationAuthorHint: this.dictionary.TranslationAuthorHint[this.lang],
+                translationLink: this.dictionary.TranslationLink[this.lang],
+                translationLinkHint: this.dictionary.TranslationLinkHint[this.lang],
+                difficult: this.dictionary.Difficult[this.lang],
+                difficultNone: this.dictionary.DifficultNone[this.lang],
+                difficultEasy: this.dictionary.DifficultEasy[this.lang],
+                difficultMedium: this.dictionary.DifficultMedium[this.lang],
+                difficultHard: this.dictionary.DifficultHard[this.lang],
+                previewHeader: this.dictionary.PreviewHeader[this.lang],
+                addCover: this.dictionary.AddCover[this.lang],
+                coverInfo: this.dictionary.CoverInfo[this.lang],
+                uploadCover: this.dictionary.UploadCoverButton[this.lang],
+                previewTextPlaceholder: this.dictionary.PreviewTextPlaceholder[this.lang],
+                previewHint: this.dictionary.PreviewHint[this.lang],
+                readMoreText: this.dictionary.ReadMoreText[this.lang],
+                readMoreTextPlaceholder: this.dictionary.ReadMoreTextPlaceholder[this.lang],
+                backToPublication: this.dictionary.BackToPublication[this.lang],
+                sendArticle: this.dictionary.SendArticle[this.lang],
+                words: getWords(Dictionary.Aside, this.pageModel.lang),
+            })
+        }
         const popupMenu = document.querySelector('.menu') as HTMLElement
         if (popupMenu) {
             popupMenu.innerHTML = ''
@@ -164,17 +235,23 @@ export class EditorView extends EventEmitter {
                     const lang = (document.querySelector("input[name='lang']:checked") as HTMLInputElement)?.value
                     const image = document.querySelector('.preview-image') as HTMLImageElement
                     const selectFlowInput = document.querySelector('select-pure') as SelectPure
+                    const difficult = (document.querySelector('input[name="сomplexity"]:checked') as HTMLInputElement)
+                        ?.value
                     const imageSrc = image ? image.getAttribute('src') : ''
+                    const objectPosition = image.style.objectPosition?.split(' ')
+                    console.log(objectPosition)
                     const imageSrcResult = imageSrc ?? ''
                     const textButtonValue = buttonText.value
                     const preview: ParsedPreviewArticle = {
                         image: imageSrcResult,
                         nextBtnText: textButtonValue,
+                        imagePosition: objectPosition,
                         previewBlocks: parsedPreviewResult.blocks,
                     }
                     const result: NewArticleData = {
                         blocks: parseMainEditorResult.blocks,
                         title: title,
+                        difficult: difficult,
                         keywords: parsedKeywords,
                         flows: selectFlowInput.values,
                         lang: lang,
@@ -184,34 +261,116 @@ export class EditorView extends EventEmitter {
                         translateLink: translateLink.value,
                         isTranslate: translateCheckbox.checked,
                     }
+                    console.log(result)
                     this.emit('ARTICLE_PARSED', undefined, result)
                 }
             })
+            this.onSettingsPage = true
             this.toggleEditorView()
+        })
+        document.querySelector('.restore-save-article')?.addEventListener('click', (e) => {
+            e.preventDefault()
+            document.querySelector('.save-information-block')?.remove()
+            this.restoreArticle(this.savedBlocks)
         })
         document.querySelector('.backToEditor')?.addEventListener('click', (e) => {
             e.preventDefault()
+            this.onSettingsPage = false
             this.toggleEditorView()
         })
-        document.querySelector('.image-preview')?.addEventListener('change', (e) => {
+        const previewImage = document.querySelector('.preview-image') as HTMLImageElement
+        const previewControls = document.querySelector('.preview-image-controls') as HTMLElement
+        const deletePreview = document.querySelector('.delete-preview-btn') as HTMLElement
+        const changePosition = document.querySelector('.change-position-preview-btn') as HTMLElement
+        const savePosition = document.querySelector('.save-position') as HTMLElement
+        const textPreview = document.querySelector('.load-image-preview-text')
+        const previewImageInput = document.querySelector('.image-preview') as HTMLInputElement
+        const previewImageBlock = document.querySelector('.previewImageBlock') as HTMLElement
+        deletePreview?.addEventListener('click', (e) => {
+            e.preventDefault()
+            if (previewImage) {
+                previewImage.classList.add('hidden')
+                previewImage.src = ''
+                delete previewImage.dataset.objectX
+                delete previewImage.dataset.objectY
+                previewImage.style.removeProperty('object-position')
+                previewControls.hidden = true
+                if (previewImageInput) {
+                    previewImageInput.value = ''
+                }
+                if (textPreview) {
+                    textPreview.classList.remove('hidden')
+                }
+            }
+        })
+        changePosition?.addEventListener('click', (e) => {
+            e.preventDefault()
+            if (savePosition && changePosition && deletePreview) {
+                changePosition.hidden = true
+                deletePreview.hidden = true
+                savePosition.hidden = false
+                previewImageBlock?.addEventListener('pointerdown', () => {
+                    if (!savePosition.hidden) {
+                        previewImageBlock.classList.add('cursor-move')
+                        document.body.addEventListener('pointermove', this.changePreviewPosition)
+                    }
+                })
+                previewImageBlock?.addEventListener('pointerup', () => {
+                    previewImageBlock.classList.remove('cursor-move')
+                    document.body.removeEventListener('pointermove', this.changePreviewPosition)
+                })
+                previewImageBlock?.addEventListener('pointerleave', () => {
+                    previewImageBlock.classList.remove('cursor-move')
+                    document.body.removeEventListener('pointermove', this.changePreviewPosition)
+                })
+            }
+        })
+        savePosition?.addEventListener('click', (e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            const [objectX, objectY] = previewImage.style.objectPosition.split(' ')
+            previewImage.dataset.objectX = objectX
+            previewImage.dataset.objectY = objectY
+            if (savePosition && changePosition && deletePreview) {
+                changePosition.hidden = false
+                deletePreview.hidden = false
+                savePosition.hidden = true
+            }
+        })
+        savePosition?.addEventListener('pointermove', (e) => {
+            e.stopPropagation()
+        })
+        previewImageInput?.addEventListener('change', (e) => {
             const target = e.target as HTMLInputElement
             if (target) {
                 if (target.files) {
                     if (!target.files.length) {
                         return
                     } else {
+                        const coverMessage = document.querySelector('.add-cover-message') as HTMLElement
+                        const coverErrorMessage = document.querySelector('.preview-error-cover') as HTMLElement
+                        if (target.files[0].size > 1048576) {
+                            if (coverMessage && coverErrorMessage) {
+                                coverMessage.hidden = true
+                                coverErrorMessage.hidden = false
+                            }
+                            return
+                        }
+                        if (coverMessage && coverErrorMessage) {
+                            coverMessage.hidden = false
+                            coverErrorMessage.hidden = true
+                        }
                         const fileTypes = ['jpg', 'jpeg', 'png', 'gif']
                         const extension = target.files[0].name.split('.').pop()?.toLowerCase()
-                        if (extension && fileTypes.indexOf(extension)) {
+                        if (extension && fileTypes.includes(extension)) {
                             const fileReader = new FileReader()
                             fileReader.readAsDataURL(target.files[0])
                             fileReader.onload = () => {
-                                const previewImage = document.querySelector('.preview-image') as HTMLImageElement
-                                if (previewImage) {
+                                if (previewImage && previewControls) {
                                     if (typeof fileReader.result === 'string') {
                                         previewImage.src = fileReader.result
                                         previewImage.classList.remove('hidden')
-                                        const textPreview = document.querySelector('.load-image-preview-text')
+                                        previewControls.hidden = false
                                         if (textPreview) {
                                             textPreview.classList.add('hidden')
                                         }
@@ -233,6 +392,7 @@ export class EditorView extends EventEmitter {
         if (dropZoneText) {
             this.addDropZoneEvents(dropZoneText)
         }
+        this.startAutoSave()
     }
 
     addDrag(list: HTMLElement) {
@@ -564,22 +724,12 @@ export class EditorView extends EventEmitter {
                             } else {
                                 const fileTypes = ['jpg', 'jpeg', 'png', 'gif']
                                 const extension = target.files[0].name.split('.').pop()?.toLowerCase()
-                                if (extension && fileTypes.indexOf(extension) !== -1) {
+                                if (extension && fileTypes.includes(extension)) {
                                     const fileReader = new FileReader()
                                     fileReader.readAsDataURL(target.files[0])
                                     fileReader.onload = () => {
-                                        const imgElement = textElement.querySelector('.image') as HTMLImageElement
-                                        const figureElem = textElement.querySelector('.imageFigureTag') as HTMLElement
-                                        const placeholder = textElement.querySelector(
-                                            '.imageElementPlaceholder'
-                                        ) as HTMLElement
-                                        if (imgElement && placeholder && figureElem) {
-                                            placeholder.hidden = true
-                                            if (typeof fileReader.result === 'string') {
-                                                imgElement.src = fileReader.result
-                                                figureElem.hidden = false
-                                                textElement.classList.add('image-added')
-                                            }
+                                        if (typeof fileReader.result === 'string') {
+                                            this.addImageToImageBlock(textElement, fileReader.result)
                                         }
                                     }
                                 } else {
@@ -604,12 +754,27 @@ export class EditorView extends EventEmitter {
             inputField?.dispatchEvent(event)
         })
     }
+
+    addImageToImageBlock(textElement: HTMLElement, result: string) {
+        const imgElement = textElement.querySelector('.image') as HTMLImageElement
+        const figureElem = textElement.querySelector('.imageFigureTag') as HTMLElement
+        const placeholder = textElement.querySelector('.imageElementPlaceholder') as HTMLElement
+        if (imgElement && placeholder && figureElem) {
+            placeholder.hidden = true
+            imgElement.src = result
+            figureElem.hidden = false
+            textElement.classList.add('image-added')
+        }
+    }
     addNewField(editor: HTMLElement, value?: string) {
         let el: Element | null = editor.querySelector('.focused') as HTMLElement
         el = el ? el : editor.lastElementChild
         if (el) {
             const template = document.createElement('template')
-            template.innerHTML = newField({})
+            template.innerHTML = newField({
+                menuCall: this.dictionary.MenuCall[this.lang],
+                delete: this.dictionary.Delete[this.lang],
+            })
             el.after(template.content)
             const newElem = editor.querySelector('.new') as HTMLElement
             if (newElem) {
@@ -761,7 +926,7 @@ export class EditorView extends EventEmitter {
         }
     }
 
-    addNewParagraph(el: HTMLElement) {
+    addNewParagraph(el: HTMLElement, value?: string) {
         const template = document.createElement('template')
         template.innerHTML = emptyParagraph({})
         el.after(template.content)
@@ -769,6 +934,9 @@ export class EditorView extends EventEmitter {
         const editor = document.querySelector('.textEditor') as HTMLElement
         if (newField && editor) {
             newField.classList.remove('new')
+            if (value) {
+                newField.textContent = value
+            }
             this.addTextInputListeners(newField, editor)
             newField.focus()
         }
@@ -885,6 +1053,12 @@ export class EditorView extends EventEmitter {
             checkKeywordsResult
                 ? keywordsInput.classList.remove('border-[#ff8d85]')
                 : keywordsInput.classList.add('border-[#ff8d85]')
+            const keywordsError = document.querySelector('.keywords-error')
+            if (keywordsError) {
+                checkKeywordsResult
+                    ? keywordsError.classList.remove('text-[#ff8d85]')
+                    : keywordsError.classList.add('text-[#ff8d85]')
+            }
             const checkButtonTextResult = this.checkValue(buttonTextInput.value, new RegExp('[A-zА-я]{2,}'))
             checkButtonTextResult
                 ? buttonTextInput.classList.remove('border-[#ff8d85]')
@@ -1068,58 +1242,246 @@ export class EditorView extends EventEmitter {
                 const item = document.querySelector('.focusedItem')
                 const editor = document.querySelector('.textEditor') as HTMLElement
                 if (item && editor) {
-                    const template = document.createElement('template')
-                    switch (element.dataset.type) {
-                        case 'heading':
-                            template.innerHTML = headingBlockTemplate({})
-                            break
-                        case 'quote':
-                            template.innerHTML = quoteBlockTemplate({})
-                            break
-                        case 'image':
-                            template.innerHTML = imageBlockTemplate({})
-                    }
+                    const template = this.getTemplateBlock(String(element.dataset.type))
                     item.replaceWith(template.content)
                     const newItem = document.querySelector('.new') as HTMLElement
                     if (element.dataset.type === 'heading') {
                         if (newItem) {
-                            newItem.querySelectorAll('.heading')?.forEach((el) => {
-                                const element = el as HTMLElement
-                                element.addEventListener('click', (e) => {
-                                    const parent = newItem.closest('.editorElement') as HTMLElement
-                                    if (parent) {
-                                        if (element.dataset.name) {
-                                            parent.dataset.type = element.dataset.name
-                                        }
-                                    }
-                                })
-                            })
+                            this.addListenerToHeadingElement(newItem)
                         }
                     }
                     if (newItem) {
-                        const newItemField = newItem.querySelector('.editable') as HTMLElement
-                        if (editor && newItem) {
-                            newItem.classList.remove('new')
-                            this.addNewField(editor)
-                            if (newItemField) {
-                                this.addTextInputListeners(newItemField, editor)
-                                setTimeout(() => {
-                                    newItemField.focus()
-                                }, 0)
-                            }
-                            this.addTextElementListeners(newItem, editor)
-                        }
+                        this.addListenerToNewItem(newItem, editor)
                     }
                 }
             })
         })
     }
 
-    emit<T>(event: ItemViewEventsName, arg?: T, articleData?: NewArticleData) {
-        return super.emit(event, arg, articleData)
+    addListenerToHeadingElement(newItem: HTMLElement) {
+        newItem.querySelectorAll('.heading')?.forEach((el) => {
+            const element = el as HTMLElement
+            element.addEventListener('click', (e) => {
+                const parent = newItem.closest('.editorElement') as HTMLElement
+                if (parent) {
+                    if (element.dataset.name) {
+                        parent.dataset.type = element.dataset.name
+                    }
+                }
+            })
+        })
     }
 
-    on<T>(event: ItemViewEventsName, callback: (arg: T, articleData: NewArticleData) => void) {
+    getTemplateBlock(elementType: string) {
+        const template = document.createElement('template')
+        switch (elementType) {
+            case 'heading':
+                template.innerHTML = headingBlockTemplate({
+                    heading: this.dictionary.Heading[this.lang],
+                    delete: this.dictionary.Delete[this.lang],
+                    heading1: this.dictionary.Heading1[this.lang],
+                    heading2: this.dictionary.Heading2[this.lang],
+                    heading3: this.dictionary.Heading3[this.lang],
+                })
+                break
+            case 'quote':
+                template.innerHTML = quoteBlockTemplate({
+                    delete: this.dictionary.Delete[this.lang],
+                    quote: this.dictionary.Quote[this.lang],
+                })
+                break
+            case 'image':
+                template.innerHTML = imageBlockTemplate({
+                    addImageText: this.dictionary.AddImageText[this.lang],
+                    figcaptionText: this.dictionary.AddFigcaptionText[this.lang],
+                    delete: this.dictionary.Delete[this.lang],
+                    uploadAnother: this.dictionary.LoadAnotherImage[this.lang],
+                })
+                break
+            case 'text':
+                template.innerHTML = newField({
+                    menuCall: this.dictionary.MenuCall[this.lang],
+                    delete: this.dictionary.Delete[this.lang],
+                })
+                break
+        }
+        return template
+    }
+
+    addListenerToNewItem(newItem: HTMLElement, editor: HTMLElement, isLast = true) {
+        const newItemField = newItem.querySelector('.editable') as HTMLElement
+        if (editor && newItem) {
+            newItem.classList.remove('new')
+            if (isLast) {
+                this.addNewField(editor)
+            }
+            if (newItemField) {
+                this.addTextInputListeners(newItemField, editor)
+                setTimeout(() => {
+                    newItemField.focus()
+                }, 0)
+            }
+            this.addTextElementListeners(newItem, editor)
+        }
+    }
+
+    restoreArticle(blocks: Array<BlocksType>) {
+        const editor = document.querySelector('.textEditor') as HTMLElement
+        editor.querySelectorAll('.editorElement')?.forEach((el) => {
+            el.remove()
+        })
+        blocks.forEach((el, index) => {
+            if (editor) {
+                console.log(el)
+                if (el.type === 'title') {
+                    const header = document.querySelector('.articleHeader') as HTMLElement
+                    if (header) {
+                        header.textContent = ''
+                        header.textContent = el.value && typeof el.value === 'string' ? el.value : ''
+                        const parent = header.parentElement
+                        if (parent) {
+                            if (el.value) {
+                                parent.classList.add('before:hidden')
+                            }
+                        }
+                    }
+                } else {
+                    const type = el.type === 'quotes' ? 'quote' : el.type
+                    const template = this.getTemplateBlock(type)
+                    editor.append(template.content)
+                    const newItem = document.querySelector('.new') as HTMLElement
+                    newItem.classList.remove('new')
+                    if (newItem) {
+                        if (!newItem.classList.contains('quoteElement')) {
+                            const editableField = newItem.querySelector('.editable') as HTMLElement
+                            if (editableField) {
+                                editableField.textContent = el.value && typeof el.value === 'string' ? el.value : ''
+                                if (el.value) {
+                                    newItem.classList.add('before:hidden')
+                                }
+                            }
+                        }
+                        if (newItem.classList.contains('quoteElement')) {
+                            if (Array.isArray(el.value)) {
+                                const elementsList = newItem.querySelector('.quote-elements-container')
+                                el.value.forEach((el) => {
+                                    if (elementsList) {
+                                        const lastChild = elementsList.lastElementChild as HTMLElement
+                                        if (lastChild) {
+                                            console.log(lastChild, elementsList, el.value)
+                                            this.addNewParagraph(
+                                                lastChild,
+                                                el.value && typeof el.value === 'string' ? el.value : ''
+                                            )
+                                        }
+                                    }
+                                })
+                                elementsList?.firstElementChild?.remove()
+                            }
+                        }
+                        if (newItem.classList.contains('imageElement')) {
+                            if (el.imageSrc) {
+                                this.addImageToImageBlock(newItem, el.imageSrc)
+                            }
+                            if (el.value && typeof el.value === 'string') {
+                                const textarea = newItem.querySelector('.image-block__textarea') as HTMLTextAreaElement
+                                if (textarea) {
+                                    textarea.value = el.value
+                                }
+                            }
+                        }
+                        if (index !== blocks.length - 1) {
+                            if (el.type === 'heading') {
+                                this.addListenerToHeadingElement(newItem)
+                            }
+                            this.addListenerToNewItem(newItem, editor, false)
+                        } else {
+                            this.addListenerToNewItem(newItem, editor, true)
+                        }
+                        const ev = new KeyboardEvent('input')
+                        newItem?.querySelector('.editable')?.dispatchEvent(ev)
+                    } else {
+                        console.log('Cant find new item')
+                    }
+                }
+            } else {
+                console.log("editor didn't find")
+            }
+        })
+        this.checkArticle()
+        this.startAutoSave()
+    }
+
+    startAutoSave() {
+        document.querySelectorAll('.editable')?.forEach((el) => {
+            const element = el as HTMLElement
+            element.addEventListener(
+                'input',
+                () => {
+                    if (!this.isSaveStart) {
+                        this.isSaveStart = true
+                        console.log('save start')
+                        this.savePageToLocalStorage()
+                    }
+                },
+                { once: true }
+            )
+        })
+    }
+
+    async changePreviewPosition(event: PointerEvent) {
+        const previewImage = document.querySelector('.preview-image') as HTMLElement
+        const previewBlock = document.querySelector('.previewImageBlock') as HTMLElement
+        if (previewImage && previewBlock) {
+            const previewBlockStyles = getComputedStyle(previewBlock)
+            const rect = previewBlock.getBoundingClientRect()
+            const previewBlockHeight = parseFloat(previewBlockStyles.height)
+            const previewBlockWidth = parseFloat(previewBlockStyles.width)
+            const clickCoordinateX = event.clientX
+            const clickCoordinateY = event.clientY
+            let coordinateX = ((clickCoordinateX - rect.left) / previewBlockWidth) * 100
+            let coordinateY = ((clickCoordinateY - rect.top) / previewBlockHeight) * 100
+            if (coordinateX < 0) {
+                coordinateX = 0
+            }
+            if (coordinateX > 100) {
+                coordinateX = 0
+            }
+            if (coordinateY < 0) {
+                coordinateY = 0
+            }
+            if (coordinateY > 100) {
+                coordinateY = 100
+            }
+            await new Promise((r) => requestAnimationFrame(r))
+            previewImage.style.objectPosition = `${coordinateX}% ${coordinateY}%`
+        }
+    }
+
+    showLastArticleSaveMessage(time: number) {
+        const messageElement = document.querySelector('.last-time-save-message') as HTMLElement
+        const timeElement = messageElement.querySelector('.saved-message-time') as HTMLElement
+        if (messageElement && time) {
+            messageElement.hidden = false
+            const fullDate = new Date(time)
+            timeElement.textContent =
+                (fullDate.getHours() < 10 ? '0' : '') +
+                fullDate.getHours() +
+                ':' +
+                (fullDate.getMinutes() < 10 ? '0' : '') +
+                fullDate.getMinutes()
+        }
+        const lastSaveWindow = document.querySelector('.save-information-block') as HTMLElement
+        if (lastSaveWindow) {
+            lastSaveWindow.remove()
+        }
+    }
+
+    emit<T>(event: ItemViewEventsName, arg?: T, articleData?: NewArticleData, blocks?: ParsedArticle) {
+        return super.emit(event, arg, articleData, blocks)
+    }
+
+    on<T>(event: ItemViewEventsName, callback: (arg: T, articleData: NewArticleData, blocks: ParsedArticle) => void) {
         return super.on(event, callback)
     }
 }

@@ -25,6 +25,7 @@ export class PageModel extends EventEmitter {
     private loadSettings() {
         const lang = localStorage.lang
         if (['ru', 'en'].includes(lang)) this.lang = lang
+        else localStorage.lang = this.lang
     }
 
     on<T>(event: PageModelEventsName, callback: (arg: T) => void) {

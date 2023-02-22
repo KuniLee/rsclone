@@ -21,6 +21,7 @@ export type AuthViewTypes = {
 export type Preview = {
     image: string
     nextBtnText: string
+    imagePosition: [string, string]
     previewBlocks: Array<{ type: 'text'; value: string }>
 }
 
@@ -51,11 +52,13 @@ export type BlocksType = {
 
 export type ParsedArticle = {
     blocks: Array<BlocksType>
+    time?: number
 }
 
 export type ParsedPreviewArticle = {
     image: string
     nextBtnText: string
+    imagePosition?: Array<string>
     previewBlocks: Array<BlocksType>
 }
 
@@ -66,6 +69,7 @@ export type NewArticleData = {
     keywords: Array<string>
     lang: string
     preview: ParsedPreviewArticle
+    difficult: string
     userId: string
     isTranslate?: boolean
     translateAuthor?: string

@@ -13,6 +13,7 @@ import {
     setDoc,
     updateDoc,
     serverTimestamp,
+    getDoc,
 } from '@/utils/FireBaseAPI'
 import { FirebaseStorage, uploadString } from 'firebase/storage'
 
@@ -47,13 +48,15 @@ export class EditorController {
             try {
                 const image = articleData.preview.image
                 const docRef = doc(collection(this.db, 'articles'))
+                const userRef = doc(this.db, `users/${this.pageModel.user.uid}`)
+                const usersArticles = await getDoc(userRef)
+                const userData = await usersArticles.data()
                 const docId = docRef.id
                 const blocks = articleData.blocks
                 if (blocks) {
                     let index = 0
                     for (const el of blocks) {
                         if (el.type === 'image') {
-                            console.log(el.imageSrc)
                             if (el.imageSrc) {
                                 const image = el.imageSrc
                                 const imageRef = ref(this.storage, `articles/${docId}/image${index}`)
@@ -72,9 +75,24 @@ export class EditorController {
                     articleData.preview.image = imageRef.fullPath
                 }
                 const newArticle = await setDoc(docRef, Object.assign(articleData, { createdAt: serverTimestamp() }))
+                if (userData) {
+                    if (userData.articles && userData.articles.length) {
+                        userData.articles = [...userData.articles, docRef]
+                    } else {
+                        userData.articles = [docRef]
+                    }
+                }
+                await updateDoc(userRef, userData)
+                await this.editorModel.deleteArticle()
                 alert('Удачно!')
             } catch (e) {
                 console.log(e)
+            }
+        })
+        view.on('SAVE_ARTICLE_TO_LOCALSTORAGE', (arg, articleData, blocks) => {
+            const result = this.editorModel.saveArticleToLocalStorage(blocks)
+            if (result) {
+                this.editorModel.updateTimeLocalSaved()
             }
         })
     }

@@ -59,6 +59,7 @@ export class MainView extends EventEmitter {
     }
 
     buildPage() {
+        localStorage.lang = this.model.lang
         const dropdownMenu = new DropdownMenu(this.model)
         const popupSettings = new PopupSettings(this.model)
         const headerEl = this.createHeader()

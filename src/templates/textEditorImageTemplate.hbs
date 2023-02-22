@@ -8,11 +8,11 @@
   </div>
   <div class="imageContainer border-2 border-color-color-gray-light min-h-[60px] w-full max-w-[96.6%]">
     <div class="imageElementPlaceholder w-full text-center leading-[60px] cursor-pointer">
-      Добавить картинку
+      {{addImageText}}
     </div>
     <figure class="imageFigureTag" hidden>
       <img class="image w-full">
-      <textarea class="image-block__textarea resize-none min-h-[22px] mt-[4px] text-[#909090] bg-none text-center text-[13px] leading-6 w-full outline-0" placeholder="Добавьте подпись к изображению" oninput="this.style.height"></textarea>
+      <textarea class="image-block__textarea resize-none min-h-[22px] mt-[4px] text-[#909090] bg-none text-center text-[13px] leading-6 w-full outline-0" placeholder="{{figcaptionText}}" oninput="this.style.height"></textarea>
     </figure>
   </div>
   <div class="options cursor-pointer group-hover:opacity-100 opacity-0">
@@ -23,8 +23,8 @@
     </button>
     <div class="options__drop-menu absolute w-[220px] shadow right-0 bg-color-light z-10" hidden>
       <div class="py-[5px]">
-        <button class="delete-btn py-[10px] hover:bg-[rgba] w-full text-[13px] border-b hover:bg-color-gray-light transition">Удалить</button>
-        <button class="choseAnotherImage py-[10px] hover:bg-[rgba] w-full text-[13px] hover:bg-color-gray-light transition">Загрузить другую</button>
+        <button class="delete-btn py-[10px] hover:bg-[rgba] w-full text-[13px] border-b hover:bg-color-gray-light transition">{{delete}}</button>
+        <button class="choseAnotherImage py-[10px] hover:bg-[rgba] w-full text-[13px] hover:bg-color-gray-light transition">{{uploadAnother}}</button>
       </div>
     </div>
   </div>
