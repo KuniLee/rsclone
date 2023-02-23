@@ -40,21 +40,6 @@
   filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
 }
 
-.ico_plus {
-  background: url(../assets/icons/ico-plus.svg) center no-repeat;
-  background-size: contain;
-  width: 23px;
-  height: 23px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  margin: 0 4px;
-}
-
-.ico_plus:hover {
-  filter: invert(66%) sepia(19%) saturate(6%) hue-rotate(340deg) brightness(83%) contrast(84%);
-}
-
 .ico_settings {
   background: url(../assets/icons/ico-settings.svg) center no-repeat;
   background-size: contain;

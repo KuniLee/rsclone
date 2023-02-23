@@ -2,14 +2,14 @@
   <div class="px-4 py-3.5 gap-2 flex items-center">
     <h3 class="text-sm leading-4 font-bold text-color-text-dark m-0">{{words.CommentsTitle}}</h3>
     {{#if comments}}
-    <span class="text-color-link-hover text-sm font-bold">{{comments.length}}</span>
+    <span class="text-color-link-hover leading-4 text-sm font-bold">{{comments.length}}</span>
     {{/if}}
   </div>
   <div class="comments-wrapper mb-6 pt-4">
     {{#if comments}}
     {{#each comments}}
     <article class="px-4 pb-3 mb-5">
-      <div class="flex gap-3 items-center">
+      <div class="flex gap-3 items-end">
         <div class="w-8 h-8 rounded-sm overflow-hidden">
           <a href="/users/{{user.displayName}}">
             {{#if user.properties.avatar}}
@@ -41,10 +41,9 @@
     <p class="text-sm leading-4 font-bold text-color-text-dark mb-5">{{words.CommentField}}</p>
     <div class="comment-editor outline-0 min-h-[5rem] relative bg-color-light">
       <div
-        class="paragraph relative outline-0 pl-9 mt-3 leading-5 min-h-[1.375em] before:content-[attr(data-empty-text)] before:absolute before:text-color-editor-placeholder before:pointer-events-none before:h-0"
-        data-empty-text="{{words.CommentPlaceholder}}">
-        <p contenteditable="true" class="editable outline-0 whitespace-pre-wrap flex-grow max-w-[96.6%]"></p>
-        <span class="ico ico_plus"></span>
+        class="paragraph relative outline-0 pl-4 mt-3 leading-5 min-h-[1.375em] before:content-[attr(data-empty-text)] before:absolute before:text-color-editor-placeholder before:pointer-events-none before:h-0"
+        data-empty-text="{{words.TypeSomething}}">
+        <p contenteditable="true" class="editable outline-0 whitespace-pre-wrap flex-grow max-w-full"></p>
       </div>
     </div>
   </div>

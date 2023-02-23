@@ -180,7 +180,7 @@ const Comments: Record<string, language> = {
     CommentsNoticePartThree: { ru: ', пожалуйста.', en: ', please.' },
     SendButton: { ru: 'Отправить', en: 'Send' },
     CommentField: { ru: 'Ваш комментарий', en: 'Your comment' },
-    CommentPlaceholder: { ru: 'Нажмите "/" для вызова меню', en: 'Press "/" to access menu' },
+    TypeSomething: { ru: 'Введите текст', en: 'Type something' },
 }
 
 export function getWords(wordObj: Record<string, language>, lang: keyof language) {
