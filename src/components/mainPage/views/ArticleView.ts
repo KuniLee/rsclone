@@ -49,7 +49,6 @@ export class ArticleView extends EventEmitter {
                     this.addListeners(feedEl)
                 }
             }
-            console.log(this.feedModel.getComments())
         })
     }
 
@@ -120,54 +119,45 @@ export class ArticleView extends EventEmitter {
     private addInputListeners(paragraphEditable: HTMLElement, feedWrapper: HTMLElement) {
         const sendBtn = feedWrapper.querySelector('.comment-form__button_send')
         const commentEditorEl = feedWrapper.querySelector('.comment-editor')
-        paragraphEditable.addEventListener('input', (ev) => {
-            const target = ev.target
-            const paragraph = paragraphEditable.parentElement
-            if (sendBtn instanceof HTMLButtonElement) sendBtn.disabled = this.checkCommentLength(paragraphEditable)
-            if (target instanceof HTMLElement && paragraph) {
-                if (target.textContent) {
-                    paragraph.classList.add('before:hidden')
-                } else {
-                    paragraph.classList.remove('before:hidden')
-                }
+        const paragraph = paragraphEditable.parentElement
+        paragraphEditable.addEventListener('input', () => {
+            if (commentEditorEl && sendBtn instanceof HTMLButtonElement && commentEditorEl instanceof HTMLElement) {
+                sendBtn.disabled = this.checkCommentLength(commentEditorEl)
+            }
+            if (paragraphEditable.textContent && paragraph) {
+                paragraph.classList.add('before:hidden')
             }
         })
         paragraphEditable.addEventListener('keypress', (ev) => {
             if (ev instanceof KeyboardEvent && commentEditorEl instanceof HTMLElement) {
                 if (ev.key === 'Enter') {
                     ev.preventDefault()
-                    this.addParagraph(commentEditorEl, feedWrapper)
+                    if (paragraph) this.addParagraph(commentEditorEl, feedWrapper, paragraph)
                 }
             }
         })
         paragraphEditable.addEventListener('keydown', (ev) => {
-            if (ev instanceof KeyboardEvent) {
+            if (ev instanceof KeyboardEvent && commentEditorEl instanceof HTMLElement) {
+                const paragraphsEl = [...commentEditorEl.children]
                 if (ev.key === 'Backspace' || ev.key === 'Delete') {
-                    const paragraph = paragraphEditable.parentElement
-                    if (paragraph && commentEditorEl instanceof HTMLElement) {
-                        const paragraphs = [...commentEditorEl.children]
-                        if (paragraphEditable.textContent === '' && paragraphs.length !== 1) {
+                    if (paragraph) {
+                        if (!paragraphEditable.textContent && paragraphsEl.length !== 1) {
+                            ev.preventDefault()
                             this.removeParagraph(paragraph, commentEditorEl)
+                        }
+                        if (
+                            paragraphEditable.textContent &&
+                            paragraphEditable.textContent.length === 1 &&
+                            paragraphsEl.length === 1
+                        ) {
+                            paragraph.classList.remove('before:hidden')
                         }
                     }
                 }
             }
         })
         paragraphEditable.addEventListener('focus', () => {
-            if (commentEditorEl) {
-                const paragraphs = [...commentEditorEl.children]
-                const paragraph = paragraphEditable.parentElement
-                this.setCaret(paragraphEditable)
-                paragraphs.forEach((paragraphEl, i) => {
-                    if (paragraph && paragraphEl instanceof HTMLElement) {
-                        if (i === paragraphs.indexOf(paragraph)) {
-                            this.showPlusIcon(paragraphEl)
-                        } else {
-                            this.hidePlusIcon(paragraphEl)
-                        }
-                    }
-                })
-            }
+            this.setCaret(paragraphEditable)
         })
     }
 
@@ -182,19 +172,21 @@ export class ArticleView extends EventEmitter {
         }
     }
 
-    private checkCommentLength(commentEditor: HTMLElement) {
-        const content = commentEditor.textContent
-        if (content && content.length) return false
+    private checkCommentLength(commentEditorEl: HTMLElement) {
+        const paragraphsEditable = commentEditorEl.querySelectorAll('.editable')
+        for (let i = 0; i < paragraphsEditable.length; i++) {
+            if (paragraphsEditable[i].textContent) return false
+        }
         return true
     }
 
-    private addParagraph(commentEditor: HTMLElement, feedWrapper: HTMLElement) {
+    private addParagraph(commentEditor: HTMLElement, feedWrapper: HTMLElement, paragraph: HTMLElement) {
         const template = document.createElement('template')
         template.innerHTML = commentEditorNewParagraphTemplate({
             words: getWords(dictionary.Comments, this.pageModel.lang),
         })
         const content = template.content
-        commentEditor.append(content)
+        paragraph.after(content)
         const paragraphEl = commentEditor.querySelector('.new')
         if (paragraphEl) {
             const editableParagraphEl = paragraphEl.querySelector('.editable')
@@ -212,8 +204,7 @@ export class ArticleView extends EventEmitter {
         const paragraphs = [...commentEditor.children]
         const lastParagraph = paragraphs[paragraphs.length - 1]
         const lastEditableParagraph = paragraphs[paragraphs.length - 1].querySelector('.editable')
-        const plusIcon = paragraphs[paragraphs.length - 1].querySelector('.ico_plus')
-        if (lastEditableParagraph instanceof HTMLElement && plusIcon) {
+        if (lastEditableParagraph instanceof HTMLElement) {
             lastEditableParagraph.focus()
             if (lastEditableParagraph.textContent === '') {
                 lastParagraph.classList.remove('before:hidden')
@@ -227,19 +218,8 @@ export class ArticleView extends EventEmitter {
         paragraphs.forEach((paragraph, i) => {
             if (i !== paragraphs.indexOf(lastParagraph) && paragraph instanceof HTMLElement) {
                 paragraph.classList.add('before:hidden')
-                this.hidePlusIcon(paragraph)
             }
         })
-    }
-
-    private hidePlusIcon(paragraph: HTMLElement) {
-        const plusIcon = paragraph.querySelector('.ico_plus')
-        if (plusIcon) plusIcon.classList.add('hidden')
-    }
-
-    private showPlusIcon(paragraph: HTMLElement) {
-        const plusIcon = paragraph.querySelector('.ico_plus')
-        if (plusIcon) plusIcon.classList.remove('hidden')
     }
 
     private parseComment(feedWrapper: HTMLElement) {
