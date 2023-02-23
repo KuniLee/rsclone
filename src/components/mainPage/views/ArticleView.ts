@@ -75,7 +75,7 @@ export class ArticleView extends EventEmitter {
     private renderPage() {
         this.mainPageContainer = document.querySelector('main') as HTMLElement
         this.mainPageContainer.innerHTML = `<div class="flex gap-4">
-<div class="w-full flex flex-col gap-4 post"></div>${aside({
+<div class="w-full flex flex-col gap-4 post max-w-[760px]"></div>${aside({
             words: getWords(dictionary.Aside, this.pageModel.lang),
         })}
 </div>`
