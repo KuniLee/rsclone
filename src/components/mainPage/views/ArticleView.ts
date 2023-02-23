@@ -6,7 +6,6 @@ import preloader from '@/templates/preloader.html'
 import postTemplate from '@/templates/post/post.hbs'
 import dictionary, { getWords } from '@/utils/dictionary'
 import aside from '@/templates/aside.hbs'
-import emptyAvatar from '@/assets/icons/avatar.svg'
 import commentEditorTemplate from '@/templates/comments/commentEditor.hbs'
 import commentsTemplate from '@/templates/comments/comments.hbs'
 import commentEditorNewParagraphTemplate from '@/templates/comments/commentEditorNewParagraph.hbs'
@@ -94,7 +93,6 @@ export class ArticleView extends EventEmitter {
             user: this.pageModel.user,
             words: getWords(dictionary.Comments, this.pageModel.lang),
             comments: this.feedModel.getComments(),
-            emptyAvatar,
         })
         return template.content
     }
