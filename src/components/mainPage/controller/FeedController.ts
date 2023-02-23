@@ -67,7 +67,11 @@ export class FeedController {
         this.articleView.on<string>('GO_TO', this.goTo.bind(this))
         this.articleView.on<ParsedData>('PARSED_COMMENT', async (comment) => {
             const article = this.feedModel.article
-            if (article) this.addComment(comment, article.id)
+            if (article) {
+                await this.addComment(comment, article.id)
+                const comments = await this.loadComments(article.id)
+                if (comments) this.feedModel.setComments(comments)
+            }
         })
     }
 

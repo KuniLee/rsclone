@@ -38,6 +38,10 @@ export class ArticleView extends EventEmitter {
                 const feedEl = this.mainPageContainer.querySelector('.post')
                 if (feedEl instanceof HTMLElement) {
                     this.renderPost(feedEl)
+                    const commentEditor = this.createCommentEditor()
+                    const commets = this.createComments()
+                    feedEl.append(commets, commentEditor)
+                    this.addListeners(feedEl)
                 }
             }
         })
@@ -45,10 +49,9 @@ export class ArticleView extends EventEmitter {
             if (this.mainPageContainer) {
                 const feedEl = this.mainPageContainer.querySelector('.post')
                 if (feedEl instanceof HTMLElement) {
-                    const commentEditor = this.createCommentEditor()
                     const commets = this.createComments()
-                    feedEl.append(commets, commentEditor)
-                    this.addListeners(feedEl)
+                    const commentsEl = feedEl.querySelector('.comments')
+                    if (commentsEl) feedEl.replaceChild(commets, commentsEl)
                 }
             }
         })
