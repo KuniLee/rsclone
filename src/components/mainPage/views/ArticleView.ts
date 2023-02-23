@@ -167,12 +167,20 @@ export class ArticleView extends EventEmitter {
         })
         paragraphEditable.addEventListener('keydown', (ev) => {
             if (ev instanceof KeyboardEvent && commentEditorEl instanceof HTMLElement) {
-                const paragraphsEl = [...commentEditorEl.children]
                 if (ev.key === 'Backspace' || ev.key === 'Delete') {
                     if (paragraph) {
+                        const paragraphsEl = [...commentEditorEl.children]
                         if (!paragraphEditable.textContent && paragraphsEl.length !== 1) {
                             ev.preventDefault()
                             this.removeParagraph(paragraph, commentEditorEl)
+                            const paragraphElIndex = paragraphsEl.indexOf(paragraph)
+                            if (paragraphElIndex === 0) {
+                                const nextParagraph = paragraphsEl[paragraphElIndex + 1]
+                                this.removeParagraph(paragraphEditable, nextParagraph)
+                            } else {
+                                const prevParagraph = paragraphsEl[paragraphElIndex - 1]
+                                this.removeParagraph(paragraphEditable, prevParagraph)
+                            }
                         }
                         if (
                             paragraphEditable.textContent &&
@@ -218,25 +226,23 @@ export class ArticleView extends EventEmitter {
         paragraph.after(content)
         const paragraphEl = commentEditor.querySelector('.new')
         if (paragraphEl) {
-            const editableParagraphEl = paragraphEl.querySelector('.editable')
-            if (editableParagraphEl instanceof HTMLElement) {
-                editableParagraphEl.focus()
+            const paragraphEditableEl = paragraphEl.querySelector('.editable')
+            if (paragraphEditableEl instanceof HTMLElement) {
+                paragraphEditableEl.focus()
                 paragraphEl.classList.remove('new')
-                this.addInputListeners(editableParagraphEl, feedWrapper)
+                this.addInputListeners(paragraphEditableEl, feedWrapper)
             }
         }
         this.hidePlaceholder(commentEditor)
     }
 
-    private removeParagraph(paragraph: HTMLElement, commentEditor: HTMLElement) {
-        paragraph.remove()
-        const paragraphs = [...commentEditor.children]
-        const lastParagraph = paragraphs[paragraphs.length - 1]
-        const lastEditableParagraph = paragraphs[paragraphs.length - 1].querySelector('.editable')
-        if (lastEditableParagraph instanceof HTMLElement) {
-            lastEditableParagraph.focus()
-            if (lastEditableParagraph.textContent === '') {
-                lastParagraph.classList.remove('before:hidden')
+    private removeParagraph(paragraphEditable: HTMLElement, paragraph: Element) {
+        const paragraphEl = paragraph.querySelector('.editable')
+        paragraphEditable.remove()
+        if (paragraphEl instanceof HTMLElement) {
+            paragraphEl.focus()
+            if (paragraphEl.textContent === '') {
+                paragraph.classList.remove('before:hidden')
             }
         }
     }
