@@ -7,7 +7,8 @@ import postTemplate from '@/templates/post/post.hbs'
 import dictionary, { getWords } from '@/utils/dictionary'
 import aside from '@/templates/aside.hbs'
 import emptyAvatar from '@/assets/icons/avatar.svg'
-import commentsBlocksTemplate from '@/templates/comments/commentsBlocks.hbs'
+import commentEditorTemplate from '@/templates/comments/commentEditor.hbs'
+import commentsTemplate from '@/templates/comments/comments.hbs'
 import commentEditorNewParagraphTemplate from '@/templates/comments/commentEditorNewParagraph.hbs'
 import { ParsedData } from '@/types/types'
 
@@ -44,8 +45,9 @@ export class ArticleView extends EventEmitter {
             if (this.mainPageContainer) {
                 const feedEl = this.mainPageContainer.querySelector('.post')
                 if (feedEl instanceof HTMLElement) {
-                    const commentsBlockEl = this.createCommentsBlocks()
-                    feedEl.append(commentsBlockEl)
+                    const commentEditor = this.createCommentEditor()
+                    const commets = this.createComments()
+                    feedEl.append(commets, commentEditor)
                     this.addListeners(feedEl)
                 }
             }
@@ -84,14 +86,23 @@ export class ArticleView extends EventEmitter {
         })
     }
 
-    private createCommentsBlocks() {
+    private createComments() {
         const template = document.createElement('template')
-        template.innerHTML = commentsBlocksTemplate({
+        template.innerHTML = commentsTemplate({
+            user: this.pageModel.user,
+            words: getWords(dictionary.Comments, this.pageModel.lang),
+            comments: this.feedModel.getComments(),
+            emptyAvatar,
+        })
+        return template.content
+    }
+
+    private createCommentEditor() {
+        const template = document.createElement('template')
+        template.innerHTML = commentEditorTemplate({
             user: this.pageModel.user,
             words: getWords(dictionary.Comments, this.pageModel.lang),
             loginHref: Paths.Auth,
-            comments: this.feedModel.getComments(),
-            emptyAvatar,
         })
         return template.content
     }
@@ -108,12 +119,24 @@ export class ArticleView extends EventEmitter {
         paragraphEditableElements.forEach((paragraphEditableEl) => {
             if (paragraphEditableEl instanceof HTMLElement) this.addInputListeners(paragraphEditableEl, feedWrapper)
         })
-        if (sendBtnEl) {
+        if (sendBtnEl instanceof HTMLElement) {
             sendBtnEl.addEventListener('click', () => {
                 const comment = this.parseComment(feedWrapper)
                 this.emit('PARSED_COMMENT', comment)
+                this.resetCommentEditor(paragraphEditableElements, sendBtnEl)
             })
         }
+    }
+
+    private resetCommentEditor(paragraphsEditable: NodeListOf<Element>, sendBtn: HTMLElement) {
+        paragraphsEditable.forEach((paragraphEditable) => {
+            if (paragraphEditable instanceof HTMLElement && sendBtn instanceof HTMLButtonElement) {
+                paragraphEditable.textContent = ''
+                sendBtn.disabled = true
+                const paragraph = paragraphEditable.parentElement
+                if (paragraph) paragraph.classList.remove('before:hidden')
+            }
+        })
     }
 
     private addInputListeners(paragraphEditable: HTMLElement, feedWrapper: HTMLElement) {

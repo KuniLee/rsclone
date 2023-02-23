@@ -1,0 +1,27 @@
+{{#if user}}
+<div class="comment-form">
+  <div class="mb-4">
+    <p class="text-sm leading-4 font-bold text-color-text-dark mb-5">{{words.CommentField}}</p>
+    <div class="comment-editor outline-0 min-h-[5rem] relative bg-color-light">
+      <div
+        class="paragraph relative outline-0 pl-4 mt-3 leading-5 min-h-[1.375em] before:content-[attr(data-empty-text)] before:absolute before:text-color-editor-placeholder before:pointer-events-none before:h-0"
+        data-empty-text="{{words.TypeSomething}}">
+        <p contenteditable="true" class="editable outline-0 whitespace-pre-wrap flex-grow max-w-full"></p>
+      </div>
+    </div>
+  </div>
+  <div>
+    <button
+      class="comment-form__button_send comment-form__button bg-color-button text-color-light disabled:cursor-not-allowed	disabled:bg-transparent disabled:text-color-text-button-comment-form disabled:border-color-border-button-comment-form border-solid border-[1px] rounded px-3 text-xs leading-8"
+      disabled="disabled">{{words.SendButton}}</button>
+  </div>
+</div>
+{{else}}
+<div
+  class="bg-color-light relative p-8 before::content-['*'] before:absolute before:left-0 before:w-4 before:top-0 before:bg-color-comments-notice before:h-full">
+  <span>{{words.CommentsNoticePartOne}}
+    <a href="{{loginHref}}"
+      class="text-color-link-hover">{{words.CommentsNoticePartTwo}}</a>{{words.CommentsNoticePartThree}}
+  </span>
+</div>
+{{/if}}
