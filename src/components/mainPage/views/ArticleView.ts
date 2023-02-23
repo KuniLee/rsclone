@@ -52,6 +52,7 @@ export class ArticleView extends EventEmitter {
                     const commets = this.createComments()
                     const commentsEl = feedEl.querySelector('.comments')
                     if (commentsEl) feedEl.replaceChild(commets, commentsEl)
+                    this.addLinksListeners(feedEl)
                 }
             }
         })
@@ -110,15 +111,19 @@ export class ArticleView extends EventEmitter {
         return template.content
     }
 
-    private addListeners(feedWrapper: HTMLElement) {
-        const paragraphEditableElements = feedWrapper.querySelectorAll('.editable')
-        const sendBtnEl = feedWrapper.querySelector('.comment-form__button_send')
+    private addLinksListeners(feedWrapper: HTMLElement) {
         feedWrapper.querySelectorAll('a').forEach((el) => {
             el.addEventListener('click', (ev) => {
                 ev.preventDefault()
                 this.emit<string>('GO_TO', el.href)
             })
         })
+    }
+
+    private addListeners(feedWrapper: HTMLElement) {
+        const paragraphEditableElements = feedWrapper.querySelectorAll('.editable')
+        const sendBtnEl = feedWrapper.querySelector('.comment-form__button_send')
+        this.addLinksListeners(feedWrapper)
         paragraphEditableElements.forEach((paragraphEditableEl) => {
             if (paragraphEditableEl instanceof HTMLElement) this.addInputListeners(paragraphEditableEl, feedWrapper)
         })
