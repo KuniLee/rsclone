@@ -18,9 +18,9 @@
       </a>
       <div class="w-8 h-8 rounded-sm overflow-hidden user-menu__item flex items-center">
         <div class="sidebar h-8">
-          <div class="sidebar__header h-full flex items-center cursor-pointer">
+          <div class="sidebar__header w-9 h-9 rounded-sm overflow-hidden flex items-center cursor-pointer">
             {{#if user.properties.avatar}}
-            <img class="object-contain w-full h-full user-img" src="{{user.properties.avatar}}" alt="user-avatar" />
+            <img class="object-cover w-full h-full user-img" src="{{user.properties.avatar}}" alt="user-avatar" />
             {{else}}
             <img class="object-cover w-full h-full rounded border-2 bg-color-light user-img" src="{{emptyAvatar}}"
               alt="user-avatar" />
@@ -64,7 +64,7 @@
         <div class="drop-down-menu relative">
           <div class="drop-down-menu__header w-8 h-8 rounded-sm overflow-hidden cursor-pointer">
             {{#if user.properties.avatar}}
-            <img class="object-contain w-full h-full user-img-desktop" src="{{user.properties.avatar}}"
+            <img class="object-cover w-full h-full user-img-desktop" src="{{user.properties.avatar}}"
               alt="user-avatar" />
             {{else}}
             <img class="object-cover w-full h-full rounded border-2 user-img-desktop" src="{{emptyAvatar}}"

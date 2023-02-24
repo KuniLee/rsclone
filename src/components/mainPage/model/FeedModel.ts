@@ -1,9 +1,10 @@
+import { CommentInfo } from '@/types/types'
 import EventEmitter from 'events'
 import type { QueryDocumentSnapshot } from 'firebase/firestore'
 import { Flows } from 'types/enums'
 import { Article } from 'types/interfaces'
 
-type FeedModelEventsName = 'LOADED' | 'POST_LOADED'
+type FeedModelEventsName = 'LOADED' | 'POST_LOADED' | 'COMMENTS_LOADED'
 export type FeedModelInstance = InstanceType<typeof FeedModel>
 
 export class FeedModel extends EventEmitter {
@@ -11,6 +12,7 @@ export class FeedModel extends EventEmitter {
     public article: Article | undefined
     private _latestArticle: QueryDocumentSnapshot | null = null
     private _flow: Flows | undefined
+    private _comments: Array<CommentInfo> = []
 
     constructor() {
         super()
@@ -48,5 +50,14 @@ export class FeedModel extends EventEmitter {
     setArticle(article: Article) {
         this.article = article
         this.emit('POST_LOADED')
+    }
+
+    setComments(comments: Array<CommentInfo>) {
+        this._comments = comments
+        this.emit('COMMENTS_LOADED')
+    }
+
+    getComments() {
+        return this._comments
     }
 }

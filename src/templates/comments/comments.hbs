@@ -1,0 +1,37 @@
+<div class="bg-color-light comments">
+  <div class="px-4 py-3.5 gap-2 flex items-center">
+    <h3 class="text-sm leading-4 font-bold text-color-text-dark m-0">{{words.CommentsTitle}}</h3>
+    {{#if comments}}
+    <span class="text-color-link-hover leading-4 text-sm font-bold">{{comments.length}}</span>
+    {{/if}}
+  </div>
+  <div class="comments-wrapper mb-6 pt-4">
+    {{#if comments}}
+    {{#each comments}}
+    <article class="px-4 pb-3 mb-5">
+      <div class="flex gap-3 items-center">
+        <div class="w-8 h-8 rounded-sm overflow-hidden">
+          <a href="/users/{{user.displayName}}">
+            {{#if user.properties.avatar}}
+            <img class="object-cover w-full h-full" src="{{user.properties.avatar}}" alt="user-avatar" />
+            {{else}}
+            <img class="object-cover w-full h-full rounded border-2" src="{{emptyAvatar}}" alt="user-avatar" />
+            {{/if}}
+          </a>
+        </div>
+        <a href="/users/{{user.displayName}}"
+          class="cursor-pointer text-sm font-medium hover:text-color-link-hover transition">{{user.displayName}}</a>
+        {{{[../../utils/toLocateDate] createdAt}}}
+      </div>
+      <div class="mt-2.5 break-all">
+        {{#each blocks}}<p>{{value}}</p>{{/each}}
+      </div>
+    </article>
+    {{/each}}
+    {{else}}
+    <div class=" text-color-text-light px-4 pt-3.5 pb-5">
+      <span class="block text-center">{{words.CommentsEmpty}}</span>
+    </div>
+    {{/if}}
+  </div>
+</div>

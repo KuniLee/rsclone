@@ -1,3 +1,4 @@
+import { CommentInfo } from './../types/types'
 import { initializeApp } from 'firebase/app'
 import { getStorage, ref, uploadBytes, getDownloadURL, uploadString } from 'firebase/storage'
 import {
@@ -15,6 +16,7 @@ import {
     limit,
     startAt,
     where,
+    DocumentReference,
 } from 'firebase/firestore'
 import {
     createUserWithEmailAndPassword,
@@ -135,6 +137,16 @@ export class FireBaseAPI extends EventEmitter {
             }
         }
         return article
+    }
+
+    async loadUsersData(comment: CommentInfo) {
+        try {
+            const commentUserRef = comment.user as DocumentReference
+            comment.user = (await getDoc(commentUserRef)).data() as UserData
+            return comment
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     async signOut() {

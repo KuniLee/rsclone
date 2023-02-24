@@ -3,40 +3,44 @@
     <div class="w-8 h-8 rounded-sm overflow-hidden">
       <a href="/users/{{article.user.displayName}}">
         {{#if article.user.properties.avatar}}
-          <img class="object-cover w-full h-full" src="{{article.user.properties.avatar}}" alt="user-avatar" />
+        <img class="object-cover w-full h-full" src="{{article.user.properties.avatar}}" alt="user-avatar" />
         {{else}}
-          <img class="object-cover w-full h-full rounded border-2" src="{{emptyAvatar}}" alt="user-avatar" />
+        <img class="object-cover w-full h-full rounded border-2" src="{{emptyAvatar}}" alt="user-avatar" />
         {{/if}}
       </a>
     </div>
-    <a href="/users/{{article.user.displayName}}" class="article__user cursor-pointer text-sm font-medium">{{article.user.displayName}}</a>
-    {{{toLocateDate article.createdAt}}}
+    <a href="/users/{{article.user.displayName}}"
+      class="article__user cursor-pointer text-sm font-medium">{{article.user.displayName}}</a>
+    {{{[../../utils/toLocateDate] article.createdAt}}}
   </div>
   <h1 class="article__link text-3xl font-medium">{{article.title}}</h1>
   {{{difficult article.difficult}}}
-  {{#if article.isTranslate}}<div class="mt-2"><span class="inline-block border-[#b0b0e2] text-[#6667a3] text-sm border rounded p-1">{{words.isTranslate}}</span></div>{{/if}}
-  {{#if article.translateAuthor}}<div class="text-[#6864a3] mt-2 bg-[#f5f3f8] text-sm py-2"><a href="{{article.translateLink}}">{{words.TransAuthor}} {{article.translateAuthor}}</a></div>{{/if}}
-    {{#each article.blocks}}{{{builder this}}}{{/each}}
+  {{#if article.isTranslate}}<div class="mt-2"><span
+      class="inline-block border-[#b0b0e2] text-[#6667a3] text-sm border rounded p-1">{{words.isTranslate}}</span></div>
+  {{/if}}
+  {{#if article.translateAuthor}}<div class="text-[#6864a3] mt-2 bg-[#f5f3f8] text-sm py-2"><a
+      href="{{article.translateLink}}">{{words.TransAuthor}} {{article.translateAuthor}}</a></div>{{/if}}
+  {{#each article.blocks}}{{{builder this}}}{{/each}}
   <div class="flex mb-4 flex-wrap gap-0.5 text-color-popup-text">
     <span class="text-black font-bold mr-1.5">{{words.keywords}}:</span>
     {{#each article.keywords}}
-      <span class="article_tag hover:opacity-75">{{this}}</span>
+    <span class="article_tag hover:opacity-75">{{this}}</span>
     {{/each}}
   </div>
 </article>
-<div class="user-card bg-color-light mb-3">
+<div class="user-card bg-color-light">
   <div class="mb-6 px-5 pt-4">
     <div class="w-12 h-12 rounded-sm overflow-hidden mb-2.5">
       <a href="/users/{{article.user.displayName}}">
         {{#if article.user.properties.avatar}}
-          <img class="object-cover w-full h-full" src="{{article.user.properties.avatar}}" alt="user-avatar" />
+        <img class="object-cover w-full h-full" src="{{article.user.properties.avatar}}" alt="user-avatar" />
         {{else}}
-          <img class="object-cover w-full h-full rounded border-2" src="{{emptyAvatar}}" alt="user-avatar" />
+        <img class="object-cover w-full h-full rounded border-2" src="{{emptyAvatar}}" alt="user-avatar" />
         {{/if}}
       </a>
     </div>
-    <span class="text-color-text-dark text-xl font-bold">{{article.user.properties.fullName}}</span>
-    <a href="/users/{{article.user.displayName}}" class="text-color-button text-xl username">@{{article.user.displayName}}</a>
+    <span class="text-color-text-dark font-bold">{{article.user.properties.fullName}}</span>
+    <a href="/users/{{article.user.displayName}}" class="text-color-button username">@{{article.user.displayName}}</a>
     <p class="text-color-text-dark">{{article.user.properties.about}}</p>
   </div>
 </div>

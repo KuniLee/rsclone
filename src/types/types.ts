@@ -1,4 +1,4 @@
-import { Timestamp } from 'firebase/firestore'
+import { DocumentReference, Timestamp } from 'firebase/firestore'
 
 export type FirebaseConfigType = {
     storageBucket: string
@@ -50,7 +50,7 @@ export type BlocksType = {
     value: string | Array<BlocksType>
 }
 
-export type ParsedArticle = {
+export type ParsedData = {
     blocks: Array<BlocksType>
     time?: number
 }
@@ -74,4 +74,10 @@ export type NewArticleData = {
     isTranslate?: boolean
     translateAuthor?: string
     translateLink?: string
+}
+
+export type CommentInfo = {
+    blocks: Array<BlocksType>
+    createdAt: Timestamp
+    user: DocumentReference | UserData
 }
