@@ -44,7 +44,7 @@ export type BlocksType = {
         size?: string
         lang?: string
     }
-    type: 'title' | 'heading' | 'code' | 'delimiter' | 'text' | 'quotes' | 'image'
+    type: string
     mod?: string
     imageSrc?: string
     value: string | Array<BlocksType>
