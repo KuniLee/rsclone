@@ -147,6 +147,25 @@
   width: 100%;
 }
 
-.article_tag:not(:last-child)::after{
+.article_tag:not(:last-child)::after {
   content: ',';
+}
+
+.comment-form {
+  background-color: #f7f7f7;
+  padding: 18px 16px 16px;
+  position: relative;
+  border-top: 1px solid rgba(146, 156, 165, .4)
+}
+
+.comment-editor {
+  border: 1px solid #d5dddf;
+  max-width: 100%;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.comment-editor__content {
+  word-wrap: break-word;
+  word-break: break-word;
 }

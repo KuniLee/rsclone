@@ -7,7 +7,7 @@ import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { Plugins, Sortable } from '@shopify/draggable'
 import { SortableEventNames } from '@shopify/draggable'
 import 'select-pure'
-import { BlocksType, NewArticleData, ParsedArticle, ParsedPreviewArticle } from 'types/types'
+import { BlocksType, NewArticleData, ParsedData, ParsedPreviewArticle } from 'types/types'
 import authErrorPage from '@/templates/authError.hbs'
 import Dictionary, { getWords, language } from '@/utils/dictionary'
 import { EditorBlocks } from '@/utils/editorPopupWithBlocks'
@@ -971,9 +971,9 @@ export class EditorView extends EventEmitter {
         }
     }
 
-    parseArticle(editor: HTMLElement): ParsedArticle {
+    parseArticle(editor: HTMLElement): ParsedData {
         const header = editor.querySelector('.articleHeader')
-        const obj: ParsedArticle = {
+        const obj: ParsedData = {
             blocks: [],
         }
         if (header) {
@@ -1534,11 +1534,11 @@ export class EditorView extends EventEmitter {
         }
     }
 
-    emit<T>(event: ItemViewEventsName, arg?: T, articleData?: NewArticleData, blocks?: ParsedArticle) {
+    emit<T>(event: ItemViewEventsName, arg?: T, articleData?: NewArticleData, blocks?: ParsedData) {
         return super.emit(event, arg, articleData, blocks)
     }
 
-    on<T>(event: ItemViewEventsName, callback: (arg: T, articleData: NewArticleData, blocks: ParsedArticle) => void) {
+    on<T>(event: ItemViewEventsName, callback: (arg: T, articleData: NewArticleData, blocks: ParsedData) => void) {
         return super.on(event, callback)
     }
 }

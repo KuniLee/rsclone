@@ -1,11 +1,14 @@
-<div class="container mx-auto flex justify-between mt-[12px] mb-[50px]">
-  <div class="w-2/3">
+<div class="flex gap-4">
+  <div class="w-full flex flex-col gap-4 max-w-[760px]">
     {{#if date}}
     <div class="save-information-block pr-[20px] mb-[20px] py-[20px] bg-[#d3f2bf] border border-transparent">
-      <p class="ml-[20px]">У вас есть сохранение от <span class="date">{{date}}</span> в <span class="time">{{dateTime}}</span> <a class="restore-save-article text-color-button underline decoration-dotted underline-offset-4" href="#">Восстановить</a></p>
+      <p class="ml-[20px]">У вас есть сохранение от <span class="date">{{date}}</span> в <span
+          class="time">{{dateTime}}</span> <a
+          class="restore-save-article text-color-button underline decoration-dotted underline-offset-4"
+          href="#">Восстановить</a></p>
     </div>
     {{/if}}
-    <div class="mainEditor min-h-[640px] bg-color-light flex flex-col pt-[20px] flex flex-col relative flex-grow">
+    <div class="mainEditor min-h-[640px] bg-color-light flex flex-col pt-[20px] relative flex-grow">
       <div class="flex px-[25px]">
         <div class="w-[24px] h-[24px] rounded-sm border-2 mr-2">
           <img class='object-cover w-full h-full rounded' src="{{userAvatar}}" alt="">
@@ -17,61 +20,73 @@
         <div class="menu absolute w-[220px] bg-white shadow left-[20px] z-10 py-[10px] max-h-[250px] overflow-y-scroll" hidden>
           <div class="menu__wrapper"></div>
         </div>
-        <div class="before:content-[attr(data-is-empty)] before:absolute before:text-[#c0c0c0] before:pointer-events-none text-4xl mb-4 px-[25px]" data-is-empty="{{title}}">
+        <div
+          class="before:content-[attr(data-is-empty)] before:absolute before:text-[#c0c0c0] before:pointer-events-none text-4xl mb-4 px-[25px]"
+          data-is-empty="{{title}}">
           <h1 contenteditable="true" class="articleHeader editable outline-0 whitespace-pre-wrap text-4xl"></h1>
         </div>
-        <div class="textElement group editorElement before:content-[attr(data-is-empty)] before:absolute before:text-[#c0c0c0] before:pointer-events-none text-xl flex items-center w-full px-[25px]" data-is-empty="{{menuCall}}">
+        <div
+          class="textElement group editorElement before:content-[attr(data-is-empty)] before:absolute before:text-[#c0c0c0] before:pointer-events-none text-xl flex items-center w-full px-[25px]"
+          data-is-empty="{{menuCall}}">
           <div class="plus absolute left-0 plusOpen cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-6 h-6">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
           </div>
           <div class="drag absolute left-0 cursor-grab hidden group-hover:opacity-100 opacity-0">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-6 h-6">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
           </div>
           <p contenteditable="true" class="editable outline-0 whitespace-pre-wrap flex-grow max-w-[96.6%]"></p>
           <div class="options cursor-pointer group-hover:opacity-100 opacity-0">
             <button class="options__open-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
               </svg>
             </button>
             <div class="options__drop-menu absolute w-[220px] shadow right-0 bg-color-light z-10" hidden>
               <div class="py-[5px]">
-                <button class="delete-btn py-[10px] hover:bg-[rgba] w-full text-[13px] hover:bg-color-gray-light transition">{{delete}}</button>
+                <button
+                  class="delete-btn py-[10px] hover:bg-[rgba] w-full text-[13px] hover:bg-color-gray-light transition">{{delete}}</button>
               </div>
             </div>
           </div>
         </div>
 
       </div>
-      <div class="before:content-[''] before:w-full before:h-[1px] before:bg-color-gray-separator before:absolute before:left-0">
+      <div
+        class="before:content-[''] before:w-full before:h-[1px] before:bg-color-gray-separator before:absolute before:left-0">
         <div class="w-full p-[20px] gap-[12px] flex items-center">
-          <button class="toSettings border-color-button text-color-button border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-btn-hover hover:border-color-btn-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white" disabled>{{toSettings}}</button>
+          <button
+            class="toSettings border-color-button text-color-button border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-btn-hover hover:border-color-btn-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white"
+            disabled>{{toSettings}}</button>
           <p class="last-time-save-message" hidden>Сохранено локально в <span class="saved-message-time"></span></p>
         </div>
       </div>
     </div>
-    <div class="editorSettings px-[16px] bg-color-light pt-[20px] flex flex-col relative flex-grow relative hidden">
+    <div class="editorSettings px-[16px] bg-color-light pt-[20px] flex-col flex-grow relative hidden">
       <h2 class="border-b border-color-gray-separator text-xl font-medium pb-[24px] mb-[12px]">{{postSettings}}</h2>
       <form action="#">
         <div class="flex mb-4">
-            <div>
-              <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>{{language}}</h3>
-              <div class="flex">
-                <div class="border-[1px] rounded-[3px] border-[#d5dddf] flex transition-colors ease-out duration-300">
-                  <input type="radio" name="lang" value="ru" id="lang-ru" class="hidden editor__type-radio" checked>
-                  <label for="lang-ru" class="editor__radio-label editor__type-label">
-                    <span>{{languageButtonRu}}</span>
-                  </label>
-                  <input type="radio" name="lang" value="en" id="lang-en" class="hidden editor__type-radio">
-                  <label for="lang-en" class="editor__radio-label editor__type-label">
-                    <span>{{languageButtonEn}}</span>
-                  </label>
-                </div>
+          <div>
+            <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>{{language}}</h3>
+            <div class="flex">
+              <div class="border-[1px] rounded-[3px] border-[#d5dddf] flex transition-colors ease-out duration-300">
+                <input type="radio" name="lang" value="ru" id="lang-ru" class="hidden editor__type-radio" checked>
+                <label for="lang-ru" class="editor__radio-label editor__type-label">
+                  <span>{{languageButtonRu}}</span>
+                </label>
+                <input type="radio" name="lang" value="en" id="lang-en" class="hidden editor__type-radio">
+                <label for="lang-en" class="editor__radio-label editor__type-label">
+                  <span>{{languageButtonEn}}</span>
+                </label>
               </div>
+            </div>
           </div>
         </div>
         <div>
@@ -80,9 +95,11 @@
           <div>
             <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>{{flowsInput}}</h3>
             <div>
-              <select-pure default-label="{{flowsHint}}" class="flows-input w-full rounded-[3px] m-0 text-[14px] outline-0" name="flow-select" id="flow-select" multiple>
+              <select-pure default-label="{{flowsHint}}"
+                class="flows-input w-full rounded-[3px] m-0 text-[14px] outline-0" name="flow-select" id="flow-select"
+                multiple>
                 {{#each flows}}
-                  <option-pure value="{{this}}">{{this}}</option-pure>
+                <option-pure value="{{this}}">{{this}}</option-pure>
                 {{/each}}
               </select-pure>
             </div>
@@ -91,7 +108,9 @@
           <div>
             <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>{{keywords}}</h3>
             <div>
-              <input class="keywords-input w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" placeholder="Введите ключевые слова">
+              <input
+                class="keywords-input w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0"
+                type="text" placeholder="Введите ключевые слова">
             </div>
             <p class="keywords-error text-gray-500 text-[12px] mb-4 mt-[9px]">{{keywordsHint}}</p>
           </div>
@@ -99,17 +118,22 @@
         <div>
           <div class="mb-4 isTranslate">
             <h3 class="text-m mb-4 font-semibold">{{translation}}</h3>
-            <label class="text-m cursor-pointer"><input class="isTranslate-checkbox" type="checkbox"> {{translationCheckText}}</label>
+            <label class="text-m cursor-pointer"><input class="isTranslate-checkbox" type="checkbox">
+              {{translationCheckText}}</label>
           </div>
           <div class="translate-info hidden">
             <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>{{translationAuthor}}</h3>
             <div>
-              <input class="translate__author w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" name="translate-author">
+              <input
+                class="translate__author w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0"
+                type="text" name="translate-author">
             </div>
             <p class="text-gray-500 text-[12px] mb-4 mt-[9px]">{{translationAuthorHint}}</p>
             <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>{{translationLink}}</h3>
             <div>
-              <input class="translate__link w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" name="translate-link">
+              <input
+                class="translate__link w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0"
+                type="text" name="translate-link">
             </div>
             <p class="text-gray-500 text-[12px] mb-4 mt-[9px]">{{translationLinkHint}}</p>
           </div>
@@ -117,61 +141,86 @@
         <div class="mb-4">
           <h3 class="text-m mb-4 font-semibold">{{difficult}}</h3>
           <div class="flex text-[14px]">
-            <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity" value="none" checked>{{difficultNone}}</label>
-            <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity" value="easy">{{difficultEasy}}</label>
-            <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity" value="medium">{{difficultMedium}}</label>
-            <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity" value="hard">{{difficultHard}}</label>
+            <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity" value="none"
+                checked>{{difficultNone}}</label>
+            <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity"
+                value="easy">{{difficultEasy}}</label>
+            <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity"
+                value="medium">{{difficultMedium}}</label>
+            <label class="mr-2 cursor-pointer"><input class="mr-1" type="radio" name="сomplexity"
+                value="hard">{{difficultHard}}</label>
           </div>
         </div>
         <div class="mb-4">
           <h2 class="text-2xl mb-4 font-semibold">{{previewHeader}}</h2>
           <div class="previewImageBlock text-[#eee] border border-color-gray-separator relative">
             <div class="dropZone w-full pb-[56.4103%] z-1">
-              <img class="preview-image absolute w-full h-full object-cover select-none hidden" ondrag="return false" ondragdrop="return false" ondragstart="return false" src="" alt="">
+              <img class="preview-image absolute w-full h-full object-cover select-none hidden" ondrag="return false"
+                ondragdrop="return false" ondragstart="return false" src="" alt="">
             </div>
-            <div class="load-image-preview-text absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center flex-col items-center z-1">
+            <div
+              class="load-image-preview-text absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center flex-col items-center z-1">
               <div>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#929ca5" class="w-6 h-6">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="#929ca5" class="w-6 h-6">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
               </div>
               <div>
-                <p class="text-[#444444] text-[14px] font-semibold mb-[12px] text-center"><span class="add-cover-message">{{addCover}}</span><span class="preview-error-cover text-[#ff8d85]" hidden>Размер изображения слишком большой. Максимальный размер изображения не должен превышать 1 Мб</span></p>
+                <p class="text-[#444444] text-[14px] font-semibold mb-[12px] text-center"><span
+                    class="add-cover-message">{{addCover}}</span><span class="preview-error-cover text-[#ff8d85]"
+                    hidden>Размер изображения слишком большой. Максимальный размер изображения не должен превышать 1
+                    Мб</span></p>
               </div>
               <div>
                 <p class="text-[#777777] text-[12px] mb-[9px] text-center">{{coverInfo}}</p>
               </div>
               <div>
-                <label class="border inline-block border-[#c9c9c9] rounded-[3px] bg-[#f4f4f4] text-[#464646] text-[12px] h-[30px] leading-[30px] px-[12px] cursor-pointer">
-                  <input class="image-preview" type="file" accept="image/png, image/jpg, image/jpeg, image/gif" style="display: none;">
+                <label
+                  class="border inline-block border-[#c9c9c9] rounded-[3px] bg-[#f4f4f4] text-[#464646] text-[12px] h-[30px] leading-[30px] px-[12px] cursor-pointer">
+                  <input class="image-preview" type="file" accept="image/png, image/jpg, image/jpeg, image/gif"
+                    style="display: none;">
                   <span>{{uploadCover}}</span>
                 </label>
               </div>
             </div>
             <div class="preview-image-controls absolute right-[24px] bottom-[20px]" hidden>
-              <button class="delete-preview-btn border border-color-gray-separator h-[30px] text-[#464646] cursor-pointer bg-[#f4f4f4] leading-[30px] text-[12px] outline-none mr-4 px-[12px]">Удалить обложку</button>
-              <button class="change-position-preview-btn border border-color-gray-separator h-[30px] text-[#464646] cursor-pointer bg-[#f4f4f4] leading-[30px] text-[12px] outline-none mr-4 px-[12px]">Редактировать позицию</button>
-              <button class="save-position border border-color-gray-separator h-[30px] text-[#464646] cursor-pointer bg-[#f4f4f4] leading-[30px] text-[12px] outline-none mr-4 px-[12px] z-10" hidden>Сохранить изменения</button>
+              <button
+                class="delete-preview-btn border border-color-gray-separator h-[30px] text-[#464646] cursor-pointer bg-[#f4f4f4] leading-[30px] text-[12px] outline-none mr-4 px-[12px]">Удалить
+                обложку</button>
+              <button
+                class="change-position-preview-btn border border-color-gray-separator h-[30px] text-[#464646] cursor-pointer bg-[#f4f4f4] leading-[30px] text-[12px] outline-none mr-4 px-[12px]">Редактировать
+                позицию</button>
+              <button
+                class="save-position border border-color-gray-separator h-[30px] text-[#464646] cursor-pointer bg-[#f4f4f4] leading-[30px] text-[12px] outline-none mr-4 px-[12px] z-10"
+                hidden>Сохранить изменения</button>
             </div>
           </div>
           <div class="text-[#eee] border border-color-gray-separator relative">
             <div class="textPreviewEditor relative flex-grow text-black">
-              <div class="textElement group editorElement before:content-[attr(data-is-empty)] before:absolute before:text-[#c0c0c0] before:pointer-events-none text-xl flex items-center w-full px-[25px]" data-is-empty="{{previewTextPlaceholder}}">
+              <div
+                class="textElement group editorElement before:content-[attr(data-is-empty)] before:absolute before:text-[#c0c0c0] before:pointer-events-none text-xl flex items-center w-full px-[25px]"
+                data-is-empty="{{previewTextPlaceholder}}">
                 <div class="drag absolute left-0 cursor-grab hidden group-hover:opacity-100 opacity-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                   </svg>
                 </div>
                 <p contenteditable="true" class="editable outline-0 whitespace-pre-wrap flex-grow max-w-[96.6%]"></p>
                 <div class="options cursor-pointer group-hover:opacity-100 opacity-0">
                   <button class="options__open-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="w-6 h-6">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
                     </svg>
                   </button>
                   <div class="options__drop-menu absolute w-[220px] shadow right-0 bg-color-light z-10" hidden>
                     <div class="py-[5px]">
-                      <button class="delete-btn py-[10px] hover:bg-[rgba] w-full text-[13px] hover:bg-color-gray-light transition">{{delete}}</button>
+                      <button
+                        class="delete-btn py-[10px] hover:bg-[rgba] w-full text-[13px] hover:bg-color-gray-light transition">{{delete}}</button>
                     </div>
                   </div>
                 </div>
@@ -186,20 +235,26 @@
             <p class="read-more-text-length text-[12px] font-semibold">40</p>
           </div>
           <div>
-            <input class="buttonTextInput w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0" type="text" value="{{readMoreTextPlaceholder}}" maxlength="42">
+            <input
+              class="buttonTextInput w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0"
+              type="text" value="{{readMoreTextPlaceholder}}">
           </div>
         </div>
-        <div class="before:content-[''] before:w-full before:h-[1px] before:bg-color-gray-separator before:absolute before:left-0 mb-4 flex justify-between">
-          <button class="backToEditor mt-[16px] border-color-button text-color-button border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-btn-hover hover:border-color-btn-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white">{{backToPublication}}</button>
-          <button class="submitArticle mt-[16px] border-color-button-send text-white bg-color-button-send text-color border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-button-send-hover hover:border-color-button-send-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white" disabled>{{sendArticle}}</button>
+        <div
+          class="before:content-[''] before:w-full before:h-[1px] before:bg-color-gray-separator before:absolute before:left-0 mb-4 flex justify-between">
+          <button
+            class="backToEditor mt-[16px] border-color-button text-color-button border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-btn-hover hover:border-color-btn-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white">{{backToPublication}}</button>
+          <button
+            class="submitArticle mt-[16px] border-color-button-send text-white bg-color-button-send text-color border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-button-send-hover hover:border-color-button-send-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white"
+            disabled>{{sendArticle}}</button>
         </div>
       </form>
     </div>
   </div>
-  <div class="w-1/4 bg-color-light">
+  <aside class="hidden lg:block basis-80 bg-color-light shrink-0 h-fit">
     <div class="px-5 py-4">
       <h3
-          class=" text-color-text-dark uppercase font-medium tracking-wide border-solid border-b border-color-border-light pb-3">
+        class=" text-color-text-dark uppercase font-medium tracking-wide border-solid border-b border-color-border-light pb-3">
         {{words.Title}}</h3>
       <ul class="py-4">
         <li>
@@ -207,19 +262,19 @@
             <span class="rs-sloth"></span>
             <p class="text-color-text-dark">
               {{words.FirstParagraphPartOne}}
-              <a href="https://rollingscopes.com/" class="hover:text-color-link-hover transition text-color-text-light">The
+              <a href="https://rollingscopes.com/"
+                class="hover:text-color-link-hover transition text-color-text-light">The
                 Rolling Scopes</a>
               {{words.FirstParagraphPartTwo}}
             </p>
             <p class="text-color-text-dark">
               {{words.SecondParagraphPartOne}}
               <a href="https://rs.school/" class="hover:text-color-link-hover transition text-color-text-light">RS
-                School</a>
-              {{words.SecondParagraphPartTwo}}
+                School</a>{{words.SecondParagraphPartTwo}}
             </p>
           </div>
         </li>
       </ul>
     </div>
-  </div>
+  </aside>
 </div>

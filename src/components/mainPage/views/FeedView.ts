@@ -55,12 +55,11 @@ export class FeedView extends EventEmitter {
     }
 
     private createAside() {
-        const asideEl = document.createElement('aside')
-        asideEl.className = 'hidden lg:block basis-80 bg-color-light shrink-0 h-fit'
-        asideEl.innerHTML = asideTemplate({
+        const template = document.createElement('template')
+        template.innerHTML = asideTemplate({
             words: getWords(dictionary.Aside, this.pageModel.lang),
         })
-        return asideEl
+        return template.content
     }
 
     private setArticles() {

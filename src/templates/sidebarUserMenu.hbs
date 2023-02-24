@@ -5,7 +5,7 @@
       <div class="w-9 h-9 rounded-sm overflow-hidden">
         <a href="/users/{{user.displayName}}" class="link">
           {{#if user.properties.avatar}}
-          <img class="object-contain w-full h-full user-avatar" src="{{user.properties.avatar}}" alt="user-avatar" />
+          <img class="object-cover w-full h-full user-avatar" src="{{user.properties.avatar}}" alt="user-avatar" />
           {{else}}
           <img class="object-cover w-full h-full rounded border-2 user-avatar" src="{{emptyAvatar}}"
             alt="user-avatar" />

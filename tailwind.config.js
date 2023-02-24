@@ -35,6 +35,10 @@ module.exports = {
                 'color-gray-separator': '#d3d7db',
                 'color-button-send': '#7aa600',
                 'color-button-send-hover': '#4c7816',
+                'color-border-button-comment-form': '#d2d2d2',
+                'color-text-button-comment-form': '#737d81',
+                'color-comments-notice': '#71992e',
+                'color-editor-placeholder': '#c0c0c0'
             },
         },
         fontFamily: {
