@@ -9,7 +9,7 @@ import aside from '@/templates/aside.hbs'
 import commentEditorTemplate from '@/templates/comments/commentEditor.hbs'
 import commentsTemplate from '@/templates/comments/comments.hbs'
 import commentEditorNewParagraphTemplate from '@/templates/comments/commentEditorNewParagraph.hbs'
-import { ParsedData } from '@/types/types'
+import { ParsedData } from 'types/types'
 
 type ArticleEventsName = 'LOAD_POST' | 'GO_TO' | 'PARSED_COMMENT'
 

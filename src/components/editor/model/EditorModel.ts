@@ -1,4 +1,4 @@
-import { BlocksType, ParsedData } from './../../../types/types'
+import { BlocksType, ParsedData } from 'types/types'
 import EventEmitter from 'events'
 import { Flows, Paths } from 'types/enums'
 import { URLParams } from 'types/interfaces'

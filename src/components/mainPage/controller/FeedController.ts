@@ -22,7 +22,7 @@ import { Flows, Paths } from 'types/enums'
 import { Article, URLParams } from 'types/interfaces'
 import { ArticleViewInstance } from '@/components/mainPage/views/ArticleView'
 import { RouterInstance } from '@/utils/Rooter'
-import { CommentInfo, ParsedData } from '@/types/types'
+import { CommentInfo, ParsedData } from 'types/types'
 
 export class FeedController {
     private view: FeedViewInstance
