@@ -4,7 +4,7 @@ import type { QueryDocumentSnapshot } from 'firebase/firestore'
 import { Flows } from 'types/enums'
 import { Article } from 'types/interfaces'
 
-type FeedModelEventsName = 'LOADED' | 'POST_LOADED' | 'COMMENTS_LOADED'
+type FeedModelEventsName = 'LOADED' | 'POST_LOADED' | 'COMMENTS_LOADED' | 'NO_MORE'
 export type FeedModelInstance = InstanceType<typeof FeedModel>
 
 export class FeedModel extends EventEmitter {
@@ -45,6 +45,7 @@ export class FeedModel extends EventEmitter {
     addArticles(articles: Array<Article>) {
         this.articles.push(...articles)
         this.emit('LOADED')
+        if (articles.length < 5) this.emit('NO_MORE')
     }
 
     setArticle(article: Article) {

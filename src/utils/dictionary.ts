@@ -165,6 +165,7 @@ const PostPage: Record<string, language> = {
     hard: { ru: 'Сложно', en: 'Hard' },
     medium: { ru: 'Средне', en: 'Medium' },
     easy: { ru: 'Просто', en: 'Easy' },
+    noMoreArticles: { ru: 'Статей больше нет', en: 'No more articles' },
 }
 
 const Comments: Record<string, language> = {

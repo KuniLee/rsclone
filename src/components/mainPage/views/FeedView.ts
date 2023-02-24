@@ -18,11 +18,13 @@ export class FeedView extends EventEmitter {
     private pageModel: PageModelInstance
     private feedModel: FeedModelInstance
     private articles: Preview[] = []
+    private readonly moreBtn: HTMLButtonElement
 
     constructor(models: { pageModel: PageModelInstance; feedModel: FeedModelInstance }) {
         super()
         this.pageModel = models.pageModel
         this.feedModel = models.feedModel
+        this.moreBtn = this.renderMoreBtn()
         this.pageModel.on<Flows>('SHOW_FEED', (flow) => {
             this.renderPage()
             this.showPreloader()
@@ -31,6 +33,9 @@ export class FeedView extends EventEmitter {
         this.feedModel.on('LOADED', () => {
             this.setArticles()
             this.renderArticles()
+        })
+        this.feedModel.on('NO_MORE', () => {
+            this.showNoMoreMsg()
         })
     }
 
@@ -51,6 +56,11 @@ export class FeedView extends EventEmitter {
         const asideEl = this.createAside()
         mainPageWrapperEl.append(feedEl, asideEl)
         this.mainPageContainer.replaceChildren(mainPageWrapperEl)
+        this.moreBtn.addEventListener('click', () => {
+            this.moreBtn.remove()
+            feedEl.insertAdjacentHTML('beforeend', preloaderSmall)
+            this.emit('LOAD_MORE')
+        })
     }
 
     private createAside() {
@@ -74,21 +84,31 @@ export class FeedView extends EventEmitter {
         this.updateMoreBtn()
     }
 
-    updateMoreBtn() {
+    renderMoreBtn() {
         const feedEl = this.mainPageContainer?.querySelector('.feed') as HTMLDivElement
         const template = document.createElement('template')
         template.innerHTML = loadBtn({ words: getWords(dictionary.buttons, this.pageModel.lang) })
         const btn = template.content.querySelector('button') as HTMLButtonElement
-        btn.addEventListener('click', () => {
-            btn.remove()
-            feedEl.insertAdjacentHTML('beforeend', preloaderSmall)
-            this.emit('LOAD_MORE')
-        })
-        feedEl.append(template.content)
+        return btn
+    }
+
+    updateMoreBtn() {
+        const feedEl = this.mainPageContainer?.querySelector('.feed') as HTMLDivElement
+        feedEl.append(this.moreBtn)
     }
 
     private showPreloader() {
         const feedEl = this.mainPageContainer?.querySelector('.feed') as HTMLDivElement
         feedEl.innerHTML = preloader
+    }
+
+    private showNoMoreMsg() {
+        const feedEl = this.mainPageContainer?.querySelector('.feed') as HTMLDivElement
+        this.moreBtn.remove()
+        feedEl.insertAdjacentHTML(
+            'beforeend',
+            `<span class="mx-auto text-sky-900">
+${dictionary.PostPage.noMoreArticles[this.pageModel.lang]}<span>`
+        )
     }
 }
