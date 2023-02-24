@@ -6,6 +6,7 @@ import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
 import preloader from '@/templates/preloader.html'
 import { Preview } from '@/utils/previewBuilder'
 import asideTemplate from '@/templates/aside.hbs'
+import loadBtn from '@/templates/loadMoreBtn.hbs'
 
 type FeedViewEventsName = 'LOAD_ARTICLES' | 'DOWNLOAD_IMAGE' | 'UPLOAD_IMAGE' | 'GO_TO'
 
@@ -62,7 +63,6 @@ export class FeedView extends EventEmitter {
     private setArticles() {
         this.articles = this.feedModel.articles.map((el) => new Preview(el))
         this.articles.forEach((el) => el.on('GO_TO', (path) => this.emit('GO_TO', path)))
-        console.log(this.articles)
     }
 
     renderArticles() {
@@ -70,6 +70,7 @@ export class FeedView extends EventEmitter {
         feedEl.innerHTML = ''
         if (this.articles.length === 0) feedEl.innerHTML = 'no articles'
         else feedEl.append(...this.articles.map((el) => el.render()))
+        feedEl.insertAdjacentHTML('beforeend', loadBtn({ words: getWords(dictionary.buttons, this.pageModel.lang) }))
     }
 
     private showPreloader() {

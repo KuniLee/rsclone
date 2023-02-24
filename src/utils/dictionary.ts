@@ -23,6 +23,7 @@ const buttons: Record<string, language> = {
     Save: { ru: 'Cохранить изменения', en: 'Save changes' },
     Upload: { ru: 'Загрузить', en: 'Upload' },
     Remove: { ru: 'Удалить', en: 'Remove' },
+    loadMore: { ru: 'Ещё', en: 'More' },
 }
 
 const popupSettings: Record<string, language> = {

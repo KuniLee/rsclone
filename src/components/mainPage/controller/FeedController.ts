@@ -2,29 +2,30 @@ import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { FeedViewInstance } from '@/components/mainPage/views/FeedView'
 import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
 import {
-    Auth,
     collection,
     doc,
-    FireBaseAPIInstance,
-    FirebaseStorage,
-    Firestore,
-    getCountFromServer,
+    QueryConstraint,
+    DocumentReference,
+    serverTimestamp,
+    updateDoc,
     getDoc,
     getDocs,
-    getDownloadURL,
+    arrayUnion,
     limit,
     orderBy,
     query,
-    ref,
     setDoc,
     where,
-} from '@/utils/FireBaseAPI'
-import { QueryConstraint, DocumentReference, setDoc, serverTimestamp, updateDoc, arrayUnion } from 'firebase/firestore'
+    Firestore,
+} from 'firebase/firestore'
+import { FirebaseStorage, getDownloadURL, ref } from 'firebase/storage'
 import { Flows, Paths } from 'types/enums'
 import { Article, URLParams } from 'types/interfaces'
 import { ArticleViewInstance } from '@/components/mainPage/views/ArticleView'
 import { RouterInstance } from '@/utils/Rooter'
 import { CommentInfo, ParsedData } from 'types/types'
+import { Auth } from 'firebase/auth'
+import { FireBaseAPIInstance } from '@/utils/FireBaseAPI'
 
 export class FeedController {
     private view: FeedViewInstance
