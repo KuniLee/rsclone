@@ -43,7 +43,7 @@ export class FeedModel extends EventEmitter {
     }
 
     addArticles(articles: Array<Article>) {
-        this.articles = articles
+        this.articles.push(...articles)
         this.emit('LOADED')
     }
 

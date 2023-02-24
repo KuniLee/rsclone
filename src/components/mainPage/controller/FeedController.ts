@@ -17,6 +17,7 @@ import {
     setDoc,
     where,
     Firestore,
+    startAfter,
 } from 'firebase/firestore'
 import { FirebaseStorage, getDownloadURL, ref } from 'firebase/storage'
 import { Flows, Paths } from 'types/enums'
@@ -52,6 +53,9 @@ export class FeedController {
         this.view.on<Flows>('LOAD_ARTICLES', async (flow) => {
             this.feedModel.setFlow = flow
             this.feedModel.addArticles(await this.loadArticles())
+        })
+        this.view.on<Flows>('LOAD_MORE', async (flow) => {
+            this.feedModel.addArticles(await this.loadArticles(true))
         })
         this.articleView.on<string>('LOAD_POST', async (id) => {
             const article = await this.loadArticle(id)
@@ -99,8 +103,9 @@ export class FeedController {
         }
     }
 
-    private async loadArticles() {
+    private async loadArticles(loadMore = false) {
         const queryConstants: QueryConstraint[] = [orderBy('createdAt', 'desc'), limit(5)]
+        if (loadMore) queryConstants.push(startAfter(this.feedModel.latestArticle))
         if (this.feedModel.currentFlow !== Flows.All)
             queryConstants.push(where('flows', 'array-contains', this.feedModel.currentFlow?.slice(1)))
         const ref = collection(this.db, 'articles')

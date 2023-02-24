@@ -4,11 +4,12 @@ import { Flows } from 'types/enums'
 import { PageModelInstance } from '../model/PageModel'
 import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
 import preloader from '@/templates/preloader.html'
+import preloaderSmall from '@/templates/preloaderSmall.html'
 import { Preview } from '@/utils/previewBuilder'
 import asideTemplate from '@/templates/aside.hbs'
 import loadBtn from '@/templates/loadMoreBtn.hbs'
 
-type FeedViewEventsName = 'LOAD_ARTICLES' | 'DOWNLOAD_IMAGE' | 'UPLOAD_IMAGE' | 'GO_TO'
+type FeedViewEventsName = 'LOAD_ARTICLES' | 'DOWNLOAD_IMAGE' | 'UPLOAD_IMAGE' | 'GO_TO' | 'LOAD_MORE'
 
 export type FeedViewInstance = InstanceType<typeof FeedView>
 
@@ -70,7 +71,20 @@ export class FeedView extends EventEmitter {
         feedEl.innerHTML = ''
         if (this.articles.length === 0) feedEl.innerHTML = 'no articles'
         else feedEl.append(...this.articles.map((el) => el.render()))
-        feedEl.insertAdjacentHTML('beforeend', loadBtn({ words: getWords(dictionary.buttons, this.pageModel.lang) }))
+        this.updateMoreBtn()
+    }
+
+    updateMoreBtn() {
+        const feedEl = this.mainPageContainer?.querySelector('.feed') as HTMLDivElement
+        const template = document.createElement('template')
+        template.innerHTML = loadBtn({ words: getWords(dictionary.buttons, this.pageModel.lang) })
+        const btn = template.content.querySelector('button') as HTMLButtonElement
+        btn.addEventListener('click', () => {
+            btn.remove()
+            feedEl.insertAdjacentHTML('beforeend', preloaderSmall)
+            this.emit('LOAD_MORE')
+        })
+        feedEl.append(template.content)
     }
 
     private showPreloader() {
