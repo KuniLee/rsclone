@@ -141,7 +141,7 @@ export class FeedController {
 
     private async loadComments(articleId: Article['id']) {
         try {
-            const queryConstants: QueryConstraint[] = [orderBy('createdAt', 'desc'), limit(5)]
+            const queryConstants: QueryConstraint[] = [orderBy('createdAt', 'asc')]
             const commentsArticleRef = collection(this.db, `articles/${articleId}/comments`)
             const commentsSnapshot = await getDocs(query(commentsArticleRef, ...queryConstants))
             const comments: Array<CommentInfo> = []
