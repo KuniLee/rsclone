@@ -4,7 +4,7 @@ import type { QueryDocumentSnapshot } from 'firebase/firestore'
 import { Flows } from 'types/enums'
 import { Article } from 'types/interfaces'
 
-type FeedModelEventsName = 'LOADED' | 'POST_LOADED' | 'COMMENTS_LOADED' | 'NO_MORE'
+type FeedModelEventsName = 'LOADED' | 'POST_LOADED' | 'COMMENTS_LOADED'
 export type FeedModelInstance = InstanceType<typeof FeedModel>
 
 export class FeedModel extends EventEmitter {
@@ -13,13 +13,18 @@ export class FeedModel extends EventEmitter {
     private _latestArticle: QueryDocumentSnapshot | null = null
     private _flow: Flows | undefined
     private _comments: Array<CommentInfo> = []
+    public noMoreArticles = false
 
     constructor() {
         super()
     }
 
     set setFlow(flow: Flows) {
-        this._flow = flow
+        if (this._flow !== flow) {
+            this.noMoreArticles = false
+            this.articles = []
+            this._flow = flow
+        }
     }
 
     get currentFlow() {
@@ -44,8 +49,8 @@ export class FeedModel extends EventEmitter {
 
     addArticles(articles: Array<Article>) {
         this.articles.push(...articles)
+        if (articles.length < 5) this.noMoreArticles = true
         this.emit('LOADED')
-        if (articles.length < 5) this.emit('NO_MORE')
     }
 
     setArticle(article: Article) {

@@ -73,7 +73,10 @@ export class PageModel extends EventEmitter {
     private goToFlows() {
         if (this.path.length === 1 && this.path[0] === Paths.All) this.emit<Flows>('SHOW_FEED', Flows.All)
         else if (this.path.length === 2 && Object.values(Flows).includes(this.path[1] as Flows)) {
-            this.emit<Flows>('SHOW_FEED', this.path[1] as Flows)
+            if (this.path[1] === Paths.All) {
+                this.path = [Paths.All]
+                this.emit<Flows>('SHOW_FEED', Flows.All)
+            } else this.emit<Flows>('SHOW_FEED', this.path[1] as Flows)
             if (this.path[1] === Paths.All) this.path = [Paths.All]
         } else this.goTo404()
     }

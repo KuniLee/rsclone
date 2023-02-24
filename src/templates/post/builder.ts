@@ -54,6 +54,6 @@ export default function (block: BlocksType) {
             return blocks.quotes(block)
 
         default:
-            console.log(block)
+            return
     }
 }
