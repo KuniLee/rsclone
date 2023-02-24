@@ -4,7 +4,7 @@ import { rootModel, URLParams } from 'types/interfaces'
 import { ParsedQuery } from 'query-string'
 import { UserData } from 'types/types'
 
-type PageModelEventsName = 'CHANGE_PAGE' | '404' | 'AUTH_LOADED'
+type PageModelEventsName = 'CHANGE_PAGE' | '404' | 'AUTH_LOADED' | 'SHOW_FEED'
 export type PageModelInstance = InstanceType<typeof PageModel>
 
 export class PageModel extends EventEmitter {
@@ -32,8 +32,8 @@ export class PageModel extends EventEmitter {
         return super.on(event, callback)
     }
 
-    emit<T>(event: PageModelEventsName) {
-        return super.emit(event)
+    emit<T>(event: PageModelEventsName, arg?: T) {
+        return super.emit(event, arg)
     }
 
     changePage({ path, search }: URLParams) {
@@ -71,22 +71,31 @@ export class PageModel extends EventEmitter {
     }
 
     private goToFlows() {
-        if (this.path.length === 1 && this.path[0] === Paths.All) this.emit('CHANGE_PAGE')
+        if (this.path.length === 1 && this.path[0] === Paths.All)
+            this.emit<{ flow: Flows; page: number }>('SHOW_FEED', { flow: Flows.All, page: 1 })
         else if (this.path.length === 2 && this.path[0] === Paths.All && /\/page\d+/.test(this.path[1]))
-            this.emit('CHANGE_PAGE')
+            this.emit<{ flow: Flows; page: number }>('SHOW_FEED', {
+                flow: Flows.All,
+                page: Number(this.path[1].replace(/[^0-9]/g, '')),
+            })
         else if (this.path.length === 2 && Object.values(Flows).includes(this.path[1] as Flows)) {
             if (this.path[1] === Paths.All) {
                 this.path = [Paths.All]
-                console.log(`страница all`)
             }
-            this.emit('CHANGE_PAGE')
+            this.emit<{ flow: Flows; page: number }>('SHOW_FEED', {
+                flow: this.path[1] as Flows,
+                page: 1,
+            })
         } else if (
             this.path.length === 3 &&
             this.path[0] === Paths.Flows &&
             Object.values(Flows).includes(this.path[1] as Flows) &&
             /\/page\d+/.test(this.path[2])
         )
-            this.emit('CHANGE_PAGE')
+            this.emit<{ flow: Flows; page: number }>('SHOW_FEED', {
+                flow: this.path[1] as Flows,
+                page: Number(this.path[2].replace(/[^0-9]/g, '')),
+            })
         else this.goTo404()
     }
 

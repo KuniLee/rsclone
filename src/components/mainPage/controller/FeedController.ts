@@ -98,7 +98,7 @@ export class FeedController {
     }
 
     private async loadArticles() {
-        const queryConstants: QueryConstraint[] = [orderBy('createdAt', 'desc'), limit(5)]
+        const queryConstants: QueryConstraint[] = [orderBy('createdAt', 'desc'), limit(250)]
         if (this.feedModel.currentFlow !== Flows.All)
             queryConstants.push(where('flows', 'array-contains', this.feedModel.currentFlow?.slice(1)))
         const ref = collection(this.db, 'articles')

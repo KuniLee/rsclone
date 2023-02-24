@@ -1,6 +1,6 @@
 import dictionary, { getWords } from '@/utils/dictionary'
 import EventEmitter from 'events'
-import { Flows, Paths } from 'types/enums'
+import { Flows } from 'types/enums'
 import { PageModelInstance } from '../model/PageModel'
 import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
 import preloader from '@/templates/preloader.html'
@@ -21,13 +21,10 @@ export class FeedView extends EventEmitter {
         super()
         this.pageModel = models.pageModel
         this.feedModel = models.feedModel
-        this.pageModel.on('CHANGE_PAGE', () => {
-            const path = this.pageModel.path
-            if (Object.values(Flows).includes(path[1] as Flows) || path[0] === Paths.All) {
-                this.renderPage()
-                this.showPreloader()
-                this.emit('LOAD_ARTICLES', path[1])
-            }
+        this.pageModel.on<{ flow: Flows; page: number }>('SHOW_FEED', ({ flow, page }) => {
+            this.renderPage()
+            this.showPreloader()
+            this.emit('LOAD_ARTICLES', flow)
         })
         this.feedModel.on('LOADED', () => {
             this.setArticles()
