@@ -71,32 +71,11 @@ export class PageModel extends EventEmitter {
     }
 
     private goToFlows() {
-        if (this.path.length === 1 && this.path[0] === Paths.All)
-            this.emit<{ flow: Flows; page: number }>('SHOW_FEED', { flow: Flows.All, page: 1 })
-        else if (this.path.length === 2 && this.path[0] === Paths.All && /\/page\d+/.test(this.path[1]))
-            this.emit<{ flow: Flows; page: number }>('SHOW_FEED', {
-                flow: Flows.All,
-                page: Number(this.path[1].replace(/[^0-9]/g, '')),
-            })
+        if (this.path.length === 1 && this.path[0] === Paths.All) this.emit<Flows>('SHOW_FEED', Flows.All)
         else if (this.path.length === 2 && Object.values(Flows).includes(this.path[1] as Flows)) {
-            if (this.path[1] === Paths.All) {
-                this.path = [Paths.All]
-            }
-            this.emit<{ flow: Flows; page: number }>('SHOW_FEED', {
-                flow: this.path[1] as Flows,
-                page: 1,
-            })
-        } else if (
-            this.path.length === 3 &&
-            this.path[0] === Paths.Flows &&
-            Object.values(Flows).includes(this.path[1] as Flows) &&
-            /\/page\d+/.test(this.path[2])
-        )
-            this.emit<{ flow: Flows; page: number }>('SHOW_FEED', {
-                flow: this.path[1] as Flows,
-                page: Number(this.path[2].replace(/[^0-9]/g, '')),
-            })
-        else this.goTo404()
+            this.emit<Flows>('SHOW_FEED', this.path[1] as Flows)
+            if (this.path[1] === Paths.All) this.path = [Paths.All]
+        } else this.goTo404()
     }
 
     private goToSandbox() {

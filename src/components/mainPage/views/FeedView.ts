@@ -21,10 +21,10 @@ export class FeedView extends EventEmitter {
         super()
         this.pageModel = models.pageModel
         this.feedModel = models.feedModel
-        this.pageModel.on<{ flow: Flows; page: number }>('SHOW_FEED', ({ flow, page }) => {
+        this.pageModel.on<Flows>('SHOW_FEED', (flow) => {
             this.renderPage()
             this.showPreloader()
-            this.emit('LOAD_ARTICLES', flow)
+            this.emit<Flows>('LOAD_ARTICLES', flow)
         })
         this.feedModel.on('LOADED', () => {
             this.setArticles()

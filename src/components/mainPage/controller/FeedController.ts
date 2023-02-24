@@ -8,6 +8,7 @@ import {
     FireBaseAPIInstance,
     FirebaseStorage,
     Firestore,
+    getCountFromServer,
     getDoc,
     getDocs,
     getDownloadURL,
@@ -15,6 +16,7 @@ import {
     orderBy,
     query,
     ref,
+    setDoc,
     where,
 } from '@/utils/FireBaseAPI'
 import { QueryConstraint, DocumentReference, setDoc, serverTimestamp, updateDoc, arrayUnion } from 'firebase/firestore'
@@ -47,8 +49,7 @@ export class FeedController {
         this.auth = api.auth
         this.storage = api.storage
         this.view.on<Flows>('LOAD_ARTICLES', async (flow) => {
-            if (flow) this.feedModel.setFlow = flow
-            else this.feedModel.setFlow = Flows.All
+            this.feedModel.setFlow = flow
             this.feedModel.addArticles(await this.loadArticles())
         })
         this.articleView.on<string>('LOAD_POST', async (id) => {
