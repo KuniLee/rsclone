@@ -5,10 +5,8 @@ import { EditorModelInstance } from '@/components/editor/model/EditorModel'
 import {
     FireBaseAPI,
     Firestore,
-    addDoc,
     collection,
     ref,
-    uploadBytes,
     doc,
     setDoc,
     updateDoc,

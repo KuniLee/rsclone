@@ -1,9 +1,6 @@
 import blocksPopup from '../templates/textEditorBlocksPopup.hbs'
-import Dictionary, { language } from '@/utils/dictionary'
-import { PageModel } from '@/components/mainPage/model/PageModel'
+import { language } from '@/utils/dictionary'
 import dictionary from '@/utils/dictionary'
-
-type editorPopupEvents = 'ITEM_INSERT'
 
 export class EditorBlocks {
     private blocks: (() => DocumentFragment)[]
@@ -28,7 +25,6 @@ export class EditorBlocks {
             const content = el.call(this)
             template.append(content)
         })
-        console.log(template.children)
         return template.children
     }
 

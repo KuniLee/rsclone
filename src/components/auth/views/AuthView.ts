@@ -291,10 +291,6 @@ export class AuthView extends EventEmitter {
         }
     }
 
-    show404page() {
-        this.mainPageContainer.innerText = '404'
-    }
-
     private renderHeader() {
         const header = document.createElement('header')
         header.className = 'border-solid border-b border-color-border-header'
@@ -312,10 +308,6 @@ export class AuthView extends EventEmitter {
 
     private show() {
         document.body.append(this.headerEl, this.mainPageContainer, this.footerEl)
-    }
-
-    private openRegistrationForm() {
-        console.log('test')
     }
 
     emit<T>(event: ItemViewEventsName, arg?: T, data?: AuthViewTypes) {

@@ -1,15 +1,10 @@
-import { BlocksType, ParsedData } from 'types/types'
+import { ParsedData } from 'types/types'
 import EventEmitter from 'events'
-import { Flows, Paths } from 'types/enums'
-import { URLParams } from 'types/interfaces'
-import { ParsedQuery } from 'query-string'
 
 type EditorModelEventsName = 'CHANGE_PAGE' | '404' | 'ARTICLE_SAVED'
 export type EditorModelInstance = InstanceType<typeof EditorModel>
 
 export class EditorModel extends EventEmitter {
-    public search: ParsedQuery<string> = {}
-
     constructor() {
         super()
     }

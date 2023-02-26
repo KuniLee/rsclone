@@ -1,6 +1,6 @@
-import { CommentInfo } from './../types/types'
+import { CommentInfo } from 'types/types'
 import { initializeApp } from 'firebase/app'
-import { getStorage, ref, uploadBytes, getDownloadURL, uploadString } from 'firebase/storage'
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import {
     query,
     getFirestore,
@@ -167,13 +167,6 @@ export class FireBaseAPI extends EventEmitter {
             .catch((err) => {
                 return err
             })
-    }
-
-    async uploadPreviewImage(articleId: string, image: string) {
-        const imageRef = ref(this.storage, `articles/${articleId}/previewImage`)
-        uploadString(imageRef, image).then((snapshot) => {
-            return snapshot
-        })
     }
 
     emit<T>(event: FirebaseEvents, arg?: T) {

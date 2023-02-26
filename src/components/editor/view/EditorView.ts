@@ -91,7 +91,6 @@ export class EditorView extends EventEmitter {
             if (savedArticle) {
                 const fullDate = new Date(Number(savedArticle.time))
                 this.savedBlocks = savedArticle.blocks
-                console.log(this.savedBlocks)
                 dateTime =
                     (fullDate.getHours() < 10 ? '0' : '') +
                     fullDate.getHours() +
@@ -257,7 +256,6 @@ export class EditorView extends EventEmitter {
                         ?.value
                     const imageSrc = image ? image.getAttribute('src') : ''
                     const objectPosition = image.style.objectPosition?.split(' ')
-                    console.log(objectPosition)
                     const imageSrcResult = imageSrc ?? ''
                     const textButtonValue = buttonText.value
                     const preview: ParsedPreviewArticle = {
@@ -279,7 +277,6 @@ export class EditorView extends EventEmitter {
                         translateLink: translateLink.value,
                         isTranslate: translateCheckbox.checked,
                     }
-                    console.log(result)
                     this.emit('ARTICLE_PARSED', undefined, result)
                 }
             })
@@ -498,7 +495,6 @@ export class EditorView extends EventEmitter {
         const item = el.closest('.list') as HTMLElement
         const value = el.textContent
         if (value) {
-            console.log(1)
             this.addNewParagraph(el)
         } else {
             if (listParagraphs) {
@@ -1387,7 +1383,6 @@ export class EditorView extends EventEmitter {
         })
         blocks.forEach((el, index) => {
             if (editor) {
-                console.log(el)
                 if (el.type === 'title') {
                     const header = document.querySelector('.articleHeader') as HTMLElement
                     if (header) {
@@ -1425,7 +1420,6 @@ export class EditorView extends EventEmitter {
                                     if (elementsList) {
                                         const lastChild = elementsList.lastElementChild as HTMLElement
                                         if (lastChild) {
-                                            console.log(lastChild, elementsList, el.value)
                                             this.addNewParagraph(
                                                 lastChild,
                                                 el.value && typeof el.value === 'string' ? el.value : ''
