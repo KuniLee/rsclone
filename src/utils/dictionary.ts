@@ -23,6 +23,7 @@ const buttons: Record<string, language> = {
     Save: { ru: 'Cохранить изменения', en: 'Save changes' },
     Upload: { ru: 'Загрузить', en: 'Upload' },
     Remove: { ru: 'Удалить', en: 'Remove' },
+    loadMore: { ru: 'Ещё', en: 'More' },
 }
 
 const popupSettings: Record<string, language> = {
@@ -166,6 +167,7 @@ const PostPage: Record<string, language> = {
     hard: { ru: 'Сложно', en: 'Hard' },
     medium: { ru: 'Средне', en: 'Medium' },
     easy: { ru: 'Просто', en: 'Easy' },
+    noMoreArticles: { ru: 'Статей больше нет', en: 'No more articles' },
 }
 
 const Comments: Record<string, language> = {

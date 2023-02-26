@@ -54,7 +54,7 @@ export class ProfileController {
     }
 
     private async loadArticles(id: User['uid']) {
-        const queryConstants: QueryConstraint[] = [where('userId', '==', id), orderBy('createdAt', 'desc'), limit(5)]
+        const queryConstants: QueryConstraint[] = [where('userId', '==', id), orderBy('createdAt', 'desc')]
         const articlesRef = collection(this.db, 'articles')
         const q = query(articlesRef, ...queryConstants)
         const querySnapshot = await getDocs(q)

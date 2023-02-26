@@ -22,16 +22,19 @@ export class Router extends EventEmitter {
                 this.emit<URLParams>('ROUTE', this.getParams())
             }
         })
-        model.on('CHANGE_PAGE', () => {
-            const { path, search } = this.model
-            const oldParams = this.createPathQuery(this.getParams())
-            const newParams = this.createPathQuery({ path, search })
-            if (!this.loaded) {
-                this.replace(newParams)
-                this.loaded = true
-            } else if (oldParams === newParams) this.replace(newParams)
-            else this.push(newParams)
-        })
+        model.on('CHANGE_PAGE', this.change.bind(this))
+        model.on('SHOW_FEED', this.change.bind(this))
+    }
+
+    private change() {
+        const { path, search } = this.model
+        const oldParams = this.createPathQuery(this.getParams())
+        const newParams = this.createPathQuery({ path, search })
+        if (!this.loaded) {
+            this.replace(newParams)
+            this.loaded = true
+        } else if (oldParams === newParams) this.replace(newParams)
+        else this.push(newParams)
     }
 
     getPathArray(url: string) {
