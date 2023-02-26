@@ -74,6 +74,10 @@ export type NewArticleData = {
     isTranslate?: boolean
     translateAuthor?: string
     translateLink?: string
+    createdAt?: {
+        seconds: number
+        nanoseconds: number
+    }
 }
 
 export type CommentInfo = {

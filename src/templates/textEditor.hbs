@@ -14,7 +14,7 @@
           <img class='object-cover w-full h-full rounded' src="{{userAvatar}}" alt="">
         </div>
         <p class="mr-[10px]">{{userName}}</p>
-        <p class="mr-[10px]">{{neverPublish}}</p>
+        <p class="mr-[10px] time-published">{{neverPublish}}</p>
       </div>
       <div class="relative textEditor flex-grow">
         <div class="menu absolute w-[220px] bg-white shadow left-[20px] z-10 py-[10px] max-h-[250px] overflow-y-scroll" hidden>
@@ -77,11 +77,11 @@
             <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>{{language}}</h3>
             <div class="flex">
               <div class="border-[1px] rounded-[3px] border-[#d5dddf] flex transition-colors ease-out duration-300">
-                <input type="radio" name="lang" value="ru" id="lang-ru" class="hidden editor__type-radio" checked>
+                <input type="radio" name="lang" value="ru" id="lang-ru" class="lang-check__ru hidden editor__type-radio" checked>
                 <label for="lang-ru" class="editor__radio-label editor__type-label">
                   <span>{{languageButtonRu}}</span>
                 </label>
-                <input type="radio" name="lang" value="en" id="lang-en" class="hidden editor__type-radio">
+                <input type="radio" name="lang" value="en" id="lang-en" class="lang-check__en hidden editor__type-radio">
                 <label for="lang-en" class="editor__radio-label editor__type-label">
                   <span>{{languageButtonEn}}</span>
                 </label>
@@ -97,6 +97,8 @@
             <div>
               <select-pure default-label="{{flowsHint}}"
                 class="flows-input w-full rounded-[3px] m-0 text-[14px] outline-0" name="flow-select" id="flow-select"
+                           name = 'flows'
+                           id="flows"
                 multiple>
                 {{#each flows}}
                 <option-pure value="{{this}}">{{this}}</option-pure>

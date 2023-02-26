@@ -15,7 +15,8 @@ import {
     serverTimestamp,
     getDoc,
 } from '@/utils/FireBaseAPI'
-import { FirebaseStorage, uploadString } from 'firebase/storage'
+import { FirebaseStorage, getDownloadURL, uploadString } from 'firebase/storage'
+import { NewArticleData } from 'types/types'
 
 export class EditorController {
     private router: RouterInstance
@@ -94,6 +95,23 @@ export class EditorController {
             const result = this.editorModel.saveArticleToLocalStorage(blocks)
             if (result) {
                 this.editorModel.updateTimeLocalSaved()
+            }
+        })
+        view.on('GET_ARTICLE', async (id) => {
+            try {
+                const docRef = await getDoc(doc(this.db, `articles/${id}`))
+                const article = (await docRef.data()) as NewArticleData
+                const index = 0
+                for (const el of article.blocks) {
+                    if (el.type === 'image') {
+                        el.imageSrc = await getDownloadURL(ref(this.storage, el.imageSrc))
+                    }
+                }
+                article.preview.image = await getDownloadURL(ref(this.storage, article.preview.image))
+                this.editorModel.getArticle(article)
+            } catch (err) {
+                this.editorModel.getArticle()
+                console.log(err)
             }
         })
     }

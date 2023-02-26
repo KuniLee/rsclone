@@ -118,9 +118,9 @@ export class ProfileView extends EventEmitter {
                 })
                 buttonsContainer.classList.add('flex', 'justify-between')
                 buttonsContainer.appendChild(template.content)
-                this.addListenerToEditButton()
             }
         })
+        this.addListenerToEditButton()
     }
 
     private addListenerToEditButton() {

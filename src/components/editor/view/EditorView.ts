@@ -19,10 +19,12 @@ import delimiterTemplate from '@/templates/textEditorDelimeterTemplate.hbs'
 import numberedListTemplate from '@/templates/textEditorNumberListTemplate.hbs'
 import unorderedListTemplate from '@/templates/textEditorUnorderedListTemplate.hbs'
 import listElementTemplate from '@/templates/textEditorListElement.hbs'
-import { SelectPure } from 'select-pure/lib/components'
+import { OptionPure, SelectPure } from 'select-pure/lib/components'
 import dictionary from '@/utils/dictionary'
+import preloader from '@/templates/preloaderModal.hbs'
+import { OptionPureElement } from 'select-pure/lib/models'
 
-type ItemViewEventsName = 'GOTO' | 'ARTICLE_PARSED' | 'SAVE_ARTICLE_TO_LOCALSTORAGE'
+type ItemViewEventsName = 'GOTO' | 'ARTICLE_PARSED' | 'SAVE_ARTICLE_TO_LOCALSTORAGE' | 'GET_ARTICLE'
 
 export type EditorViewInstance = InstanceType<typeof EditorView>
 
@@ -51,11 +53,27 @@ export class EditorView extends EventEmitter {
         this.savedBlocks = [] as Array<BlocksType>
         this.blocksPopup = new EditorBlocks(this.lang)
         this.pageModel.on('CHANGE_PAGE', () => {
-            if (this.pageModel.path[0] === Paths.Sandbox && this.pageModel.path[1] === Sandbox.New) {
-                if (this.pageModel.user) {
-                    this.buildPage()
+            if (
+                (this.pageModel.path[0] === Paths.Sandbox && this.pageModel.path[1] === Sandbox.New) ||
+                (this.pageModel.path[0] === Paths.Edit && this.pageModel.path[1])
+            ) {
+                if (this.pageModel.path[0] === Paths.Sandbox) {
+                    if (this.pageModel.user) {
+                        this.buildPage()
+                    } else {
+                        this.showAuthFail()
+                    }
                 } else {
-                    this.showAuthFail()
+                    const main = document.querySelector('main')
+                    if (main instanceof HTMLElement) {
+                        const template = document.createElement('template')
+                        template.innerHTML = preloader({})
+                        document.body.append(template.content)
+                        if (this.pageModel.user) {
+                            this.buildPage()
+                        }
+                    }
+                    this.emit('GET_ARTICLE', this.pageModel.path[1].split('/')[1])
                 }
             }
         })
@@ -63,6 +81,13 @@ export class EditorView extends EventEmitter {
             if (typeof arg === 'number') {
                 this.showLastArticleSaveMessage(arg)
             }
+        })
+        this.editorModel.on('ARTICLE_RECEIVED', (arg) => {
+            this.parseData(arg as NewArticleData)
+        })
+        this.editorModel.on('ARTICLE_NOT_RECEIVED', () => {
+            this.showAuthFail()
+            document.querySelector('.modal-loader')?.remove()
         })
     }
 
@@ -79,6 +104,26 @@ export class EditorView extends EventEmitter {
         }, 15000)
     }
 
+    private getParsedTime(date: Date) {
+        return (
+            (date.getHours() < 10 ? '0' : '') +
+            date.getHours() +
+            ':' +
+            (date.getMinutes() < 10 ? '0' : '') +
+            date.getMinutes()
+        )
+    }
+
+    private getParsedDate(date: Date) {
+        return (
+            (date.getDate() < 10 ? '0' : '') +
+            date.getDate() +
+            '/' +
+            (date.getMonth() + 1 < 10 ? '0' : '') +
+            (date.getMonth() + 1)
+        )
+    }
+
     private async buildPage() {
         const main = document.querySelector('main')
         const flows = Object.keys(Flows)
@@ -92,18 +137,8 @@ export class EditorView extends EventEmitter {
                 const fullDate = new Date(Number(savedArticle.time))
                 this.savedBlocks = savedArticle.blocks
                 console.log(this.savedBlocks)
-                dateTime =
-                    (fullDate.getHours() < 10 ? '0' : '') +
-                    fullDate.getHours() +
-                    ':' +
-                    (fullDate.getMinutes() < 10 ? '0' : '') +
-                    fullDate.getMinutes()
-                date =
-                    (fullDate.getDate() < 10 ? '0' : '') +
-                    fullDate.getDate() +
-                    '/' +
-                    (fullDate.getMonth() + 1 < 10 ? '0' : '') +
-                    (fullDate.getMonth() + 1)
+                dateTime = this.getParsedTime(fullDate)
+                date = this.getParsedDate(fullDate)
             }
             main.innerHTML = textEditor({
                 userName: this.pageModel.user.displayName,
@@ -1380,25 +1415,34 @@ export class EditorView extends EventEmitter {
         }
     }
 
+    restoreTitle(value: string) {
+        const header = document.querySelector('.articleHeader') as HTMLElement
+        if (header) {
+            header.textContent = ''
+            header.textContent = value ? value : ''
+            const parent = header.parentElement
+            if (parent) {
+                if (value) {
+                    parent.classList.add('before:hidden')
+                }
+            }
+        }
+    }
+
     restoreArticle(blocks: Array<BlocksType>) {
         const editor = document.querySelector('.textEditor') as HTMLElement
-        editor.querySelectorAll('.editorElement')?.forEach((el) => {
-            el.remove()
-        })
+        if (document.querySelector('.editorElement')) {
+            editor.querySelectorAll('.editorElement')?.forEach((el) => {
+                el.remove()
+            })
+        }
         blocks.forEach((el, index) => {
             if (editor) {
-                console.log(el)
                 if (el.type === 'title') {
-                    const header = document.querySelector('.articleHeader') as HTMLElement
-                    if (header) {
-                        header.textContent = ''
-                        header.textContent = el.value && typeof el.value === 'string' ? el.value : ''
-                        const parent = header.parentElement
-                        if (parent) {
-                            if (el.value) {
-                                parent.classList.add('before:hidden')
-                            }
-                        }
+                    if (typeof el.value === 'string') {
+                        this.restoreTitle(el.value)
+                    } else {
+                        this.restoreTitle('')
                     }
                 } else {
                     const type = el.type === 'quotes' ? 'quote' : el.type
@@ -1415,6 +1459,9 @@ export class EditorView extends EventEmitter {
                                     newItem.classList.add('before:hidden')
                                 }
                             }
+                        }
+                        if (newItem.classList.contains('headerElement')) {
+                            newItem.dataset.type = el.mod
                         }
                         if (newItem.classList.contains('list')) {
                             if (Array.isArray(el.value)) {
@@ -1531,6 +1578,104 @@ export class EditorView extends EventEmitter {
         const lastSaveWindow = document.querySelector('.save-information-block') as HTMLElement
         if (lastSaveWindow) {
             lastSaveWindow.remove()
+        }
+    }
+
+    parseData(obj: NewArticleData) {
+        this.restoreArticle(obj.blocks)
+        this.restoreTitle(obj.title)
+        this.checkArticle()
+        if (obj.createdAt) {
+            const date = new Date(obj.createdAt.seconds * 1000 + obj.createdAt.nanoseconds / 1000000)
+            this.changeTimePublished(date)
+        } else {
+            console.log('empty obj.createdAt')
+        }
+        const langCheckbox = document.querySelector(`.lang-check__${obj.lang}`)
+        if (langCheckbox instanceof HTMLInputElement) {
+            langCheckbox.checked = true
+        }
+        document.querySelectorAll('option-pure')?.forEach((el) => {
+            const element = el as OptionPureElement
+            if (obj.flows.includes(element.getOption().value)) {
+                element.select()
+            }
+        })
+        const keywords = obj.keywords.join(', ')
+        const keywordsInput = document.querySelector('.keywords-input')
+        if (keywordsInput instanceof HTMLInputElement) {
+            keywordsInput.value = keywords
+        }
+        const isPublication = obj.isTranslate
+        if (isPublication) {
+            const isTranslateCheckbox = document.querySelector('.isTranslate-checkbox')
+            const isTranslate = document.querySelector('.isTranslate')
+            if (isTranslateCheckbox instanceof HTMLInputElement) {
+                const ev = new Event('change')
+                isTranslateCheckbox.checked = true
+                if (isTranslate) {
+                    isTranslate.dispatchEvent(ev)
+                }
+                const author = document.querySelector('.translate__author')
+                if (author instanceof HTMLInputElement) {
+                    author.value = obj.translateAuthor ?? ''
+                }
+                const link = document.querySelector('.translate__link')
+                if (link instanceof HTMLInputElement) {
+                    link.value = obj.translateLink ?? ''
+                }
+            }
+        }
+        document.querySelectorAll('input[name="сomplexity"]')?.forEach((el) => {
+            const element = el as HTMLInputElement
+            console.log(element.value === obj.difficult)
+            if (element.value === obj.difficult) {
+                element.checked = true
+            }
+        })
+        if (obj.preview.image) {
+            const previewImage = document.querySelector('.preview-image') as HTMLImageElement
+            const previewControls = document.querySelector('.preview-image-controls') as HTMLElement
+            const textPreview = document.querySelector('.load-image-preview-text')
+            if (previewImage && previewControls && textPreview) {
+                previewImage.src = obj.preview.image
+                previewControls.hidden = false
+                textPreview.classList.add('hidden')
+                previewImage.classList.remove('hidden')
+            }
+        }
+
+        const previewEditor = document.querySelector('.textPreviewEditor') as HTMLElement
+        if (previewEditor) {
+            obj.preview.previewBlocks?.forEach((el) => {
+                this.previewEditorBuilded = true
+                if (typeof el.value === 'string') {
+                    this.addNewField(previewEditor, el.value)
+                }
+            })
+            this.addNewField(previewEditor)
+            if (previewEditor.children.length > 1) {
+                previewEditor.firstElementChild?.remove()
+            }
+            this.hidePlaceholder(previewEditor)
+        }
+        const newBtnInput = document.querySelector('.buttonTextInput')
+        if (newBtnInput instanceof HTMLInputElement) {
+            const ev = new KeyboardEvent('input')
+            newBtnInput.value = obj.preview.nextBtnText
+            newBtnInput.dispatchEvent(ev)
+        }
+        this.checkSettings()
+        document.querySelector('.modal-loader')?.remove()
+    }
+
+    private changeTimePublished(date: Date) {
+        const span = document.createElement('span')
+        span.textContent = `Документ был создан ${this.getParsedDate(date)} в ${this.getParsedTime(date)}`
+        const publishedMessage = document.querySelector('.time-published')
+        if (publishedMessage) {
+            publishedMessage.innerHTML = ''
+            publishedMessage.append(span)
         }
     }
 
