@@ -36,6 +36,7 @@ export class AuthController {
         this.view.on('SIGN_UP', (arg, data) => {
             this.signUpUser(data)
         })
+        this.model.changePage(this.router.getParams())
     }
 
     private async signInUser(email: string, password: string) {
