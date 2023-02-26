@@ -67,6 +67,7 @@ const ProfilePage: Record<string, language> = {
     Information: { ru: 'Информация', en: 'Information' },
     Registered: { ru: 'Зарегистрирован', en: 'Registered' },
     Posts: { ru: 'Публикации', en: 'Posts' },
+    edit: { ru: 'Редактировать', en: 'Edit article' },
 }
 
 const PageNotFound: Record<string, language> = {

@@ -6,6 +6,7 @@ import profilePageTemplate from '@/templates/profilePage.hbs'
 import Dictionary, { getWords } from '@/utils/dictionary'
 import emptyAvatar from '@/assets/icons/avatar.svg'
 import preloader from '@/templates/preloader.html'
+import editButton from '@/templates/editButtonTemplate.hbs'
 import { User } from 'firebase/auth'
 import { Preview } from '@/utils/previewBuilder'
 
@@ -39,6 +40,7 @@ export class ProfileView extends EventEmitter {
             this.createArticles()
             this.renderArticles()
         })
+        console.log(this.pageModel.user)
     }
 
     emit<T>(event: ProfileViewEventsName, arg?: T) {
@@ -93,6 +95,45 @@ export class ProfileView extends EventEmitter {
 
     private renderArticles() {
         const articlesListEl = document.querySelector('.articles-list')
-        if (articlesListEl) articlesListEl.replaceChildren(...this.articles.map((article) => article.render()))
+        if (articlesListEl) {
+            articlesListEl.replaceChildren(
+                ...this.articles.map((article) => {
+                    return article.render()
+                })
+            )
+            if (this.pageModel.path[1].slice(1) === this.pageModel.user.displayName) {
+                this.addEditButton()
+            }
+        }
+    }
+    private addEditButton() {
+        document.querySelectorAll('article')?.forEach((el) => {
+            const buttonsContainer = el.querySelector('.articles__buttons')
+            if (buttonsContainer) {
+                const template = document.createElement('template')
+                console.log(el.dataset.id)
+                template.innerHTML = editButton({
+                    edit: Dictionary.ProfilePage.edit[this.pageModel.lang],
+                    id: el.dataset.id,
+                })
+                buttonsContainer.classList.add('flex', 'justify-between')
+                buttonsContainer.appendChild(template.content)
+                this.addListenerToEditButton()
+            }
+        })
+    }
+
+    private addListenerToEditButton() {
+        document.querySelectorAll('.article__edit')?.forEach((el) => {
+            el.addEventListener('click', (e) => {
+                e.preventDefault()
+                const href = el
+                    .getAttribute('href')
+                    ?.split('/')
+                    .map((el) => '/' + el)
+                console.log(href)
+                this.emit('GO_TO', { path: href })
+            })
+        })
     }
 }
