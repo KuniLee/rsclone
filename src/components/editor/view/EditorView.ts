@@ -192,6 +192,9 @@ export class EditorView extends EventEmitter {
                 backToPublication: this.dictionary.BackToPublication[this.lang],
                 sendArticle: this.dictionary.SendArticle[this.lang],
                 words: getWords(Dictionary.Aside, this.pageModel.lang),
+                removeCover: this.dictionary.RemoveCover[this.lang],
+                changePosition: this.dictionary.ChangePosition[this.lang],
+                savePosition: this.dictionary.SavePosition[this.lang],
             })
         }
         const popupMenu = document.querySelector('.menu') as HTMLElement
@@ -1692,7 +1695,9 @@ export class EditorView extends EventEmitter {
 
     private changeTimePublished(date: Date) {
         const span = document.createElement('span')
-        span.textContent = `Документ был создан ${this.getParsedDate(date)} в ${this.getParsedTime(date)}`
+        span.textContent = `${this.dictionary.documentCreated[this.lang]} ${this.getParsedDate(
+            date
+        )} ${this.getParsedTime(date)}`
         const publishedMessage = document.querySelector('.time-published')
         if (publishedMessage) {
             publishedMessage.innerHTML = ''

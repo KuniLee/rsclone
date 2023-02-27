@@ -140,6 +140,10 @@ const EditorPage: Record<string, language> = {
     AddImageText: { ru: 'Добавить картинку', en: 'Add image' },
     AddFigcaptionText: { ru: 'Добавьте подпись к изображению', en: 'Image title' },
     LoadAnotherImage: { ru: 'Загрузить другую', en: 'Upload new one' },
+    documentCreated: { ru: 'Документ был создан ', en: 'Article was created ' },
+    RemoveCover: { ru: 'Удалить обложку', en: 'Remove cover' },
+    ChangePosition: { ru: 'Изменить позицию', en: 'Edit position' },
+    SavePosition: { ru: 'Сохранить позицию', en: 'Save position' },
 }
 
 const Aside: Record<string, language> = {
