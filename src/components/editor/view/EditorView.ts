@@ -24,7 +24,12 @@ import dictionary from '@/utils/dictionary'
 import preloader from '@/templates/preloaderModal.hbs'
 import { OptionPureElement } from 'select-pure/lib/models'
 
-type ItemViewEventsName = 'GOTO' | 'ARTICLE_PARSED' | 'SAVE_ARTICLE_TO_LOCALSTORAGE' | 'GET_ARTICLE'
+type ItemViewEventsName =
+    | 'GOTO'
+    | 'ARTICLE_PARSED'
+    | 'SAVE_ARTICLE_TO_LOCALSTORAGE'
+    | 'GET_ARTICLE'
+    | 'EDIT_ARTICLE_COMPLETE'
 
 export type EditorViewInstance = InstanceType<typeof EditorView>
 
@@ -39,6 +44,7 @@ export class EditorView extends EventEmitter {
     private isSaveStart: boolean
     private savedBlocks: Array<BlocksType>
     private onSettingsPage: boolean
+    private isEdit: boolean
 
     constructor(editorModel: EditorModel, pageModel: PageModelInstance) {
         super()
@@ -47,6 +53,7 @@ export class EditorView extends EventEmitter {
         this.isGlobalListener = false
         this.previewEditorBuilded = false
         this.isSaveStart = false
+        this.isEdit = false
         this.onSettingsPage = false
         this.dictionary = dictionary.EditorPage
         this.lang = this.pageModel.lang
@@ -58,12 +65,14 @@ export class EditorView extends EventEmitter {
                 (this.pageModel.path[0] === Paths.Edit && this.pageModel.path[1])
             ) {
                 if (this.pageModel.path[0] === Paths.Sandbox) {
+                    this.isEdit = false
                     if (this.pageModel.user) {
                         this.buildPage()
                     } else {
                         this.showAuthFail()
                     }
                 } else {
+                    this.isEdit = true
                     const main = document.querySelector('main')
                     if (main instanceof HTMLElement) {
                         const template = document.createElement('template')
@@ -315,7 +324,11 @@ export class EditorView extends EventEmitter {
                         isTranslate: translateCheckbox.checked,
                     }
                     console.log(result)
-                    this.emit('ARTICLE_PARSED', undefined, result)
+                    if (!this.isEdit) {
+                        this.emit('ARTICLE_PARSED', undefined, result)
+                    } else {
+                        this.emit('EDIT_ARTICLE_COMPLETE', this.pageModel.path[1].split('/')[1], result)
+                    }
                 }
             })
             this.onSettingsPage = true
@@ -770,10 +783,12 @@ export class EditorView extends EventEmitter {
                     e.stopImmediatePropagation()
                 }
             }
-            if (el.closest('.imageContainer') && !textElement.classList.contains('image-added')) {
+            if (el.closest('.imageContainer')) {
                 const inputField = textElement.querySelector('.image-elem__input') as HTMLInputElement
-                const event = new MouseEvent('click', { bubbles: false })
-                inputField?.dispatchEvent(event)
+                if (!textElement.classList.contains('image-added')) {
+                    const event = new MouseEvent('click', { bubbles: false })
+                    inputField?.dispatchEvent(event)
+                }
                 inputField?.addEventListener('change', (e) => {
                     const target = e.target as HTMLInputElement
                     if (target) {
@@ -1595,6 +1610,7 @@ export class EditorView extends EventEmitter {
         if (langCheckbox instanceof HTMLInputElement) {
             langCheckbox.checked = true
         }
+        const selectPure = document.querySelector('select-pure') as SelectPure
         document.querySelectorAll('option-pure')?.forEach((el) => {
             const element = el as OptionPureElement
             if (obj.flows.includes(element.getOption().value)) {
@@ -1642,6 +1658,11 @@ export class EditorView extends EventEmitter {
                 previewControls.hidden = false
                 textPreview.classList.add('hidden')
                 previewImage.classList.remove('hidden')
+            }
+            if (obj.preview.imagePosition && obj.preview.imagePosition.length) {
+                const x = obj.preview.imagePosition[0]
+                const y = obj.preview.imagePosition[1]
+                previewImage.style.objectPosition = `${x} ${y}`
             }
         }
 
