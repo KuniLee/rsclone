@@ -7,10 +7,12 @@ import Dictionary, { getWords } from '@/utils/dictionary'
 import emptyAvatar from '@/assets/icons/avatar.svg'
 import preloader from '@/templates/preloader.html'
 import editButton from '@/templates/editButtonTemplate.hbs'
+import preload from '@/templates/preloaderModal.hbs'
+import editDeleteTemplate from '@/templates/editAndDeleteArticleButtonsTemplate.hbs'
 import { User } from 'firebase/auth'
 import { Preview } from '@/utils/previewBuilder'
 
-type ProfileViewEventsName = 'GOTO' | 'LOAD_USER_INFO' | 'LOAD_ARTICLES' | 'GO_TO'
+type ProfileViewEventsName = 'GOTO' | 'LOAD_USER_INFO' | 'LOAD_ARTICLES' | 'GO_TO' | 'DELETE_ARTICLE'
 
 export type ProfileViewInstance = InstanceType<typeof ProfileView>
 
@@ -110,8 +112,7 @@ export class ProfileView extends EventEmitter {
             const buttonsContainer = el.querySelector('.articles__buttons')
             if (buttonsContainer) {
                 const template = document.createElement('template')
-                template.innerHTML = editButton({
-                    edit: Dictionary.ProfilePage.edit[this.pageModel.lang],
+                template.innerHTML = editDeleteTemplate({
                     id: el.dataset.id,
                 })
                 buttonsContainer.classList.add('flex', 'justify-between')
@@ -119,6 +120,7 @@ export class ProfileView extends EventEmitter {
             }
         })
         this.addListenerToEditButton()
+        this.addListenerToDeleteButton()
     }
 
     private addListenerToEditButton() {
@@ -130,6 +132,40 @@ export class ProfileView extends EventEmitter {
                     ?.split('/')
                     .map((el) => '/' + el)
                 this.emit('GO_TO', { path: href })
+            })
+        })
+    }
+
+    private addListenerToDeleteButton() {
+        document.querySelectorAll('.article__delete')?.forEach((el) => {
+            el.addEventListener('click', (e) => {
+                e.preventDefault()
+                let message = ''
+                if (this.pageModel.lang === 'ru') {
+                    message = 'Вы действительно хотите удалить статью?'
+                } else {
+                    message = 'Are you sure you want to delete the article?'
+                }
+                const ask = confirm(message)
+                if (ask) {
+                    const article = el.closest('article')
+                    if (article instanceof HTMLElement) {
+                        const id = article.dataset.id
+                        console.log(id)
+                        if (id) {
+                            const main = document.querySelector('main')
+                            if (main instanceof HTMLElement) {
+                                const template = document.createElement('template')
+                                template.innerHTML = preload({})
+                                document.body.append(template.content)
+                                if (this.pageModel.user) {
+                                    this.buildPage()
+                                }
+                            }
+                            this.emit('DELETE_ARTICLE', id)
+                        }
+                    }
+                }
             })
         })
     }
