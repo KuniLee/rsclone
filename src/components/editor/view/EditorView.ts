@@ -255,15 +255,16 @@ export class EditorView extends EventEmitter {
                 }
             })
             buttonText.addEventListener('input', () => {
-                const value = buttonText.value
+                let value = buttonText.value
+                console.log(value.length)
+                if (value.length > 42) {
+                    buttonText.value = value.slice(0, 43 - 1)
+                    value = value.slice(0, 43 - 1)
+                }
                 const readMoreTextLengthNumber = document.querySelector('.read-more-text-length')
                 if (readMoreTextLengthNumber) {
                     const valueLength = Number(value.length)
-                    if (42 - valueLength >= 0) {
-                        readMoreTextLengthNumber.textContent = String(42 - valueLength)
-                    } else {
-                        buttonText.value
-                    }
+                    readMoreTextLengthNumber.textContent = String(42 - valueLength)
                 }
             })
             const ev = new Event('input')
