@@ -780,6 +780,13 @@ export class EditorView extends EventEmitter {
                     e.stopImmediatePropagation()
                 }
             }
+            if (textElement.classList.contains('imageElement')) {
+                const inputField = textElement.querySelector('.image-elem__input') as HTMLInputElement
+                if (!textElement.classList.contains('image-added')) {
+                    const event = new MouseEvent('click', { bubbles: false })
+                    inputField?.dispatchEvent(event)
+                }
+            }
             const plusBlock = el.closest('.plus')
             if (plusBlock) {
                 const menu = document.querySelector('.menu') as HTMLElement
