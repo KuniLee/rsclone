@@ -15,10 +15,20 @@ import headingBlockTemplate from '@/templates/textEditorHeaderTemplate.hbs'
 import quoteBlockTemplate from '@/templates/textEditorQuoteTemplate.hbs'
 import emptyParagraph from '@/templates/paragraph.hbs'
 import imageBlockTemplate from '@/templates/textEditorImageTemplate.hbs'
+import delimiterTemplate from '@/templates/textEditorDelimeterTemplate.hbs'
+import numberedListTemplate from '@/templates/textEditorNumberListTemplate.hbs'
+import unorderedListTemplate from '@/templates/textEditorUnorderedListTemplate.hbs'
+import listElementTemplate from '@/templates/textEditorListElement.hbs'
 import { SelectPure } from 'select-pure/lib/components'
 import dictionary from '@/utils/dictionary'
+import preloader from '@/templates/preloaderModal.hbs'
 
-type ItemViewEventsName = 'GOTO' | 'ARTICLE_PARSED' | 'SAVE_ARTICLE_TO_LOCALSTORAGE'
+type ItemViewEventsName =
+    | 'GOTO'
+    | 'ARTICLE_PARSED'
+    | 'SAVE_ARTICLE_TO_LOCALSTORAGE'
+    | 'GET_ARTICLE'
+    | 'EDIT_ARTICLE_COMPLETE'
 
 export type EditorViewInstance = InstanceType<typeof EditorView>
 
@@ -29,10 +39,11 @@ export class EditorView extends EventEmitter {
     private previewEditorBuilded: boolean
     private blocksPopup: EditorBlocks
     private dictionary: Record<string, language>
-    private lang: 'ru' | 'en'
+    private readonly lang: 'ru' | 'en'
     private isSaveStart: boolean
     private savedBlocks: Array<BlocksType>
     private onSettingsPage: boolean
+    private isEdit: boolean
 
     constructor(editorModel: EditorModel, pageModel: PageModelInstance) {
         super()
@@ -41,17 +52,36 @@ export class EditorView extends EventEmitter {
         this.isGlobalListener = false
         this.previewEditorBuilded = false
         this.isSaveStart = false
+        this.isEdit = false
         this.onSettingsPage = false
         this.dictionary = dictionary.EditorPage
         this.lang = this.pageModel.lang
         this.savedBlocks = [] as Array<BlocksType>
         this.blocksPopup = new EditorBlocks(this.lang)
         this.pageModel.on('CHANGE_PAGE', () => {
-            if (this.pageModel.path[0] === Paths.Sandbox && this.pageModel.path[1] === Sandbox.New) {
-                if (this.pageModel.user) {
-                    this.buildPage()
+            if (
+                (this.pageModel.path[0] === Paths.Sandbox && this.pageModel.path[1] === Sandbox.New) ||
+                (this.pageModel.path[0] === Paths.Edit && this.pageModel.path[1])
+            ) {
+                if (this.pageModel.path[0] === Paths.Sandbox) {
+                    this.isEdit = false
+                    if (this.pageModel.user) {
+                        this.buildPage()
+                    } else {
+                        this.showAuthFail()
+                    }
                 } else {
-                    this.showAuthFail()
+                    this.isEdit = true
+                    const main = document.querySelector('main')
+                    if (main instanceof HTMLElement) {
+                        const template = document.createElement('template')
+                        template.innerHTML = preloader({})
+                        document.body.append(template.content)
+                        if (this.pageModel.user) {
+                            this.buildPage()
+                        }
+                    }
+                    this.emit('GET_ARTICLE', this.pageModel.path[1].split('/')[1])
                 }
             }
         })
@@ -60,19 +90,47 @@ export class EditorView extends EventEmitter {
                 this.showLastArticleSaveMessage(arg)
             }
         })
+        this.editorModel.on('ARTICLE_RECEIVED', (arg) => {
+            this.parseData(arg as NewArticleData)
+        })
+        this.editorModel.on('ARTICLE_NOT_RECEIVED', () => {
+            this.showAuthFail('editError')
+            document.querySelector('.modal-loader')?.remove()
+        })
     }
 
     private savePageToLocalStorage() {
         const editor = document.querySelector('.textEditor') as HTMLElement
         setInterval(() => {
             if (editor) {
-                if (!this.onSettingsPage) {
+                const mainEditor = document.querySelector('.mainEditor')
+                if (mainEditor instanceof HTMLElement && !mainEditor.classList.contains('hidden')) {
                     const obj = this.parseArticle(editor)
                     obj.time = Date.now()
                     this.emit('SAVE_ARTICLE_TO_LOCALSTORAGE', undefined, undefined, obj)
                 }
             }
         }, 15000)
+    }
+
+    private getParsedTime(date: Date) {
+        return (
+            (date.getHours() < 10 ? '0' : '') +
+            date.getHours() +
+            ':' +
+            (date.getMinutes() < 10 ? '0' : '') +
+            date.getMinutes()
+        )
+    }
+
+    private getParsedDate(date: Date) {
+        return (
+            (date.getDate() < 10 ? '0' : '') +
+            date.getDate() +
+            '/' +
+            (date.getMonth() + 1 < 10 ? '0' : '') +
+            (date.getMonth() + 1)
+        )
     }
 
     private async buildPage() {
@@ -84,22 +142,11 @@ export class EditorView extends EventEmitter {
             const savedArticle = await this.editorModel.getSavedArticle()
             let dateTime = ''
             let date = ''
-            if (savedArticle) {
+            if (savedArticle && !this.isEdit) {
                 const fullDate = new Date(Number(savedArticle.time))
                 this.savedBlocks = savedArticle.blocks
-                console.log(this.savedBlocks)
-                dateTime =
-                    (fullDate.getHours() < 10 ? '0' : '') +
-                    fullDate.getHours() +
-                    ':' +
-                    (fullDate.getMinutes() < 10 ? '0' : '') +
-                    fullDate.getMinutes()
-                date =
-                    (fullDate.getDate() < 10 ? '0' : '') +
-                    fullDate.getDate() +
-                    '/' +
-                    (fullDate.getMonth() + 1 < 10 ? '0' : '') +
-                    (fullDate.getMonth() + 1)
+                dateTime = this.getParsedTime(fullDate)
+                date = this.getParsedDate(fullDate)
             }
             main.innerHTML = textEditor({
                 userName: this.pageModel.user.displayName,
@@ -122,6 +169,7 @@ export class EditorView extends EventEmitter {
                 flowsHint: this.dictionary.FlowsHint[this.lang],
                 keywords: this.dictionary.Keywords[this.lang],
                 keywordsHint: this.dictionary.KeywordsHint[this.lang],
+                keywordsPlaceholder: this.dictionary.KeywordsPlaceholder[this.lang],
                 translation: this.dictionary.Translation[this.lang],
                 translationCheckText: this.dictionary.TranslationCheckboxText[this.lang],
                 translationAuthor: this.dictionary.TranslationAuthor[this.lang],
@@ -144,6 +192,13 @@ export class EditorView extends EventEmitter {
                 backToPublication: this.dictionary.BackToPublication[this.lang],
                 sendArticle: this.dictionary.SendArticle[this.lang],
                 words: getWords(Dictionary.Aside, this.pageModel.lang),
+                removeCover: this.dictionary.RemoveCover[this.lang],
+                changePosition: this.dictionary.ChangePosition[this.lang],
+                savePosition: this.dictionary.SavePosition[this.lang],
+                getSave: this.dictionary.GetSave[this.lang],
+                restore: this.dictionary.Restore[this.lang],
+                imageSizeError: this.dictionary.ImageSizeError[this.lang],
+                savedLocally: this.dictionary.SavedLocally[this.lang],
             })
         }
         const popupMenu = document.querySelector('.menu') as HTMLElement
@@ -186,7 +241,7 @@ export class EditorView extends EventEmitter {
             }
             const selectPure = document.querySelector('select-pure') as SelectPure
             if (selectPure) {
-                selectPure.addEventListener('change', (e) => {
+                selectPure.addEventListener('change', () => {
                     this.checkSettings()
                 })
             }
@@ -200,6 +255,20 @@ export class EditorView extends EventEmitter {
                     })
                 }
             })
+            buttonText.addEventListener('input', () => {
+                let value = buttonText.value
+                if (value.length > 42) {
+                    buttonText.value = value.slice(0, 43 - 1)
+                    value = value.slice(0, 43 - 1)
+                }
+                const readMoreTextLengthNumber = document.querySelector('.read-more-text-length')
+                if (readMoreTextLengthNumber) {
+                    const valueLength = Number(value.length)
+                    readMoreTextLengthNumber.textContent = String(42 - valueLength)
+                }
+            })
+            const ev = new Event('input')
+            buttonText.dispatchEvent(ev)
             this.addDrag(previewEditor)
         }
         document.querySelector('.isTranslate')?.addEventListener('change', () => {
@@ -239,7 +308,6 @@ export class EditorView extends EventEmitter {
                         ?.value
                     const imageSrc = image ? image.getAttribute('src') : ''
                     const objectPosition = image.style.objectPosition?.split(' ')
-                    console.log(objectPosition)
                     const imageSrcResult = imageSrc ?? ''
                     const textButtonValue = buttonText.value
                     const preview: ParsedPreviewArticle = {
@@ -261,17 +329,28 @@ export class EditorView extends EventEmitter {
                         translateLink: translateLink.value,
                         isTranslate: translateCheckbox.checked,
                     }
-                    console.log(result)
-                    this.emit('ARTICLE_PARSED', undefined, result)
+                    if (!this.isEdit) {
+                        this.emit('ARTICLE_PARSED', undefined, result)
+                    } else {
+                        this.emit('EDIT_ARTICLE_COMPLETE', this.pageModel.path[1].split('/')[1], result)
+                    }
                 }
             })
             this.onSettingsPage = true
             this.toggleEditorView()
+            window.scrollTo(0, 0)
         })
         document.querySelector('.restore-save-article')?.addEventListener('click', (e) => {
             e.preventDefault()
             document.querySelector('.save-information-block')?.remove()
             this.restoreArticle(this.savedBlocks)
+            const settings = document.querySelector('.editorSettings')
+            if (settings instanceof HTMLElement && !settings.classList.contains('hidden')) {
+                const button = document.querySelector('.backToEditor')
+                if (button instanceof HTMLButtonElement) {
+                    button.click()
+                }
+            }
         })
         document.querySelector('.backToEditor')?.addEventListener('click', (e) => {
             e.preventDefault()
@@ -440,7 +519,7 @@ export class EditorView extends EventEmitter {
         if (!this.isGlobalListener) {
             this.isGlobalListener = true
             const menu = document.querySelector('.menu') as HTMLElement
-            document.addEventListener('click', (el) => {
+            document.addEventListener('click', () => {
                 const modalOptionsList = document.querySelectorAll('.options__drop-menu')
                 modalOptionsList.forEach((el) => {
                     const element = el as HTMLElement
@@ -475,41 +554,44 @@ export class EditorView extends EventEmitter {
         }
     }
 
+    addSubParagraph(el: HTMLElement, editor: HTMLElement) {
+        const listParagraphs = el.parentElement as HTMLElement
+        const item = el.closest('.list') as HTMLElement
+        const value = el.textContent
+        if (value) {
+            this.addNewParagraph(el)
+        } else {
+            if (listParagraphs) {
+                if (listParagraphs.children.length !== 2) {
+                    this.deleteElement(el, editor)
+                } else {
+                    if (item) {
+                        this.deleteElement(item, editor)
+                    }
+                }
+            }
+            this.addNewField(editor)
+        }
+    }
+
     addTextInputListeners(el: HTMLElement, editor: HTMLElement) {
         const parent = el.parentNode as HTMLElement
         const menu = document.querySelector('.menu') as HTMLElement
         el.addEventListener('keypress', (e) => {
             const event = e as KeyboardEvent
-            const value = el.textContent
             if (event.key === 'Enter') {
                 e.preventDefault()
                 if (menu && menu.hidden) {
-                    if (!el.closest('.quoteElement')) {
+                    if (!el.closest('.list')) {
                         this.addNewField(editor)
                     }
-                    if (el.closest('.quoteElement')) {
-                        const listParagraphs = el.parentElement as HTMLElement
-                        const item = el.closest('.quoteElement') as HTMLElement
-                        if (value) {
-                            this.addNewParagraph(el)
-                        } else {
-                            if (listParagraphs) {
-                                if (listParagraphs.children.length !== 2) {
-                                    this.deleteElement(el, editor)
-                                } else {
-                                    if (item) {
-                                        this.deleteElement(item, editor)
-                                    }
-                                }
-                            }
-                            this.addNewField(editor)
-                        }
+                    if (el.closest('.list')) {
+                        this.addSubParagraph(el, editor)
                     }
                 }
             }
         })
-        el.addEventListener('input', (e) => {
-            const event = e as KeyboardEvent
+        el.addEventListener('input', () => {
             const target = el as HTMLElement
             const value = target.textContent
             if (parent) {
@@ -561,12 +643,12 @@ export class EditorView extends EventEmitter {
                     if (
                         parent.classList.contains('editorElement') &&
                         listOfElements.length !== 1 &&
-                        !parent.classList.contains('quoteElement')
+                        !parent.classList.contains('list')
                     ) {
                         this.deleteElement(parent, editor)
                         e.preventDefault()
                     }
-                    if (parent.classList.contains('quoteElement')) {
+                    if (parent.classList.contains('list')) {
                         const listParagraphs = el.parentElement as HTMLElement
                         e.preventDefault()
                         if (listParagraphs) {
@@ -630,7 +712,7 @@ export class EditorView extends EventEmitter {
                 }, 0)
             }
         })
-        el.addEventListener('focus', (e) => {
+        el.addEventListener('focus', () => {
             document.querySelectorAll('.focused')?.forEach((el) => el.classList.remove('focused'))
             document.querySelectorAll('.focusedItem')?.forEach((el) => el.classList.remove('focusedItem'))
             document.querySelectorAll('.plusOpen')?.forEach((el) => el.classList.remove('plusOpen'))
@@ -680,11 +762,13 @@ export class EditorView extends EventEmitter {
             const el = e.target as HTMLElement
             document.querySelectorAll('.focused')?.forEach((el) => el.classList.remove('focused'))
             document.querySelectorAll('.focusedItem')?.forEach((el) => el.classList.remove('focusedItem'))
-            el.closest('.editorElement')?.classList.add('focused')
-            el.closest('.editorElement')?.classList.add('focusedItem')
+            setTimeout(() => {
+                el.closest('.editorElement')?.classList.add('focused')
+                el.closest('.editorElement')?.classList.add('focusedItem')
+            })
             document.querySelectorAll('.open')?.forEach((el) => {
                 el.classList.remove('open')
-                ;(el as HTMLElement).hidden = true
+                    ; (el as HTMLElement).hidden = true
             })
             if (el.closest('.options__open-btn')) {
                 e.preventDefault()
@@ -693,6 +777,13 @@ export class EditorView extends EventEmitter {
                     dropMenu.hidden = false
                     dropMenu.classList.add('open')
                     e.stopImmediatePropagation()
+                }
+            }
+            if (textElement.classList.contains('imageElement')) {
+                const inputField = textElement.querySelector('.image-elem__input') as HTMLInputElement
+                if (!textElement.classList.contains('image-added')) {
+                    const event = new MouseEvent('click', { bubbles: false })
+                    inputField?.dispatchEvent(event)
                 }
             }
             const plusBlock = el.closest('.plus')
@@ -711,36 +802,38 @@ export class EditorView extends EventEmitter {
                     e.stopImmediatePropagation()
                 }
             }
-            if (el.closest('.imageContainer') && !textElement.classList.contains('image-added')) {
-                const inputField = textElement.querySelector('.image-elem__input') as HTMLInputElement
+        })
+        if (textElement.classList.contains('imageElement')) {
+            const inputField = textElement.querySelector('.image-elem__input') as HTMLInputElement
+            if (!textElement.classList.contains('image-added')) {
                 const event = new MouseEvent('click', { bubbles: false })
                 inputField?.dispatchEvent(event)
-                inputField?.addEventListener('change', (e) => {
-                    const target = e.target as HTMLInputElement
-                    if (target) {
-                        if (target.files) {
-                            if (!target.files.length) {
-                                return
-                            } else {
-                                const fileTypes = ['jpg', 'jpeg', 'png', 'gif']
-                                const extension = target.files[0].name.split('.').pop()?.toLowerCase()
-                                if (extension && fileTypes.includes(extension)) {
-                                    const fileReader = new FileReader()
-                                    fileReader.readAsDataURL(target.files[0])
-                                    fileReader.onload = () => {
-                                        if (typeof fileReader.result === 'string') {
-                                            this.addImageToImageBlock(textElement, fileReader.result)
-                                        }
+            }
+            inputField?.addEventListener('change', (e) => {
+                const target = e.target as HTMLInputElement
+                if (target) {
+                    if (target.files) {
+                        if (!target.files.length) {
+                            return
+                        } else {
+                            const fileTypes = ['jpg', 'jpeg', 'png', 'gif']
+                            const extension = target.files[0].name.split('.').pop()?.toLowerCase()
+                            if (extension && fileTypes.includes(extension)) {
+                                const fileReader = new FileReader()
+                                fileReader.readAsDataURL(target.files[0])
+                                fileReader.onload = () => {
+                                    if (typeof fileReader.result === 'string') {
+                                        this.addImageToImageBlock(textElement, fileReader.result)
                                     }
-                                } else {
-                                    alert('wrong type of file')
                                 }
+                            } else {
+                                alert('wrong type of file')
                             }
                         }
                     }
-                })
-            }
-        })
+                }
+            })
+        }
         textElement.querySelector('.delete-btn')?.addEventListener('click', (e) => {
             e.preventDefault()
             if (editor.querySelectorAll('.editorElement')?.length !== 1) {
@@ -779,7 +872,7 @@ export class EditorView extends EventEmitter {
             const newElem = editor.querySelector('.new') as HTMLElement
             if (newElem) {
                 if (editor.classList.contains('textPreviewEditor')) {
-                    newElem.dataset.isEmpty = 'Введите текст'
+                    newElem.dataset.isEmpty = this.lang === 'ru' ? 'Введите текст' : 'Enter text'
                     if (value) {
                         const dragIcon = newElem.querySelector('.drag')
                         dragIcon?.classList.remove('hidden')
@@ -928,7 +1021,12 @@ export class EditorView extends EventEmitter {
 
     addNewParagraph(el: HTMLElement, value?: string) {
         const template = document.createElement('template')
-        template.innerHTML = emptyParagraph({})
+        if (el.closest('.quoteElement')) {
+            template.innerHTML = emptyParagraph({})
+        }
+        if (el.closest('.numberListElement') || el.closest('.unorderedListElement')) {
+            template.innerHTML = listElementTemplate({})
+        }
         el.after(template.content)
         const newField = document.querySelector('.new') as HTMLElement
         const editor = document.querySelector('.textEditor') as HTMLElement
@@ -997,16 +1095,20 @@ export class EditorView extends EventEmitter {
                     }
                 }
             }
-            if (el.classList.contains('quoteElement')) {
+            if (el.classList.contains('list')) {
                 const quoteInputs: Array<BlocksType> = []
-                const quoteElements = el.querySelectorAll('.editable')?.forEach((el) => {
+                const type = (el as HTMLElement).dataset.type
+                if (!type) {
+                    throw Error('Empty list type')
+                }
+                el.querySelectorAll('.editable')?.forEach((el) => {
                     quoteInputs.push({
                         type: 'text',
                         value: el.textContent ?? '',
                     })
                 })
                 obj.blocks.push({
-                    type: 'quotes',
+                    type: type,
                     value: quoteInputs,
                 })
             }
@@ -1022,6 +1124,12 @@ export class EditorView extends EventEmitter {
                         })
                     }
                 }
+            }
+            if (el.classList.contains('delimiterElement')) {
+                obj.blocks.push({
+                    type: 'delimiter',
+                    value: '',
+                })
             }
         })
         return obj
@@ -1049,7 +1157,9 @@ export class EditorView extends EventEmitter {
                     ? flowsError.classList.remove('text-[#ff8d85]')
                     : flowsError.classList.add('text-[#ff8d85]')
             }
-            const checkKeywordsResult = this.checkValue(keywordsInput.value, new RegExp('[A-zА-я]{5,}'))
+            let checkKeywordsResult = this.checkValue(keywordsInput.value, new RegExp('[A-zА-я]{3,}'))
+            checkKeywordsResult =
+                keywordsInput.value.split(',').length > 0 && keywordsInput.value.split(',').length < 11
             checkKeywordsResult
                 ? keywordsInput.classList.remove('border-[#ff8d85]')
                 : keywordsInput.classList.add('border-[#ff8d85]')
@@ -1073,7 +1183,7 @@ export class EditorView extends EventEmitter {
                     : previewError.classList.add('text-[#ff8d85]')
             }
             if (translateCheckbox.checked) {
-                checkTranslateAuthor = this.checkValue(translateAuthor.value, new RegExp('[A-z]{5,}'))
+                checkTranslateAuthor = this.checkValue(translateAuthor.value, new RegExp('[A-zА-я]{3,}'))
                 checkTranslateAuthor
                     ? translateAuthor.classList.remove('border-[#ff8d85]')
                     : translateAuthor.classList.add('border-[#ff8d85]')
@@ -1088,13 +1198,15 @@ export class EditorView extends EventEmitter {
                     : translateLink.classList.add('border-[#ff8d85]')
             }
             const button = document.querySelector('.submitArticle') as HTMLButtonElement
+            const checkFlowInput = selectFlowInput.values
             if (button) {
                 if (
                     checkKeywordsResult &&
                     checkTranslateLink &&
                     checkTranslateAuthor &&
                     checkButtonTextResult &&
-                    checkPreviewBlock
+                    checkPreviewBlock &&
+                    checkFlowInput.length
                 ) {
                     if (button) {
                         button.disabled = false
@@ -1151,13 +1263,14 @@ export class EditorView extends EventEmitter {
             parent?.querySelector('.drag')?.classList.add('hidden')
         }
     }
-    showAuthFail() {
+    showAuthFail(message?: string) {
         const main = document.querySelector('main') as HTMLElement
         if (main) {
             main.innerHTML = ''
             const pageWrapper = document.createElement('div')
             pageWrapper.className = 'sm:container mx-auto'
-            pageWrapper.innerHTML = authErrorPage({ words: getWords(Dictionary.errorPage, this.pageModel.lang) })
+            const dict = message ? Dictionary.AccessError : Dictionary.errorPage
+            pageWrapper.innerHTML = authErrorPage({ words: getWords(dict, this.pageModel.lang) })
             const mainPageBtn = pageWrapper.querySelector('button') as HTMLButtonElement
             mainPageBtn.onclick = () => {
                 this.emit<string>('GOTO', location.origin)
@@ -1232,6 +1345,7 @@ export class EditorView extends EventEmitter {
             }
             currentItem.classList.remove('activeMenu')
         }
+        document.querySelector('.activeMenu')?.scrollIntoView()
     }
 
     addEventListenersToPopup(popup: HTMLElement) {
@@ -1261,7 +1375,7 @@ export class EditorView extends EventEmitter {
     addListenerToHeadingElement(newItem: HTMLElement) {
         newItem.querySelectorAll('.heading')?.forEach((el) => {
             const element = el as HTMLElement
-            element.addEventListener('click', (e) => {
+            element.addEventListener('click', () => {
                 const parent = newItem.closest('.editorElement') as HTMLElement
                 if (parent) {
                     if (element.dataset.name) {
@@ -1304,6 +1418,21 @@ export class EditorView extends EventEmitter {
                     delete: this.dictionary.Delete[this.lang],
                 })
                 break
+            case 'delimiter':
+                template.innerHTML = delimiterTemplate({
+                    delete: this.dictionary.Delete[this.lang],
+                })
+                break
+            case 'numberList':
+                template.innerHTML = numberedListTemplate({
+                    delete: this.dictionary.Delete[this.lang],
+                })
+                break
+            case 'unorderedList':
+                template.innerHTML = unorderedListTemplate({
+                    delete: this.dictionary.Delete[this.lang],
+                })
+                break
         }
         return template
     }
@@ -1325,25 +1454,34 @@ export class EditorView extends EventEmitter {
         }
     }
 
+    restoreTitle(value: string) {
+        const header = document.querySelector('.articleHeader') as HTMLElement
+        if (header) {
+            header.textContent = ''
+            header.textContent = value ? value : ''
+            const parent = header.parentElement
+            if (parent) {
+                if (value) {
+                    parent.classList.add('before:hidden')
+                }
+            }
+        }
+    }
+
     restoreArticle(blocks: Array<BlocksType>) {
         const editor = document.querySelector('.textEditor') as HTMLElement
-        editor.querySelectorAll('.editorElement')?.forEach((el) => {
-            el.remove()
-        })
+        if (document.querySelector('.editorElement')) {
+            editor.querySelectorAll('.editorElement')?.forEach((el) => {
+                el.remove()
+            })
+        }
         blocks.forEach((el, index) => {
             if (editor) {
-                console.log(el)
                 if (el.type === 'title') {
-                    const header = document.querySelector('.articleHeader') as HTMLElement
-                    if (header) {
-                        header.textContent = ''
-                        header.textContent = el.value && typeof el.value === 'string' ? el.value : ''
-                        const parent = header.parentElement
-                        if (parent) {
-                            if (el.value) {
-                                parent.classList.add('before:hidden')
-                            }
-                        }
+                    if (typeof el.value === 'string') {
+                        this.restoreTitle(el.value)
+                    } else {
+                        this.restoreTitle('')
                     }
                 } else {
                     const type = el.type === 'quotes' ? 'quote' : el.type
@@ -1361,14 +1499,18 @@ export class EditorView extends EventEmitter {
                                 }
                             }
                         }
-                        if (newItem.classList.contains('quoteElement')) {
+                        if (newItem.classList.contains('headerElement')) {
+                            newItem.dataset.type = el.mod
+                        }
+                        if (newItem.classList.contains('list')) {
                             if (Array.isArray(el.value)) {
-                                const elementsList = newItem.querySelector('.quote-elements-container')
+                                const elementsList =
+                                    newItem.querySelector('.quote-elements-container') ??
+                                    newItem.querySelector('.list-elements-container')
                                 el.value.forEach((el) => {
                                     if (elementsList) {
                                         const lastChild = elementsList.lastElementChild as HTMLElement
                                         if (lastChild) {
-                                            console.log(lastChild, elementsList, el.value)
                                             this.addNewParagraph(
                                                 lastChild,
                                                 el.value && typeof el.value === 'string' ? el.value : ''
@@ -1474,6 +1616,108 @@ export class EditorView extends EventEmitter {
         const lastSaveWindow = document.querySelector('.save-information-block') as HTMLElement
         if (lastSaveWindow) {
             lastSaveWindow.remove()
+        }
+    }
+
+    parseData(obj: NewArticleData) {
+        this.restoreArticle(obj.blocks)
+        this.restoreTitle(obj.title)
+        this.checkArticle()
+        if (obj.createdAt) {
+            const date = new Date(obj.createdAt.seconds * 1000 + obj.createdAt.nanoseconds / 1000000)
+            this.changeTimePublished(date)
+        } else {
+            console.log('empty obj.createdAt')
+        }
+        const langCheckbox = document.querySelector(`.lang-check__${obj.lang}`)
+        if (langCheckbox instanceof HTMLInputElement) {
+            langCheckbox.checked = true
+        }
+        const selectPure = document.querySelector('select-pure') as SelectPure
+        const keywords = obj.keywords.join(', ')
+        const keywordsInput = document.querySelector('.keywords-input')
+        if (keywordsInput instanceof HTMLInputElement) {
+            keywordsInput.value = keywords
+        }
+        const isPublication = obj.isTranslate
+        if (isPublication) {
+            const isTranslateCheckbox = document.querySelector('.isTranslate-checkbox')
+            const isTranslate = document.querySelector('.isTranslate')
+            if (isTranslateCheckbox instanceof HTMLInputElement) {
+                const ev = new Event('change')
+                isTranslateCheckbox.checked = true
+                if (isTranslate) {
+                    isTranslate.dispatchEvent(ev)
+                }
+                const author = document.querySelector('.translate__author')
+                if (author instanceof HTMLInputElement) {
+                    author.value = obj.translateAuthor ?? ''
+                }
+                const link = document.querySelector('.translate__link')
+                if (link instanceof HTMLInputElement) {
+                    link.value = obj.translateLink ?? ''
+                }
+            }
+        }
+        document.querySelectorAll('input[name="сomplexity"]')?.forEach((el) => {
+            const element = el as HTMLInputElement
+            if (element.value === obj.difficult) {
+                element.checked = true
+            }
+        })
+        if (obj.preview.image) {
+            const previewImage = document.querySelector('.preview-image') as HTMLImageElement
+            const previewControls = document.querySelector('.preview-image-controls') as HTMLElement
+            const textPreview = document.querySelector('.load-image-preview-text')
+            if (previewImage && previewControls && textPreview) {
+                previewImage.src = obj.preview.image
+                previewControls.hidden = false
+                textPreview.classList.add('hidden')
+                previewImage.classList.remove('hidden')
+            }
+            if (obj.preview.imagePosition && obj.preview.imagePosition.length) {
+                const x = obj.preview.imagePosition[0]
+                const y = obj.preview.imagePosition[1]
+                previewImage.style.objectPosition = `${x} ${y}`
+            }
+        }
+
+        const previewEditor = document.querySelector('.textPreviewEditor') as HTMLElement
+        if (previewEditor) {
+            obj.preview.previewBlocks?.forEach((el) => {
+                this.previewEditorBuilded = true
+                if (typeof el.value === 'string') {
+                    this.addNewField(previewEditor, el.value)
+                }
+            })
+            this.addNewField(previewEditor)
+            if (previewEditor.children.length > 1) {
+                previewEditor.firstElementChild?.remove()
+            }
+            this.hidePlaceholder(previewEditor)
+        }
+        const newBtnInput = document.querySelector('.buttonTextInput')
+        if (newBtnInput instanceof HTMLInputElement) {
+            const ev = new KeyboardEvent('input')
+            newBtnInput.value = obj.preview.nextBtnText
+            newBtnInput.dispatchEvent(ev)
+        }
+        this.checkSettings()
+        document.querySelector('.modal-loader')?.remove()
+        setTimeout(() => {
+            window.scrollTo(0, 0)
+        })
+    }
+
+    private changeTimePublished(date: Date) {
+        const span = document.createElement('span')
+        span.textContent = `${this.dictionary.documentCreated[this.lang]} ${this.getParsedDate(
+            date
+        )} ${this.getParsedTime(date)}`
+        const publishedMessage = document.querySelector('.time-published')
+        if (publishedMessage) {
+            publishedMessage.innerHTML = ''
+            publishedMessage.append(span)
         }
     }
 

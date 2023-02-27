@@ -1,6 +1,6 @@
 import { CommentInfo } from './../types/types'
 import { initializeApp } from 'firebase/app'
-import { getStorage, ref, uploadBytes, getDownloadURL, uploadString } from 'firebase/storage'
+import { getStorage, ref, uploadBytes, getDownloadURL, uploadString, getBlob, getMetadata } from 'firebase/storage'
 import {
     query,
     getFirestore,
@@ -49,6 +49,8 @@ export {
     limit,
     startAt,
     where,
+    getBlob,
+    getMetadata,
 }
 import EventEmitter from 'events'
 import { UserData } from 'types/types'
@@ -112,7 +114,6 @@ export class FireBaseAPI extends EventEmitter {
     async signIn(email: string, password: string) {
         return signInWithEmailAndPassword(this.auth, email, password)
             .then((userCredential) => {
-                console.log(userCredential)
                 return userCredential.user
             })
             .catch((error) => {

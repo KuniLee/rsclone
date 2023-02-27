@@ -1,10 +1,12 @@
-<div class="headerElement group editorElement before:content-[attr(data-is-empty)] before:absolute before:text-[#c0c0c0] before:pointer-events-none text-xl flex new items-center w-full px-[25px]" data-is-empty="{{heading}}" data-type="heading-1">
+<div class="delimiterElement group new editorElement before:content-[''] before:absolute before:text-[#c0c0c0] before:pointer-events-none text-xl flex items-center w-full px-[25px]">
   <div class="drag absolute left-0 cursor-grab group-hover:opacity-100 opacity-0">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
       <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
     </svg>
   </div>
-  <p contenteditable="true" class="editable outline-0 whitespace-pre-wrap flex-grow max-w-[96.6%]"></p>
+  <div class="min-h-[60px] w-full max-w-[96.6%]">
+    <div class="w-[280px] border border-black border-b-0 my-[56px] mx-auto h-full"></div>
+  </div>
   <div class="options cursor-pointer group-hover:opacity-100 opacity-0">
     <button class="options__open-btn">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -13,10 +15,7 @@
     </button>
     <div class="options__drop-menu absolute w-[220px] shadow right-0 bg-color-light z-10" hidden>
       <div class="py-[5px]">
-        <button class="delete-btn py-[10px] hover:bg-[rgba] w-full text-[13px] border-b hover:bg-color-gray-light transition">{{delete}}</button>
-        <button class="heading heading-1 py-[10px] w-full text-[13px] hover:bg-color-gray-light transition" data-name="heading-1">{{heading1}}</button>
-        <button class="heading heading-2 py-[10px] w-full text-[13px] hover:bg-color-gray-light transition" data-name="heading-2">{{heading2}}</button>
-        <button class="heading heading-3 py-[10px] w-full text-[13px] hover:bg-color-gray-light transition" data-name="heading-3">{{heading3}}</button>
+        <button class="delete-btn py-[10px] hover:bg-color-gray-light w-full text-[13px] transition">{{delete}}</button>
       </div>
     </div>
   </div>

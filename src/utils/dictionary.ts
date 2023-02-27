@@ -23,6 +23,7 @@ const buttons: Record<string, language> = {
     Save: { ru: 'Cохранить изменения', en: 'Save changes' },
     Upload: { ru: 'Загрузить', en: 'Upload' },
     Remove: { ru: 'Удалить', en: 'Remove' },
+    loadMore: { ru: 'Ещё', en: 'More' },
 }
 
 const popupSettings: Record<string, language> = {
@@ -66,6 +67,7 @@ const ProfilePage: Record<string, language> = {
     Information: { ru: 'Информация', en: 'Information' },
     Registered: { ru: 'Зарегистрирован', en: 'Registered' },
     Posts: { ru: 'Публикации', en: 'Posts' },
+    edit: { ru: 'Редактировать', en: 'Edit article' },
 }
 
 const PageNotFound: Record<string, language> = {
@@ -83,7 +85,10 @@ const EditorPage: Record<string, language> = {
     Heading: { ru: 'Заголовок', en: 'Heading' },
     Quote: { ru: 'Цитата', en: 'Quote' },
     Delete: { ru: 'Удалить', en: 'Delete' },
+    NumberedList: { ru: 'Нумерованный список', en: 'Numbered list' },
+    UnorderedList: { ru: 'Список', en: 'Unordered list' },
     Image: { ru: 'Изображение', en: 'Image' },
+    Delimiter: { ru: 'Разделитель', en: 'Delimiter' },
     ToSettings: { ru: 'Далее к настройкам', en: 'Proceed to settings' },
     Language: { ru: 'Язык публикации', en: 'Language' },
     LanguageRu: { ru: 'Русский', en: 'Russian' },
@@ -92,6 +97,7 @@ const EditorPage: Record<string, language> = {
     PostSettings: { ru: 'Настройки публикации', en: 'Post settings' },
     FlowsHint: { ru: 'Выберите потоки', en: 'Choose flows' },
     Keywords: { ru: 'Ключевые слова', en: 'Keywords' },
+    KeywordsPlaceholder: { ru: 'Введите ключевые слова', en: 'Enter keywords' },
     KeywordsHint: {
         ru: 'Введите сюда от 1 до 10 ключевых слов, отделяя их запятыми',
         en: 'Enter from 1 to 10 key words here, separated by commas',
@@ -135,6 +141,20 @@ const EditorPage: Record<string, language> = {
     AddImageText: { ru: 'Добавить картинку', en: 'Add image' },
     AddFigcaptionText: { ru: 'Добавьте подпись к изображению', en: 'Image title' },
     LoadAnotherImage: { ru: 'Загрузить другую', en: 'Upload new one' },
+    documentCreated: { ru: 'Документ был создан ', en: 'Article was created ' },
+    RemoveCover: { ru: 'Удалить обложку', en: 'Remove cover' },
+    ChangePosition: { ru: 'Изменить позицию', en: 'Edit position' },
+    SavePosition: { ru: 'Сохранить позицию', en: 'Save position' },
+    GetSave: { ru: 'У вас есть сохранение от', en: 'You have an autosaved draft on' },
+    Restore: { ru: 'Восстановить', en: 'Restore' },
+    ImageSizeError: {
+        ru: 'Размер изображения слишком большой. Максимальный размер изображения не должен превышать 1 Мб',
+        en: 'The image size is too large. The maximum image size should not exceed 1 MB',
+    },
+    SavedLocally: {
+        ru: 'Сохранено локально в',
+        en: 'Saved locally at',
+    },
 }
 
 const Aside: Record<string, language> = {
@@ -164,6 +184,7 @@ const PostPage: Record<string, language> = {
     hard: { ru: 'Сложно', en: 'Hard' },
     medium: { ru: 'Средне', en: 'Medium' },
     easy: { ru: 'Просто', en: 'Easy' },
+    noMoreArticles: { ru: 'Статей больше нет', en: 'No more articles' },
 }
 
 const Comments: Record<string, language> = {
@@ -181,6 +202,40 @@ const Comments: Record<string, language> = {
     SendButton: { ru: 'Отправить', en: 'Send' },
     CommentField: { ru: 'Ваш комментарий', en: 'Your comment' },
     TypeSomething: { ru: 'Введите текст', en: 'Type something' },
+}
+
+const AccessError: Record<string, language> = {
+    AuthFail: { ru: 'Ошибка авторизации', en: 'Authorization failed' },
+    PleaseLogin: {
+        ru: 'Вы не имеете прав для редактирования этой страницы',
+        en: 'You are not authorized to edit this page',
+    },
+    Button: { ru: 'Вернуться на главную', en: 'Back to the main page' },
+}
+
+const AuthPage: Record<string, language> = {
+    LogIn: { ru: 'Вход', en: 'Log in' },
+    Email: { ru: 'E-mail', en: 'E-mail' },
+    Password: { ru: 'Пароль', en: 'Password' },
+    ErrorLogin: { ru: 'Неверный логин или пароль', en: 'Wrong login or password' },
+    In: { ru: 'Еще нет аккаунта', en: 'Log in' },
+    DontHaveAcc: { ru: 'Ещё нет аккаунта', en: 'Have no account yet' },
+    SignUp: { ru: 'Зарегистрируйтесь', en: 'Sign up' },
+    SignUpHeader: { ru: 'Регистрация', en: 'Sign up' },
+    EmailError: { ru: 'Некорректный email', en: 'Incorrect email' },
+    EmailExists: { ru: 'Email уже существует', en: 'Email already exist' },
+    Nickname: { ru: 'Никнейм', en: 'Nickname' },
+    LengthError: { ru: 'Длина должна быть', en: 'Length should be' },
+    PasswordErrorLowerCase: { ru: 'Как минимум 1 строчная буква', en: 'At least 1 lowercase letter' },
+    PasswordErrorUpperCase: { ru: 'Как минимум 1 заглавная буква', en: 'At least 1 capital letter' },
+    PasswordDigitError: { ru: 'Как минимум 1 цифра', en: 'At least 1 digit' },
+    PasswordSpecialChar: { ru: 'Как минимум 1 специальный символ', en: 'At least 1 special character' },
+    PasswordLengthError: { ru: 'Длина от 8 до 16 символов', en: 'Length 8 to 16 characters' },
+    PasswordRepeat: { ru: 'Пароль еще раз', en: 'Repeat password' },
+    CaptchaCheck: { ru: 'Пройдите проверку', en: 'Pass check' },
+    SignUpComplete: { ru: 'Зарегистрироваться', en: 'Sign Up' },
+    AlreadySignUp: { ru: 'Уже зарегистрированы', en: 'Already registered' },
+    SignIn: { ru: 'Войдите', en: 'Log in' },
 }
 
 export function getWords(wordObj: Record<string, language>, lang: keyof language) {
@@ -204,4 +259,6 @@ export default {
     EditorPage,
     PostPage,
     Comments,
+    AccessError,
+    AuthPage,
 }

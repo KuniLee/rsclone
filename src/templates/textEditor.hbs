@@ -1,11 +1,10 @@
-<div class="flex gap-4">
-  <div class="w-full flex flex-col gap-4 max-w-[760px]">
+<div class="flex gap-4 mb-14">
+  <div class="w-full flex flex-col gap-4 lg:max-w-[760px]">
     {{#if date}}
     <div class="save-information-block pr-[20px] mb-[20px] py-[20px] bg-[#d3f2bf] border border-transparent">
-      <p class="ml-[20px]">У вас есть сохранение от <span class="date">{{date}}</span> в <span
-          class="time">{{dateTime}}</span> <a
+      <p class="ml-[20px]">{{getSave}} <span class="date">{{date}}</span> <span class="time">{{dateTime}}</span> <a
           class="restore-save-article text-color-button underline decoration-dotted underline-offset-4"
-          href="#">Восстановить</a></p>
+          href="#">{{restore}}</a></p>
     </div>
     {{/if}}
     <div class="mainEditor min-h-[640px] bg-color-light flex flex-col pt-[20px] relative flex-grow">
@@ -14,10 +13,11 @@
           <img class='object-cover w-full h-full rounded' src="{{userAvatar}}" alt="">
         </div>
         <p class="mr-[10px]">{{userName}}</p>
-        <p class="mr-[10px]">{{neverPublish}}</p>
+        <p class="mr-[10px] time-published">{{neverPublish}}</p>
       </div>
       <div class="relative textEditor flex-grow">
-        <div class="menu absolute w-[200px] bg-white shadow left-[20px] z-10 py-[10px]" hidden>
+        <div class="menu absolute w-[220px] bg-white shadow left-[20px] z-10 py-[10px] max-h-[250px] overflow-y-scroll"
+          hidden>
           <div class="menu__wrapper"></div>
         </div>
         <div
@@ -65,7 +65,7 @@
           <button
             class="toSettings border-color-button text-color-button border-[1px] outline-none py-[8px] px-[14px] text-sm rounded hover:bg-color-btn-hover hover:border-color-btn-hover hover:text-white transition disabled:cursor-not-allowed disabled:border-color-button-disabled disabled:text-color-button-disabled disabled:bg-white"
             disabled>{{toSettings}}</button>
-          <p class="last-time-save-message" hidden>Сохранено локально в <span class="saved-message-time"></span></p>
+          <p class="last-time-save-message" hidden>{{savedLocally}} <span class="saved-message-time"></span></p>
         </div>
       </div>
     </div>
@@ -77,11 +77,13 @@
             <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>{{language}}</h3>
             <div class="flex">
               <div class="border-[1px] rounded-[3px] border-[#d5dddf] flex transition-colors ease-out duration-300">
-                <input type="radio" name="lang" value="ru" id="lang-ru" class="hidden editor__type-radio" checked>
+                <input type="radio" name="lang" value="ru" id="lang-ru" class="lang-check__ru hidden editor__type-radio"
+                  checked>
                 <label for="lang-ru" class="editor__radio-label editor__type-label">
                   <span>{{languageButtonRu}}</span>
                 </label>
-                <input type="radio" name="lang" value="en" id="lang-en" class="hidden editor__type-radio">
+                <input type="radio" name="lang" value="en" id="lang-en"
+                  class="lang-check__en hidden editor__type-radio">
                 <label for="lang-en" class="editor__radio-label editor__type-label">
                   <span>{{languageButtonEn}}</span>
                 </label>
@@ -97,7 +99,7 @@
             <div>
               <select-pure default-label="{{flowsHint}}"
                 class="flows-input w-full rounded-[3px] m-0 text-[14px] outline-0" name="flow-select" id="flow-select"
-                multiple>
+                name='flows' id="flows" multiple>
                 {{#each flows}}
                 <option-pure value="{{this}}">{{this}}</option-pure>
                 {{/each}}
@@ -110,7 +112,7 @@
             <div>
               <input
                 class="keywords-input w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0"
-                type="text" placeholder="Введите ключевые слова">
+                type="text" placeholder="{{keywordsPlaceholder}}">
             </div>
             <p class="keywords-error text-gray-500 text-[12px] mb-4 mt-[9px]">{{keywordsHint}}</p>
           </div>
@@ -169,8 +171,7 @@
               <div>
                 <p class="text-[#444444] text-[14px] font-semibold mb-[12px] text-center"><span
                     class="add-cover-message">{{addCover}}</span><span class="preview-error-cover text-[#ff8d85]"
-                    hidden>Размер изображения слишком большой. Максимальный размер изображения не должен превышать 1
-                    Мб</span></p>
+                    hidden>{{imageSizeError}}</span></p>
               </div>
               <div>
                 <p class="text-[#777777] text-[12px] mb-[9px] text-center">{{coverInfo}}</p>
@@ -186,14 +187,12 @@
             </div>
             <div class="preview-image-controls absolute right-[24px] bottom-[20px]" hidden>
               <button
-                class="delete-preview-btn border border-color-gray-separator h-[30px] text-[#464646] cursor-pointer bg-[#f4f4f4] leading-[30px] text-[12px] outline-none mr-4 px-[12px]">Удалить
-                обложку</button>
+                class="delete-preview-btn border border-color-gray-separator h-[30px] text-[#464646] cursor-pointer bg-[#f4f4f4] leading-[30px] text-[12px] outline-none mr-4 px-[12px]">{{removeCover}}</button>
               <button
-                class="change-position-preview-btn border border-color-gray-separator h-[30px] text-[#464646] cursor-pointer bg-[#f4f4f4] leading-[30px] text-[12px] outline-none mr-4 px-[12px]">Редактировать
-                позицию</button>
+                class="change-position-preview-btn border border-color-gray-separator h-[30px] text-[#464646] cursor-pointer bg-[#f4f4f4] leading-[30px] text-[12px] outline-none mr-4 px-[12px]">{{changePosition}}</button>
               <button
                 class="save-position border border-color-gray-separator h-[30px] text-[#464646] cursor-pointer bg-[#f4f4f4] leading-[30px] text-[12px] outline-none mr-4 px-[12px] z-10"
-                hidden>Сохранить изменения</button>
+                hidden>{{savePosition}}</button>
             </div>
           </div>
           <div class="text-[#eee] border border-color-gray-separator relative">
@@ -230,7 +229,10 @@
           <p class="previewEditorError text-gray-500 text-[12px] mb-[9px]">{{previewHint}}</p>
         </div>
         <div class="mb-4">
-          <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>{{readMoreText}}</h3>
+          <div class="flex justify-between items-center">
+            <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>{{readMoreText}}</h3>
+            <p class="read-more-text-length text-[12px] font-semibold">40</p>
+          </div>
           <div>
             <input
               class="buttonTextInput w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0"

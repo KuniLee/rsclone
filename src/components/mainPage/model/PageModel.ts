@@ -4,7 +4,7 @@ import { rootModel, URLParams } from 'types/interfaces'
 import { ParsedQuery } from 'query-string'
 import { UserData } from 'types/types'
 
-type PageModelEventsName = 'CHANGE_PAGE' | '404' | 'AUTH_LOADED'
+type PageModelEventsName = 'CHANGE_PAGE' | '404' | 'AUTH_LOADED' | 'SHOW_FEED'
 export type PageModelInstance = InstanceType<typeof PageModel>
 
 export class PageModel extends EventEmitter {
@@ -32,8 +32,8 @@ export class PageModel extends EventEmitter {
         return super.on(event, callback)
     }
 
-    emit<T>(event: PageModelEventsName) {
-        return super.emit(event)
+    emit<T>(event: PageModelEventsName, arg?: T) {
+        return super.emit(event, arg)
     }
 
     changePage({ path, search }: URLParams) {
@@ -49,6 +49,7 @@ export class PageModel extends EventEmitter {
             case Paths.Flows:
                 this.goToFlows()
                 break
+            case Paths.Edit:
             case Paths.Sandbox:
                 this.goToSandbox()
                 break
@@ -71,32 +72,23 @@ export class PageModel extends EventEmitter {
     }
 
     private goToFlows() {
-        if (this.path[0] === Paths.All) {
-            console.log(`страница all`)
-            this.emit('CHANGE_PAGE')
-            return
-        }
-        if (Object.values(Flows).includes(this.path[1] as Flows)) {
+        if (this.path.length === 1 && this.path[0] === Paths.All) this.emit<Flows>('SHOW_FEED', Flows.All)
+        else if (this.path.length === 2 && Object.values(Flows).includes(this.path[1] as Flows)) {
             if (this.path[1] === Paths.All) {
                 this.path = [Paths.All]
-                console.log(`страница all`)
-                this.emit('CHANGE_PAGE')
-                return
-            }
-            console.log(`страница flows${this.path[1]}`)
-            this.emit('CHANGE_PAGE')
+                this.emit<Flows>('SHOW_FEED', Flows.All)
+            } else this.emit<Flows>('SHOW_FEED', this.path[1] as Flows)
+            if (this.path[1] === Paths.All) this.path = [Paths.All]
         } else this.goTo404()
     }
 
     private goToSandbox() {
-        if (Object.values(Sandbox).includes(this.path[1] as Sandbox)) {
-            console.log(`страница sandbox${this.path[1]}`)
+        if (Object.values(Sandbox).includes(this.path[1] as Sandbox) || this.path[1]) {
             this.emit('CHANGE_PAGE')
         } else this.goTo404()
     }
 
     public goTo404() {
-        console.log('страница 404')
         this.emit('404')
     }
 

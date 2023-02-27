@@ -25,10 +25,11 @@ const blocks: Record<BlocksType['type'], (arg0: BlocksType) => string> = {
         }
         return el.outerHTML
     },
-    delimiter(block) {
-        return 'delimiter'
+    delimiter() {
+        return `<div class="min-h-[60px] w-full max-w-[96.6%]">
+        <div class="w-[280px] border border-black border-b-0 my-[56px] mx-auto h-full"></div></div>`
     },
-    quotes(block) {
+    quote(block) {
         const quote = document.createElement('div')
         quote.className = 'my-6 pl-4 py-0.5 border-l-color-button border-l-4'
         if (Array.isArray(block.value))
@@ -37,8 +38,27 @@ const blocks: Record<BlocksType['type'], (arg0: BlocksType) => string> = {
             })
         return quote.outerHTML
     },
-    code(block) {
-        return 'code'
+    numberList(block) {
+        const ol = document.createElement('ol')
+        ol.className = 'list-decimal pl-5'
+        for (const li of block.value) {
+            const el = document.createElement('li')
+            el.className = 'mb-1 pl-4'
+            el.textContent = (li as BlocksType).value.toString()
+            ol.append(el)
+        }
+        return ol.outerHTML
+    },
+    unorderedList(block) {
+        const ol = document.createElement('ul')
+        ol.className = 'list-disc pl-5'
+        for (const li of block.value) {
+            const el = document.createElement('li')
+            el.className = 'mb-1 pl-4'
+            el.textContent = (li as BlocksType).value.toString()
+            ol.append(el)
+        }
+        return ol.outerHTML
     },
 }
 
@@ -50,9 +70,14 @@ export default function (block: BlocksType) {
             return blocks.heading(block)
         case 'image':
             return blocks.image(block)
-        case 'quotes':
-            return blocks.quotes(block)
-
+        case 'quote':
+            return blocks.quote(block)
+        case 'delimiter':
+            return blocks.delimiter(block)
+        case 'numberList':
+            return blocks.numberList(block)
+        case 'unorderedList':
+            return blocks.unorderedList(block)
         default:
             console.log(block)
     }

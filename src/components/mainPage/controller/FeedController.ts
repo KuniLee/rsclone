@@ -2,27 +2,31 @@ import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { FeedViewInstance } from '@/components/mainPage/views/FeedView'
 import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
 import {
-    Auth,
     collection,
     doc,
-    FireBaseAPIInstance,
-    FirebaseStorage,
-    Firestore,
+    QueryConstraint,
+    DocumentReference,
+    serverTimestamp,
+    updateDoc,
     getDoc,
     getDocs,
-    getDownloadURL,
+    arrayUnion,
     limit,
     orderBy,
     query,
-    ref,
+    setDoc,
     where,
-} from '@/utils/FireBaseAPI'
-import { QueryConstraint, DocumentReference, setDoc, serverTimestamp, updateDoc, arrayUnion } from 'firebase/firestore'
+    Firestore,
+    startAfter,
+} from 'firebase/firestore'
+import { FirebaseStorage, getDownloadURL, ref } from 'firebase/storage'
 import { Flows, Paths } from 'types/enums'
 import { Article, URLParams } from 'types/interfaces'
 import { ArticleViewInstance } from '@/components/mainPage/views/ArticleView'
 import { RouterInstance } from '@/utils/Rooter'
 import { CommentInfo, ParsedData } from 'types/types'
+import { Auth } from 'firebase/auth'
+import { FireBaseAPIInstance } from '@/utils/FireBaseAPI'
 
 export class FeedController {
     private view: FeedViewInstance
@@ -47,9 +51,11 @@ export class FeedController {
         this.auth = api.auth
         this.storage = api.storage
         this.view.on<Flows>('LOAD_ARTICLES', async (flow) => {
-            if (flow) this.feedModel.setFlow = flow
-            else this.feedModel.setFlow = Flows.All
+            this.feedModel.setFlow = flow
             this.feedModel.addArticles(await this.loadArticles())
+        })
+        this.view.on<Flows>('LOAD_MORE', async (flow) => {
+            this.feedModel.addArticles(await this.loadArticles(true))
         })
         this.articleView.on<string>('LOAD_POST', async (id) => {
             const article = await this.loadArticle(id)
@@ -97,12 +103,14 @@ export class FeedController {
         }
     }
 
-    private async loadArticles() {
+    private async loadArticles(loadMore = false) {
         const queryConstants: QueryConstraint[] = [orderBy('createdAt', 'desc'), limit(5)]
+        if (loadMore) queryConstants.push(startAfter(this.feedModel.latestArticle))
         if (this.feedModel.currentFlow !== Flows.All)
             queryConstants.push(where('flows', 'array-contains', this.feedModel.currentFlow?.slice(1)))
         const ref = collection(this.db, 'articles')
         const querySnapshot = await getDocs(query(ref, ...queryConstants))
+        this.feedModel.latestArticle = querySnapshot.docs[querySnapshot.docs.length - 1]
         const articles: Array<Article> = []
         querySnapshot.forEach((doc) => {
             const article = doc.data() as Article
@@ -121,7 +129,7 @@ export class FeedController {
             })
         } else {
             this.router.push(path)
-            location.reload()
+            if (lastHref === Paths.Auth) location.reload()
         }
     }
 

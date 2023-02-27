@@ -6,7 +6,7 @@ import { AuthModelInstance } from '@/components/auth/model/AuthModel'
 import headerTemplate from '@/templates/header.hbs'
 import { AuthViewTypes } from 'types/types'
 import footerTemplate from '@/templates/footer.hbs'
-import dictionary from '@/utils/dictionary'
+import dictionary, { getWords } from '@/utils/dictionary'
 
 type ItemViewEventsName = 'GOTO' | 'LOGIN' | 'CHECK_EMAIL' | 'SIGN_UP'
 
@@ -26,7 +26,6 @@ export class AuthView extends EventEmitter {
         this.mainPageContainer = document.createElement('main')
         this.mainPageContainer.className = 'bg-color-bg-dark flex-grow'
         this.show()
-        this.buildPage()
         this.model.on('CHANGE_PAGE', () => {
             if (this.model.path[0] === Paths.Auth) this.buildPage()
             if (this.model.path[0] === Paths.Registration) this.buildPage(true)
@@ -65,16 +64,21 @@ export class AuthView extends EventEmitter {
         const mainContainer = document.querySelector('main')
         if (mainContainer) {
             if (!isRegister) {
-                mainContainer.innerHTML = authTemplate({})
+                console.log(getWords(dictionary.AuthPage, this.model.lang))
+                mainContainer.innerHTML = authTemplate({
+                    words: getWords(dictionary.AuthPage, this.model.lang),
+                })
             } else {
-                mainContainer.innerHTML = registerTemplate({})
+                mainContainer.innerHTML = registerTemplate({
+                    words: getWords(dictionary.AuthPage, this.model.lang),
+                })
                 const captcha = document.getElementById('captcha1') as HTMLElement
                 if (captcha && grecaptcha) {
                     setTimeout(() => {
                         grecaptcha.render('captcha1', {
                             sitekey: process.env.KAPTCHA_KEY,
                         })
-                    }, 1000)
+                    }, 1500)
                 }
             }
             this.addListeners()
@@ -220,7 +224,7 @@ export class AuthView extends EventEmitter {
                 }
                 const passLengthError = document.querySelector('.password-error__length') as HTMLElement
                 if (passLengthError) {
-                    passLengthError.hidden = !(passValue.length < 8 && passValue.length > 16)
+                    passLengthError.hidden = !(passValue.length < 8 || passValue.length > 16)
                 }
             } else {
                 if (passError) {
@@ -313,10 +317,6 @@ export class AuthView extends EventEmitter {
 
     private show() {
         document.body.append(this.headerEl, this.mainPageContainer, this.footerEl)
-    }
-
-    private openRegistrationForm() {
-        console.log('test')
     }
 
     emit<T>(event: ItemViewEventsName, arg?: T, data?: AuthViewTypes) {

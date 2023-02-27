@@ -10,6 +10,7 @@ export enum Paths {
     Auth = '/login',
     Settings = '/settings',
     Registration = '/register',
+    Edit = '/edit',
 }
 
 export enum Sandbox {
