@@ -112,7 +112,7 @@
             <div>
               <input
                 class="keywords-input w-full rounded-[3px] m-0 pl-[12px] h-[38px] text-[14px] border border-color-gray-separator outline-0"
-                type="text" placeholder="Введите ключевые слова">
+                type="text" placeholder="{{keywordsPlaceholder}}">
             </div>
             <p class="keywords-error text-gray-500 text-[12px] mb-4 mt-[9px]">{{keywordsHint}}</p>
           </div>
@@ -171,8 +171,7 @@
               <div>
                 <p class="text-[#444444] text-[14px] font-semibold mb-[12px] text-center"><span
                     class="add-cover-message">{{addCover}}</span><span class="preview-error-cover text-[#ff8d85]"
-                    hidden>Размер изображения слишком большой. Максимальный размер изображения не должен превышать 1
-                    Мб</span></p>
+                    hidden>{{imageSizeError}}</span></p>
               </div>
               <div>
                 <p class="text-[#777777] text-[12px] mb-[9px] text-center">{{coverInfo}}</p>

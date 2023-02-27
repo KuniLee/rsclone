@@ -170,6 +170,7 @@ export class EditorView extends EventEmitter {
                 flowsHint: this.dictionary.FlowsHint[this.lang],
                 keywords: this.dictionary.Keywords[this.lang],
                 keywordsHint: this.dictionary.KeywordsHint[this.lang],
+                keywordsPlaceholder: this.dictionary.KeywordsPlaceholder[this.lang],
                 translation: this.dictionary.Translation[this.lang],
                 translationCheckText: this.dictionary.TranslationCheckboxText[this.lang],
                 translationAuthor: this.dictionary.TranslationAuthor[this.lang],
@@ -197,6 +198,7 @@ export class EditorView extends EventEmitter {
                 savePosition: this.dictionary.SavePosition[this.lang],
                 getSave: this.dictionary.GetSave[this.lang],
                 restore: this.dictionary.Restore[this.lang],
+                imageSizeError: this.dictionary.ImageSizeError[this.lang],
             })
         }
         const popupMenu = document.querySelector('.menu') as HTMLElement
@@ -864,7 +866,7 @@ export class EditorView extends EventEmitter {
             const newElem = editor.querySelector('.new') as HTMLElement
             if (newElem) {
                 if (editor.classList.contains('textPreviewEditor')) {
-                    newElem.dataset.isEmpty = 'Введите текст'
+                    newElem.dataset.isEmpty = this.lang === 'ru' ? 'Введите текст' : 'Enter text'
                     if (value) {
                         const dragIcon = newElem.querySelector('.drag')
                         dragIcon?.classList.remove('hidden')

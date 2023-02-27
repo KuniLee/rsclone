@@ -97,6 +97,7 @@ const EditorPage: Record<string, language> = {
     PostSettings: { ru: 'Настройки публикации', en: 'Post settings' },
     FlowsHint: { ru: 'Выберите потоки', en: 'Choose flows' },
     Keywords: { ru: 'Ключевые слова', en: 'Keywords' },
+    KeywordsPlaceholder: { ru: 'Введите ключевые слова', en: 'Enter keywords' },
     KeywordsHint: {
         ru: 'Введите сюда от 1 до 10 ключевых слов, отделяя их запятыми',
         en: 'Enter from 1 to 10 key words here, separated by commas',
@@ -146,6 +147,10 @@ const EditorPage: Record<string, language> = {
     SavePosition: { ru: 'Сохранить позицию', en: 'Save position' },
     GetSave: { ru: 'У вас есть сохранение от', en: 'You have an autosaved draft on' },
     Restore: { ru: 'Восстановить', en: 'Restore' },
+    ImageSizeError: {
+        ru: 'Размер изображения слишком большой. Максимальный размер изображения не должен превышать 1 Мб',
+        en: 'The image size is too large. The maximum image size should not exceed 1 MB',
+    },
 }
 
 const Aside: Record<string, language> = {
