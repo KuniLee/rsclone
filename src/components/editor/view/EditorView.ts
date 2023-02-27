@@ -19,11 +19,9 @@ import delimiterTemplate from '@/templates/textEditorDelimeterTemplate.hbs'
 import numberedListTemplate from '@/templates/textEditorNumberListTemplate.hbs'
 import unorderedListTemplate from '@/templates/textEditorUnorderedListTemplate.hbs'
 import listElementTemplate from '@/templates/textEditorListElement.hbs'
-import { OptionPure, SelectPure } from 'select-pure/lib/components'
+import { SelectPure } from 'select-pure/lib/components'
 import dictionary from '@/utils/dictionary'
 import preloader from '@/templates/preloaderModal.hbs'
-import { OptionPureElement } from 'select-pure/lib/models'
-import { Declaration } from 'postcss'
 
 type ItemViewEventsName =
     | 'GOTO'
@@ -41,7 +39,7 @@ export class EditorView extends EventEmitter {
     private previewEditorBuilded: boolean
     private blocksPopup: EditorBlocks
     private dictionary: Record<string, language>
-    private lang: 'ru' | 'en'
+    private readonly lang: 'ru' | 'en'
     private isSaveStart: boolean
     private savedBlocks: Array<BlocksType>
     private onSettingsPage: boolean
@@ -242,7 +240,7 @@ export class EditorView extends EventEmitter {
             }
             const selectPure = document.querySelector('select-pure') as SelectPure
             if (selectPure) {
-                selectPure.addEventListener('change', (e) => {
+                selectPure.addEventListener('change', () => {
                     this.checkSettings()
                 })
             }
@@ -256,7 +254,7 @@ export class EditorView extends EventEmitter {
                     })
                 }
             })
-            buttonText.addEventListener('input', (e) => {
+            buttonText.addEventListener('input', () => {
                 const value = buttonText.value
                 const readMoreTextLengthNumber = document.querySelector('.read-more-text-length')
                 if (readMoreTextLengthNumber) {
@@ -520,7 +518,7 @@ export class EditorView extends EventEmitter {
         if (!this.isGlobalListener) {
             this.isGlobalListener = true
             const menu = document.querySelector('.menu') as HTMLElement
-            document.addEventListener('click', (el) => {
+            document.addEventListener('click', () => {
                 const modalOptionsList = document.querySelectorAll('.options__drop-menu')
                 modalOptionsList.forEach((el) => {
                     const element = el as HTMLElement
@@ -581,7 +579,6 @@ export class EditorView extends EventEmitter {
         const menu = document.querySelector('.menu') as HTMLElement
         el.addEventListener('keypress', (e) => {
             const event = e as KeyboardEvent
-            const value = el.textContent
             if (event.key === 'Enter') {
                 e.preventDefault()
                 if (menu && menu.hidden) {
@@ -594,8 +591,7 @@ export class EditorView extends EventEmitter {
                 }
             }
         })
-        el.addEventListener('input', (e) => {
-            const event = e as KeyboardEvent
+        el.addEventListener('input', () => {
             const target = el as HTMLElement
             const value = target.textContent
             if (parent) {
@@ -716,7 +712,7 @@ export class EditorView extends EventEmitter {
                 }, 0)
             }
         })
-        el.addEventListener('focus', (e) => {
+        el.addEventListener('focus', () => {
             document.querySelectorAll('.focused')?.forEach((el) => el.classList.remove('focused'))
             document.querySelectorAll('.focusedItem')?.forEach((el) => el.classList.remove('focusedItem'))
             document.querySelectorAll('.plusOpen')?.forEach((el) => el.classList.remove('plusOpen'))
@@ -1099,7 +1095,7 @@ export class EditorView extends EventEmitter {
                 if (!type) {
                     throw Error('Empty list type')
                 }
-                const quoteElements = el.querySelectorAll('.editable')?.forEach((el) => {
+                el.querySelectorAll('.editable')?.forEach((el) => {
                     quoteInputs.push({
                         type: 'text',
                         value: el.textContent ?? '',
@@ -1371,7 +1367,7 @@ export class EditorView extends EventEmitter {
     addListenerToHeadingElement(newItem: HTMLElement) {
         newItem.querySelectorAll('.heading')?.forEach((el) => {
             const element = el as HTMLElement
-            element.addEventListener('click', (e) => {
+            element.addEventListener('click', () => {
                 const parent = newItem.closest('.editorElement') as HTMLElement
                 if (parent) {
                     if (element.dataset.name) {

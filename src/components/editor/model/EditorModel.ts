@@ -8,8 +8,6 @@ type EditorModelEventsName = 'CHANGE_PAGE' | '404' | 'ARTICLE_SAVED' | 'ARTICLE_
 export type EditorModelInstance = InstanceType<typeof EditorModel>
 
 export class EditorModel extends EventEmitter {
-    public search: ParsedQuery<string> = {}
-
     constructor() {
         super()
     }

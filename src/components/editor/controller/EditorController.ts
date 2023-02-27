@@ -5,19 +5,16 @@ import { EditorModelInstance } from '@/components/editor/model/EditorModel'
 import {
     FireBaseAPI,
     Firestore,
-    addDoc,
     collection,
     ref,
-    uploadBytes,
     doc,
     setDoc,
     updateDoc,
     serverTimestamp,
     getDoc,
     getBlob,
-    getMetadata,
 } from '@/utils/FireBaseAPI'
-import { FirebaseStorage, getDownloadURL, uploadString } from 'firebase/storage'
+import { FirebaseStorage, uploadString } from 'firebase/storage'
 import { NewArticleData } from 'types/types'
 
 export class EditorController {
@@ -77,7 +74,7 @@ export class EditorController {
                     await uploadString(imageRef, image, 'data_url')
                     articleData.preview.image = imageRef.fullPath
                 }
-                const newArticle = await setDoc(docRef, Object.assign(articleData, { createdAt: serverTimestamp() }))
+                await setDoc(docRef, Object.assign(articleData, { createdAt: serverTimestamp() }))
                 if (userData) {
                     if (userData.articles && userData.articles.length) {
                         userData.articles = [...userData.articles, docRef]
@@ -118,7 +115,7 @@ export class EditorController {
                     await uploadString(imageRef, image, 'data_url')
                     articleData.preview.image = imageRef.fullPath
                 }
-                const newArticle = await updateDoc(docRef, articleData)
+                await updateDoc(docRef, articleData)
                 await this.editorModel.deleteArticle()
                 this.view.emit('GOTO', location.origin)
             } catch (e) {
@@ -136,7 +133,6 @@ export class EditorController {
                 const docRef = await getDoc(doc(this.db, `articles/${id}`))
                 const article = (await docRef.data()) as NewArticleData
                 if (article.userId === this.pageModel.user.uid) {
-                    const index = 0
                     const getImageBase64FromBlob = async (image: Blob) => {
                         return await new Promise((resolve, reject) => {
                             const reader = new FileReader()
