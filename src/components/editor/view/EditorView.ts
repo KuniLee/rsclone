@@ -546,6 +546,7 @@ export class EditorView extends EventEmitter {
             })
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                    console.log('test')
                     if (menu && !menu.hidden) {
                         this.navigateInMenu(e.key)
                     }
@@ -764,8 +765,10 @@ export class EditorView extends EventEmitter {
             const el = e.target as HTMLElement
             document.querySelectorAll('.focused')?.forEach((el) => el.classList.remove('focused'))
             document.querySelectorAll('.focusedItem')?.forEach((el) => el.classList.remove('focusedItem'))
-            el.closest('.editorElement')?.classList.add('focused')
-            el.closest('.editorElement')?.classList.add('focusedItem')
+            setTimeout(() => {
+                el.closest('.editorElement')?.classList.add('focused')
+                el.closest('.editorElement')?.classList.add('focusedItem')
+            })
             document.querySelectorAll('.open')?.forEach((el) => {
                 el.classList.remove('open')
                 ;(el as HTMLElement).hidden = true
