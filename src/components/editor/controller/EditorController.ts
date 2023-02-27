@@ -118,8 +118,6 @@ export class EditorController {
                     await uploadString(imageRef, image, 'data_url')
                     articleData.preview.image = imageRef.fullPath
                 }
-                // @ts-ignore
-                articleData.createdAt = serverTimestamp()
                 const newArticle = await updateDoc(docRef, articleData)
                 await this.editorModel.deleteArticle()
                 alert('Удачно!')
