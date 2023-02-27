@@ -40,7 +40,6 @@ export class ProfileView extends EventEmitter {
             this.createArticles()
             this.renderArticles()
         })
-        console.log(this.pageModel.user)
     }
 
     emit<T>(event: ProfileViewEventsName, arg?: T) {
@@ -111,7 +110,6 @@ export class ProfileView extends EventEmitter {
             const buttonsContainer = el.querySelector('.articles__buttons')
             if (buttonsContainer) {
                 const template = document.createElement('template')
-                console.log(el.dataset.id)
                 template.innerHTML = editButton({
                     edit: Dictionary.ProfilePage.edit[this.pageModel.lang],
                     id: el.dataset.id,
@@ -131,7 +129,6 @@ export class ProfileView extends EventEmitter {
                     .getAttribute('href')
                     ?.split('/')
                     .map((el) => '/' + el)
-                console.log(href)
                 this.emit('GO_TO', { path: href })
             })
         })

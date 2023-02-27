@@ -84,13 +84,11 @@ export class PageModel extends EventEmitter {
 
     private goToSandbox() {
         if (Object.values(Sandbox).includes(this.path[1] as Sandbox) || this.path[1]) {
-            console.log(`страница sandbox${this.path[1]}`)
             this.emit('CHANGE_PAGE')
         } else this.goTo404()
     }
 
     public goTo404() {
-        console.log('страница 404')
         this.emit('404')
     }
 

@@ -28,7 +28,6 @@ export class EditorBlocks {
             const content = el.call(this)
             template.append(content)
         })
-        console.log(template.children)
         return template.children
     }
 

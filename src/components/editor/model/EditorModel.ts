@@ -23,7 +23,6 @@ export class EditorModel extends EventEmitter {
                     }
                 }
                 openRequest.onsuccess = function () {
-                    console.log(openRequest.result)
                     const db = openRequest.result
                     const transaction = db.transaction('article', 'readwrite')
                     const article = transaction.objectStore('article')
@@ -51,7 +50,6 @@ export class EditorModel extends EventEmitter {
         return new Promise((resolve) => {
             const openRequest = indexedDB.open('localSavedArticle', 1)
             openRequest.onupgradeneeded = function () {
-                console.log('upgrade')
                 const db = openRequest.result
                 if (!db.objectStoreNames.contains('article')) {
                     db.createObjectStore('article')

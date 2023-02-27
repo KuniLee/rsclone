@@ -257,7 +257,6 @@ export class EditorView extends EventEmitter {
             })
             buttonText.addEventListener('input', () => {
                 let value = buttonText.value
-                console.log(value.length)
                 if (value.length > 42) {
                     buttonText.value = value.slice(0, 43 - 1)
                     value = value.slice(0, 43 - 1)
@@ -547,7 +546,6 @@ export class EditorView extends EventEmitter {
             })
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-                    console.log('test')
                     if (menu && !menu.hidden) {
                         this.navigateInMenu(e.key)
                     }
@@ -845,7 +843,6 @@ export class EditorView extends EventEmitter {
         textElement.querySelector('.choseAnotherImage')?.addEventListener('click', (e) => {
             e.preventDefault()
             const inputField = textElement.querySelector('.image-elem__input') as HTMLInputElement
-            console.log(inputField)
             const event = new MouseEvent('click', { bubbles: false })
             inputField?.dispatchEvent(event)
         })

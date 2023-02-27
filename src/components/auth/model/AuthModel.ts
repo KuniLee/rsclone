@@ -55,7 +55,6 @@ export class AuthModel extends EventEmitter {
     }
 
     private goTo404() {
-        console.log('страница 404')
         this.emit('404')
     }
 }
