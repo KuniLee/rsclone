@@ -199,6 +199,7 @@ export class EditorView extends EventEmitter {
                 getSave: this.dictionary.GetSave[this.lang],
                 restore: this.dictionary.Restore[this.lang],
                 imageSizeError: this.dictionary.ImageSizeError[this.lang],
+                savedLocally: this.dictionary.SavedLocally[this.lang],
             })
         }
         const popupMenu = document.querySelector('.menu') as HTMLElement

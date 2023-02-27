@@ -151,6 +151,10 @@ const EditorPage: Record<string, language> = {
         ru: 'Размер изображения слишком большой. Максимальный размер изображения не должен превышать 1 Мб',
         en: 'The image size is too large. The maximum image size should not exceed 1 MB',
     },
+    SavedLocally: {
+        ru: 'Сохранено локально в',
+        en: 'Saved locally at',
+    },
 }
 
 const Aside: Record<string, language> = {
