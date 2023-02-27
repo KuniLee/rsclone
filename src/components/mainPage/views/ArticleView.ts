@@ -119,7 +119,7 @@ export class ArticleView extends EventEmitter {
     private addListeners(feedWrapper: HTMLElement) {
         const paragraphEditableElements = feedWrapper.querySelectorAll('.editable')
         const sendBtnEl = feedWrapper.querySelector('.comment-form__button_send')
-        this.addLinksListeners(feedWrapper)
+        //this.addLinksListeners(feedWrapper)
         paragraphEditableElements.forEach((paragraphEditableEl) => {
             if (paragraphEditableEl instanceof HTMLElement) this.addInputListeners(paragraphEditableEl, feedWrapper)
         })
