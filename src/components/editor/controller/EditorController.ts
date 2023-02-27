@@ -156,7 +156,6 @@ export class EditorController {
                                 const imageBlob = await getBlob(ref(this.storage, el.imageSrc))
                                 if (imageBlob) {
                                     const promise = await getImageBase64FromBlob(imageBlob)
-                                    console.log(promise)
                                     if (promise && typeof promise === 'string') {
                                         el.imageSrc = promise
                                     }
@@ -168,7 +167,6 @@ export class EditorController {
                         const imageBlob = await getBlob(ref(this.storage, article.preview.image))
                         if (imageBlob) {
                             const promise = await getImageBase64FromBlob(imageBlob)
-                            console.log(promise)
                             if (promise && typeof promise === 'string') {
                                 article.preview.image = promise
                             }

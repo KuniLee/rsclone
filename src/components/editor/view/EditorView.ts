@@ -146,7 +146,6 @@ export class EditorView extends EventEmitter {
             if (savedArticle && !this.isEdit) {
                 const fullDate = new Date(Number(savedArticle.time))
                 this.savedBlocks = savedArticle.blocks
-                console.log(this.savedBlocks)
                 dateTime = this.getParsedTime(fullDate)
                 date = this.getParsedDate(fullDate)
             }
@@ -307,7 +306,6 @@ export class EditorView extends EventEmitter {
                         ?.value
                     const imageSrc = image ? image.getAttribute('src') : ''
                     const objectPosition = image.style.objectPosition?.split(' ')
-                    console.log(objectPosition)
                     const imageSrcResult = imageSrc ?? ''
                     const textButtonValue = buttonText.value
                     const preview: ParsedPreviewArticle = {
@@ -329,7 +327,6 @@ export class EditorView extends EventEmitter {
                         translateLink: translateLink.value,
                         isTranslate: translateCheckbox.checked,
                     }
-                    console.log(result)
                     if (!this.isEdit) {
                         this.emit('ARTICLE_PARSED', undefined, result)
                     } else {
@@ -559,7 +556,6 @@ export class EditorView extends EventEmitter {
         const item = el.closest('.list') as HTMLElement
         const value = el.textContent
         if (value) {
-            console.log(1)
             this.addNewParagraph(el)
         } else {
             if (listParagraphs) {
@@ -796,38 +792,38 @@ export class EditorView extends EventEmitter {
                     e.stopImmediatePropagation()
                 }
             }
-            if (el.closest('.imageContainer')) {
-                const inputField = textElement.querySelector('.image-elem__input') as HTMLInputElement
-                if (!textElement.classList.contains('image-added')) {
-                    const event = new MouseEvent('click', { bubbles: false })
-                    inputField?.dispatchEvent(event)
-                }
-                inputField?.addEventListener('change', (e) => {
-                    const target = e.target as HTMLInputElement
-                    if (target) {
-                        if (target.files) {
-                            if (!target.files.length) {
-                                return
-                            } else {
-                                const fileTypes = ['jpg', 'jpeg', 'png', 'gif']
-                                const extension = target.files[0].name.split('.').pop()?.toLowerCase()
-                                if (extension && fileTypes.includes(extension)) {
-                                    const fileReader = new FileReader()
-                                    fileReader.readAsDataURL(target.files[0])
-                                    fileReader.onload = () => {
-                                        if (typeof fileReader.result === 'string') {
-                                            this.addImageToImageBlock(textElement, fileReader.result)
-                                        }
+        })
+        if (textElement.classList.contains('imageElement')) {
+            const inputField = textElement.querySelector('.image-elem__input') as HTMLInputElement
+            if (!textElement.classList.contains('image-added')) {
+                const event = new MouseEvent('click', { bubbles: false })
+                inputField?.dispatchEvent(event)
+            }
+            inputField?.addEventListener('change', (e) => {
+                const target = e.target as HTMLInputElement
+                if (target) {
+                    if (target.files) {
+                        if (!target.files.length) {
+                            return
+                        } else {
+                            const fileTypes = ['jpg', 'jpeg', 'png', 'gif']
+                            const extension = target.files[0].name.split('.').pop()?.toLowerCase()
+                            if (extension && fileTypes.includes(extension)) {
+                                const fileReader = new FileReader()
+                                fileReader.readAsDataURL(target.files[0])
+                                fileReader.onload = () => {
+                                    if (typeof fileReader.result === 'string') {
+                                        this.addImageToImageBlock(textElement, fileReader.result)
                                     }
-                                } else {
-                                    alert('wrong type of file')
                                 }
+                            } else {
+                                alert('wrong type of file')
                             }
                         }
                     }
-                })
-            }
-        })
+                }
+            })
+        }
         textElement.querySelector('.delete-btn')?.addEventListener('click', (e) => {
             e.preventDefault()
             if (editor.querySelectorAll('.editorElement')?.length !== 1) {
@@ -837,6 +833,7 @@ export class EditorView extends EventEmitter {
         textElement.querySelector('.choseAnotherImage')?.addEventListener('click', (e) => {
             e.preventDefault()
             const inputField = textElement.querySelector('.image-elem__input') as HTMLInputElement
+            console.log(inputField)
             const event = new MouseEvent('click', { bubbles: false })
             inputField?.dispatchEvent(event)
         })
@@ -1503,7 +1500,6 @@ export class EditorView extends EventEmitter {
                                     if (elementsList) {
                                         const lastChild = elementsList.lastElementChild as HTMLElement
                                         if (lastChild) {
-                                            console.log(lastChild, elementsList, el.value)
                                             this.addNewParagraph(
                                                 lastChild,
                                                 el.value && typeof el.value === 'string' ? el.value : ''
@@ -1654,7 +1650,6 @@ export class EditorView extends EventEmitter {
         }
         document.querySelectorAll('input[name="сomplexity"]')?.forEach((el) => {
             const element = el as HTMLInputElement
-            console.log(element.value === obj.difficult)
             if (element.value === obj.difficult) {
                 element.checked = true
             }
