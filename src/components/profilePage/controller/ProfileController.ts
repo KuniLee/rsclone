@@ -10,6 +10,7 @@ import {
     Firestore,
     getDoc,
     getDocs,
+    listAll,
     query,
     ref,
     updateDoc,
@@ -20,6 +21,7 @@ import { ProfileModelInstance } from '../model/ProfileModel'
 import { ProfileViewInstance } from './../view/ProfileView'
 import { limit, orderBy, QueryConstraint } from 'firebase/firestore'
 import { Article, URLParams } from 'types/interfaces'
+import { list } from 'postcss'
 
 export class ProfileController {
     private view: ProfileViewInstance
@@ -94,6 +96,13 @@ export class ProfileController {
                                 }
                             })
                             await updateDoc(userRef, userData)
+                        }
+                    }
+                    const storageRef = await ref(this.storage, `articles/${arg}`)
+                    const listOfImages = await listAll(storageRef)
+                    if (listOfImages && Array.isArray(listOfImages.items)) {
+                        for (const item of listOfImages.items) {
+                            await deleteObject(item)
                         }
                     }
                     await deleteDoc(doc(this.db, `articles/${arg}`))

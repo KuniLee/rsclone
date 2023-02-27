@@ -9,6 +9,7 @@ import {
     getBlob,
     getMetadata,
     deleteObject,
+    listAll,
 } from 'firebase/storage'
 import {
     query,
@@ -63,6 +64,7 @@ export {
     getMetadata,
     deleteDoc,
     deleteObject,
+    listAll,
 }
 import EventEmitter from 'events'
 import { UserData } from 'types/types'
