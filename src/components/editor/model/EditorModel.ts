@@ -1,15 +1,13 @@
-import { BlocksType, ParsedData } from 'types/types'
+import { BlocksType, NewArticleData, ParsedData } from 'types/types'
 import EventEmitter from 'events'
 import { Flows, Paths } from 'types/enums'
 import { URLParams } from 'types/interfaces'
 import { ParsedQuery } from 'query-string'
 
-type EditorModelEventsName = 'CHANGE_PAGE' | '404' | 'ARTICLE_SAVED'
+type EditorModelEventsName = 'CHANGE_PAGE' | '404' | 'ARTICLE_SAVED' | 'ARTICLE_RECEIVED' | 'ARTICLE_NOT_RECEIVED'
 export type EditorModelInstance = InstanceType<typeof EditorModel>
 
 export class EditorModel extends EventEmitter {
-    public search: ParsedQuery<string> = {}
-
     constructor() {
         super()
     }
@@ -102,6 +100,14 @@ export class EditorModel extends EventEmitter {
                 resolve(null)
             }
         })
+    }
+
+    getArticle(obj?: NewArticleData) {
+        if (obj) {
+            this.emit('ARTICLE_RECEIVED', obj)
+        } else {
+            this.emit('ARTICLE_NOT_RECEIVED')
+        }
     }
 
     on<T>(event: EditorModelEventsName, callback: (arg: T) => void) {

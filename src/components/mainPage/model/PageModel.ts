@@ -49,6 +49,7 @@ export class PageModel extends EventEmitter {
             case Paths.Flows:
                 this.goToFlows()
                 break
+            case Paths.Edit:
             case Paths.Sandbox:
                 this.goToSandbox()
                 break
@@ -82,7 +83,7 @@ export class PageModel extends EventEmitter {
     }
 
     private goToSandbox() {
-        if (Object.values(Sandbox).includes(this.path[1] as Sandbox)) {
+        if (Object.values(Sandbox).includes(this.path[1] as Sandbox) || this.path[1]) {
             console.log(`страница sandbox${this.path[1]}`)
             this.emit('CHANGE_PAGE')
         } else this.goTo404()

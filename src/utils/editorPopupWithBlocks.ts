@@ -92,7 +92,7 @@ export class EditorBlocks {
         template.innerHTML = blocksPopup({
             class: 'unorderedListElementPopup',
             svg: require('../assets/icons/unordered-list.svg'),
-            blockName: this.dictionary.NumberedList[this.lang],
+            blockName: this.dictionary.UnorderedList[this.lang],
             type: 'unorderedList',
         })
         return template.content

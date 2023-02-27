@@ -5,17 +5,17 @@ import { EditorModelInstance } from '@/components/editor/model/EditorModel'
 import {
     FireBaseAPI,
     Firestore,
-    addDoc,
     collection,
     ref,
-    uploadBytes,
     doc,
     setDoc,
     updateDoc,
     serverTimestamp,
     getDoc,
+    getBlob,
 } from '@/utils/FireBaseAPI'
 import { FirebaseStorage, uploadString } from 'firebase/storage'
+import { NewArticleData } from 'types/types'
 
 export class EditorController {
     private router: RouterInstance
@@ -74,7 +74,7 @@ export class EditorController {
                     await uploadString(imageRef, image, 'data_url')
                     articleData.preview.image = imageRef.fullPath
                 }
-                const newArticle = await setDoc(docRef, Object.assign(articleData, { createdAt: serverTimestamp() }))
+                await setDoc(docRef, Object.assign(articleData, { createdAt: serverTimestamp() }))
                 if (userData) {
                     if (userData.articles && userData.articles.length) {
                         userData.articles = [...userData.articles, docRef]
@@ -83,9 +83,41 @@ export class EditorController {
                     }
                 }
                 await updateDoc(userRef, userData)
-                console.log('delete')
                 await this.editorModel.deleteArticle()
-                alert('Удачно!')
+                this.view.emit('GOTO', location.origin)
+            } catch (e) {
+                console.log(e)
+            }
+        })
+        view.on('EDIT_ARTICLE_COMPLETE', async (arg, articleData) => {
+            try {
+                const image = articleData.preview.image
+                const docRef = doc(this.db, `articles/${arg}`)
+                const blocks = articleData.blocks
+                if (blocks) {
+                    let index = 0
+                    for (const el of blocks) {
+                        if (el.type === 'image') {
+                            if (el.imageSrc) {
+                                const image = el.imageSrc
+                                const imageRef = ref(this.storage, `articles/${arg}/image${index}`)
+                                if (image != null) {
+                                    await uploadString(imageRef, image, 'data_url')
+                                    el.imageSrc = imageRef.fullPath
+                                }
+                                index++
+                            }
+                        }
+                    }
+                }
+                if (image) {
+                    const imageRef = ref(this.storage, `articles/${arg}/previewImage`)
+                    await uploadString(imageRef, image, 'data_url')
+                    articleData.preview.image = imageRef.fullPath
+                }
+                await updateDoc(docRef, articleData)
+                await this.editorModel.deleteArticle()
+                this.view.emit('GOTO', location.origin)
             } catch (e) {
                 console.log(e)
             }
@@ -94,6 +126,55 @@ export class EditorController {
             const result = this.editorModel.saveArticleToLocalStorage(blocks)
             if (result) {
                 this.editorModel.updateTimeLocalSaved()
+            }
+        })
+        view.on('GET_ARTICLE', async (id) => {
+            try {
+                const docRef = await getDoc(doc(this.db, `articles/${id}`))
+                const article = (await docRef.data()) as NewArticleData
+                if (article.userId === this.pageModel.user.uid) {
+                    const getImageBase64FromBlob = async (image: Blob) => {
+                        return await new Promise((resolve, reject) => {
+                            const reader = new FileReader()
+                            reader.onerror = (e) => {
+                                console.log('error in read file')
+                                reject()
+                            }
+                            reader.onload = () => {
+                                resolve(reader.result)
+                            }
+                            reader.readAsDataURL(image)
+                        })
+                    }
+                    for (const el of article.blocks) {
+                        if (el.type === 'image') {
+                            if (el.imageSrc) {
+                                const imageBlob = await getBlob(ref(this.storage, el.imageSrc))
+                                if (imageBlob) {
+                                    const promise = await getImageBase64FromBlob(imageBlob)
+                                    if (promise && typeof promise === 'string') {
+                                        el.imageSrc = promise
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (article.preview.image) {
+                        const imageBlob = await getBlob(ref(this.storage, article.preview.image))
+                        if (imageBlob) {
+                            const promise = await getImageBase64FromBlob(imageBlob)
+                            if (promise && typeof promise === 'string') {
+                                article.preview.image = promise
+                            }
+                        }
+                    }
+                    this.editorModel.getArticle(article)
+                } else {
+                    throw new Error('Auth error')
+                }
+            } catch (err) {
+                this.editorModel.getArticle()
+                console.log(err)
             }
         })
     }

@@ -21,6 +21,7 @@ export class Preview extends EventEmitter {
             time: getTimeAgo(this.article.createdAt.toDate(), localStorage.lang),
             words: getWords(dictionary.PostPage, localStorage.lang),
             article: this.article,
+            id: this.article.id,
             emptyAvatar,
         })
         this.el = template.content

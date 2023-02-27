@@ -67,6 +67,7 @@ const ProfilePage: Record<string, language> = {
     Information: { ru: 'Информация', en: 'Information' },
     Registered: { ru: 'Зарегистрирован', en: 'Registered' },
     Posts: { ru: 'Публикации', en: 'Posts' },
+    edit: { ru: 'Редактировать', en: 'Edit article' },
 }
 
 const PageNotFound: Record<string, language> = {
@@ -85,6 +86,7 @@ const EditorPage: Record<string, language> = {
     Quote: { ru: 'Цитата', en: 'Quote' },
     Delete: { ru: 'Удалить', en: 'Delete' },
     NumberedList: { ru: 'Нумерованный список', en: 'Numbered list' },
+    UnorderedList: { ru: 'Список', en: 'Unordered list' },
     Image: { ru: 'Изображение', en: 'Image' },
     Delimiter: { ru: 'Разделитель', en: 'Delimiter' },
     ToSettings: { ru: 'Далее к настройкам', en: 'Proceed to settings' },
@@ -95,6 +97,7 @@ const EditorPage: Record<string, language> = {
     PostSettings: { ru: 'Настройки публикации', en: 'Post settings' },
     FlowsHint: { ru: 'Выберите потоки', en: 'Choose flows' },
     Keywords: { ru: 'Ключевые слова', en: 'Keywords' },
+    KeywordsPlaceholder: { ru: 'Введите ключевые слова', en: 'Enter keywords' },
     KeywordsHint: {
         ru: 'Введите сюда от 1 до 10 ключевых слов, отделяя их запятыми',
         en: 'Enter from 1 to 10 key words here, separated by commas',
@@ -138,6 +141,20 @@ const EditorPage: Record<string, language> = {
     AddImageText: { ru: 'Добавить картинку', en: 'Add image' },
     AddFigcaptionText: { ru: 'Добавьте подпись к изображению', en: 'Image title' },
     LoadAnotherImage: { ru: 'Загрузить другую', en: 'Upload new one' },
+    documentCreated: { ru: 'Документ был создан ', en: 'Article was created ' },
+    RemoveCover: { ru: 'Удалить обложку', en: 'Remove cover' },
+    ChangePosition: { ru: 'Изменить позицию', en: 'Edit position' },
+    SavePosition: { ru: 'Сохранить позицию', en: 'Save position' },
+    GetSave: { ru: 'У вас есть сохранение от', en: 'You have an autosaved draft on' },
+    Restore: { ru: 'Восстановить', en: 'Restore' },
+    ImageSizeError: {
+        ru: 'Размер изображения слишком большой. Максимальный размер изображения не должен превышать 1 Мб',
+        en: 'The image size is too large. The maximum image size should not exceed 1 MB',
+    },
+    SavedLocally: {
+        ru: 'Сохранено локально в',
+        en: 'Saved locally at',
+    },
 }
 
 const Aside: Record<string, language> = {
@@ -187,6 +204,15 @@ const Comments: Record<string, language> = {
     TypeSomething: { ru: 'Введите текст', en: 'Type something' },
 }
 
+const AccessError: Record<string, language> = {
+    AuthFail: { ru: 'Ошибка авторизации', en: 'Authorization failed' },
+    PleaseLogin: {
+        ru: 'Вы не имеете прав для редактирования этой страницы',
+        en: 'You are not authorized to edit this page',
+    },
+    Button: { ru: 'Вернуться на главную', en: 'Back to the main page' },
+}
+
 export function getWords(wordObj: Record<string, language>, lang: keyof language) {
     const result: Record<string, string> = {}
     for (const wordObjKey in wordObj) {
@@ -208,4 +234,5 @@ export default {
     EditorPage,
     PostPage,
     Comments,
+    AccessError,
 }
