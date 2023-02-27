@@ -1,6 +1,15 @@
 import { CommentInfo } from './../types/types'
 import { initializeApp } from 'firebase/app'
-import { getStorage, ref, uploadBytes, getDownloadURL, uploadString, getBlob, getMetadata } from 'firebase/storage'
+import {
+    getStorage,
+    ref,
+    uploadBytes,
+    getDownloadURL,
+    uploadString,
+    getBlob,
+    getMetadata,
+    deleteObject,
+} from 'firebase/storage'
 import {
     query,
     getFirestore,
@@ -16,6 +25,7 @@ import {
     limit,
     startAt,
     where,
+    deleteDoc,
     DocumentReference,
 } from 'firebase/firestore'
 import {
@@ -51,6 +61,8 @@ export {
     where,
     getBlob,
     getMetadata,
+    deleteDoc,
+    deleteObject,
 }
 import EventEmitter from 'events'
 import { UserData } from 'types/types'

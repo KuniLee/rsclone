@@ -1,6 +1,20 @@
-import { UserData } from 'types/types'
+import { CommentInfo, NewArticleData, UserData } from 'types/types'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
-import { collection, FireBaseAPIInstance, FirebaseStorage, Firestore, getDocs, query, where } from '@/utils/FireBaseAPI'
+import {
+    collection,
+    deleteDoc,
+    deleteObject,
+    doc,
+    FireBaseAPIInstance,
+    FirebaseStorage,
+    Firestore,
+    getDoc,
+    getDocs,
+    query,
+    ref,
+    updateDoc,
+    where,
+} from '@/utils/FireBaseAPI'
 import { Auth, User } from 'firebase/auth'
 import { ProfileModelInstance } from '../model/ProfileModel'
 import { ProfileViewInstance } from './../view/ProfileView'
@@ -39,6 +53,56 @@ export class ProfileController {
         })
         this.view.on<URLParams>('GO_TO', (path) => {
             this.pageModel.changePage(path)
+        })
+        this.view.on<string>('DELETE_ARTICLE', async (arg) => {
+            try {
+                const docRef = await getDoc(doc(this.db, `articles/${arg}`))
+                const article = (await docRef.data()) as NewArticleData
+                if (article) {
+                    const queryConstants: QueryConstraint[] = [orderBy('createdAt', 'asc')]
+                    const author = article.userId
+                    const authorRef = await doc(this.db, `users/${author}`)
+                    const authorArticles = await getDoc(authorRef)
+                    const userData = await authorArticles.data()
+                    if (userData) {
+                        if (userData.articles && userData.articles.length) {
+                            console.log(userData.articles)
+                            const id = userData.articles.indexOf(`/articles/${arg}`)
+                            userData.articles.splice(id, 1)
+                            await updateDoc(authorRef, userData)
+                        }
+                    }
+                    const commentsArticleRef = collection(this.db, `articles/${arg}/comments`)
+                    const commentsSnapshot = await getDocs(query(commentsArticleRef, ...queryConstants))
+                    const commentData: Array<string[]> = []
+                    commentsSnapshot.forEach((el) => {
+                        const commentId = el.id
+                        const comment = el.data() as CommentInfo
+                        // @ts-ignore
+                        const userId = comment.user.id
+                        commentData.push([commentId, userId])
+                    })
+                    for (const [commentId, userid] of commentData) {
+                        const userRef = doc(this.db, `users/${userid}`)
+                        const usersArticles = await getDoc(userRef)
+                        const userData = (await usersArticles.data()) as UserData
+                        if (userData.comments) {
+                            userData.comments.forEach((el, index) => {
+                                // @ts-ignore
+                                if (el.id === commentId) {
+                                    userData.comments?.splice(index, 1)
+                                }
+                            })
+                            await updateDoc(userRef, userData)
+                        }
+                    }
+                    await deleteDoc(doc(this.db, `articles/${arg}`))
+                    location.reload()
+                }
+            } catch (e) {
+                console.log(e)
+                location.reload()
+            }
         })
     }
 

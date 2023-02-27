@@ -11,7 +11,7 @@ import editDeleteTemplate from '@/templates/editAndDeleteArticleButtonsTemplate.
 import { User } from 'firebase/auth'
 import { Preview } from '@/utils/previewBuilder'
 
-type ProfileViewEventsName = 'GOTO' | 'LOAD_USER_INFO' | 'LOAD_ARTICLES' | 'GO_TO'
+type ProfileViewEventsName = 'GOTO' | 'LOAD_USER_INFO' | 'LOAD_ARTICLES' | 'GO_TO' | 'DELETE_ARTICLE'
 
 export type ProfileViewInstance = InstanceType<typeof ProfileView>
 
@@ -119,6 +119,7 @@ export class ProfileView extends EventEmitter {
             }
         })
         this.addListenerToEditButton()
+        this.addListenerToDeleteButton()
     }
 
     private addListenerToEditButton() {
@@ -130,6 +131,31 @@ export class ProfileView extends EventEmitter {
                     ?.split('/')
                     .map((el) => '/' + el)
                 this.emit('GO_TO', { path: href })
+            })
+        })
+    }
+
+    private addListenerToDeleteButton() {
+        document.querySelectorAll('.article__delete')?.forEach((el) => {
+            el.addEventListener('click', (e) => {
+                e.preventDefault()
+                let message = ''
+                if (this.pageModel.lang === 'ru') {
+                    message = 'Вы действительно хотите удалить статью?'
+                } else {
+                    message = 'Are you sure you want to delete the article?'
+                }
+                const ask = confirm(message)
+                if (ask) {
+                    const article = el.closest('article')
+                    if (article instanceof HTMLElement) {
+                        const id = article.dataset.id
+                        console.log(id)
+                        if (id) {
+                            this.emit('DELETE_ARTICLE', id)
+                        }
+                    }
+                }
             })
         })
     }
