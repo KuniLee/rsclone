@@ -1693,6 +1693,9 @@ export class EditorView extends EventEmitter {
         }
         this.checkSettings()
         document.querySelector('.modal-loader')?.remove()
+        setTimeout(() => {
+            window.scrollTo(0, 0)
+        })
     }
 
     private changeTimePublished(date: Date) {
