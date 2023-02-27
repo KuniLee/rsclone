@@ -85,9 +85,3 @@ export type CommentInfo = {
     createdAt: Timestamp
     user: DocumentReference | UserData
 }
-
-export type CommentInfo = {
-    blocks: Array<BlocksType>
-    createdAt: Timestamp
-    user: DocumentReference | UserData
-}

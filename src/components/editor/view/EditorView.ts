@@ -768,7 +768,7 @@ export class EditorView extends EventEmitter {
             })
             document.querySelectorAll('.open')?.forEach((el) => {
                 el.classList.remove('open')
-                    ; (el as HTMLElement).hidden = true
+                ;(el as HTMLElement).hidden = true
             })
             if (el.closest('.options__open-btn')) {
                 e.preventDefault()
