@@ -1,6 +1,6 @@
 import EventEmitter from 'events'
 import { Paths } from 'types/enums'
-import { URLParams } from 'types/interfaces'
+import { rootModel, URLParams } from 'types/interfaces'
 import { ParsedQuery } from 'query-string'
 
 type PageModelEventsName = 'CHANGE_PAGE' | '404' | 'USER_SIGNED_UP' | 'USER_SIGNED_IN' | 'EMAIL_EXIST' | 'WRONG_DATA'
@@ -8,11 +8,18 @@ export type AuthModelInstance = InstanceType<typeof AuthModel>
 
 export class AuthModel extends EventEmitter {
     public path: Array<string> = []
-    public lang: 'ru' | 'en' = 'ru'
+    public lang: rootModel['lang'] = 'ru'
     public search: ParsedQuery = {}
 
     constructor() {
         super()
+        this.loadSettings()
+    }
+
+    private loadSettings() {
+        const lang = localStorage.lang
+        if (['ru', 'en'].includes(lang)) this.lang = lang
+        else localStorage.lang = this.lang
     }
     on<T>(event: PageModelEventsName, callback: (arg: T) => void) {
         return super.on(event, callback)
