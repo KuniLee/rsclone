@@ -7,6 +7,7 @@ import Dictionary, { getWords } from '@/utils/dictionary'
 import emptyAvatar from '@/assets/icons/avatar.svg'
 import preloader from '@/templates/preloader.html'
 import editButton from '@/templates/editButtonTemplate.hbs'
+import preload from '@/templates/preloaderModal.hbs'
 import editDeleteTemplate from '@/templates/editAndDeleteArticleButtonsTemplate.hbs'
 import { User } from 'firebase/auth'
 import { Preview } from '@/utils/previewBuilder'
@@ -152,6 +153,15 @@ export class ProfileView extends EventEmitter {
                         const id = article.dataset.id
                         console.log(id)
                         if (id) {
+                            const main = document.querySelector('main')
+                            if (main instanceof HTMLElement) {
+                                const template = document.createElement('template')
+                                template.innerHTML = preload({})
+                                document.body.append(template.content)
+                                if (this.pageModel.user) {
+                                    this.buildPage()
+                                }
+                            }
                             this.emit('DELETE_ARTICLE', id)
                         }
                     }
