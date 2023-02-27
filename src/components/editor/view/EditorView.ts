@@ -1190,13 +1190,15 @@ export class EditorView extends EventEmitter {
                     : translateLink.classList.add('border-[#ff8d85]')
             }
             const button = document.querySelector('.submitArticle') as HTMLButtonElement
+            const checkFlowInput = selectFlowInput.values
             if (button) {
                 if (
                     checkKeywordsResult &&
                     checkTranslateLink &&
                     checkTranslateAuthor &&
                     checkButtonTextResult &&
-                    checkPreviewBlock
+                    checkPreviewBlock &&
+                    checkFlowInput.length
                 ) {
                     if (button) {
                         button.disabled = false
@@ -1625,12 +1627,6 @@ export class EditorView extends EventEmitter {
             langCheckbox.checked = true
         }
         const selectPure = document.querySelector('select-pure') as SelectPure
-        document.querySelectorAll('option-pure')?.forEach((el) => {
-            const element = el as OptionPureElement
-            if (obj.flows.includes(element.getOption().value)) {
-                element.select()
-            }
-        })
         const keywords = obj.keywords.join(', ')
         const keywordsInput = document.querySelector('.keywords-input')
         if (keywordsInput instanceof HTMLInputElement) {
