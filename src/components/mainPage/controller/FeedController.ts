@@ -129,7 +129,7 @@ export class FeedController {
             })
         } else {
             this.router.push(path)
-            location.reload()
+            if (lastHref === Paths.Auth) location.reload()
         }
     }
 
