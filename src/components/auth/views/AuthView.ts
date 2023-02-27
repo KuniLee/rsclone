@@ -26,7 +26,6 @@ export class AuthView extends EventEmitter {
         this.mainPageContainer = document.createElement('main')
         this.mainPageContainer.className = 'bg-color-bg-dark flex-grow'
         this.show()
-        this.buildPage()
         this.model.on('CHANGE_PAGE', () => {
             if (this.model.path[0] === Paths.Auth) this.buildPage()
             if (this.model.path[0] === Paths.Registration) this.buildPage(true)
@@ -74,7 +73,7 @@ export class AuthView extends EventEmitter {
                         grecaptcha.render('captcha1', {
                             sitekey: process.env.KAPTCHA_KEY,
                         })
-                    }, 1000)
+                    }, 1500)
                 }
             }
             this.addListeners()
