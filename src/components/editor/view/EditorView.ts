@@ -23,6 +23,7 @@ import { OptionPure, SelectPure } from 'select-pure/lib/components'
 import dictionary from '@/utils/dictionary'
 import preloader from '@/templates/preloaderModal.hbs'
 import { OptionPureElement } from 'select-pure/lib/models'
+import { Declaration } from 'postcss'
 
 type ItemViewEventsName =
     | 'GOTO'
@@ -95,7 +96,7 @@ export class EditorView extends EventEmitter {
             this.parseData(arg as NewArticleData)
         })
         this.editorModel.on('ARTICLE_NOT_RECEIVED', () => {
-            this.showAuthFail()
+            this.showAuthFail('editError')
             document.querySelector('.modal-loader')?.remove()
         })
     }
@@ -1252,13 +1253,14 @@ export class EditorView extends EventEmitter {
             parent?.querySelector('.drag')?.classList.add('hidden')
         }
     }
-    showAuthFail() {
+    showAuthFail(message?: string) {
         const main = document.querySelector('main') as HTMLElement
         if (main) {
             main.innerHTML = ''
             const pageWrapper = document.createElement('div')
             pageWrapper.className = 'sm:container mx-auto'
-            pageWrapper.innerHTML = authErrorPage({ words: getWords(Dictionary.errorPage, this.pageModel.lang) })
+            const dict = message ? Dictionary.AccessError : Dictionary.errorPage
+            pageWrapper.innerHTML = authErrorPage({ words: getWords(dict, this.pageModel.lang) })
             const mainPageBtn = pageWrapper.querySelector('button') as HTMLButtonElement
             mainPageBtn.onclick = () => {
                 this.emit<string>('GOTO', location.origin)

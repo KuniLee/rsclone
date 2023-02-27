@@ -195,6 +195,15 @@ const Comments: Record<string, language> = {
     TypeSomething: { ru: 'Введите текст', en: 'Type something' },
 }
 
+const AccessError: Record<string, language> = {
+    AuthFail: { ru: 'Ошибка авторизации', en: 'Authorization failed' },
+    PleaseLogin: {
+        ru: 'Вы не имеете прав для редактирования этой страницы',
+        en: 'You are not authorized to edit this page',
+    },
+    Button: { ru: 'Вернуться на главную', en: 'Back to the main page' },
+}
+
 export function getWords(wordObj: Record<string, language>, lang: keyof language) {
     const result: Record<string, string> = {}
     for (const wordObjKey in wordObj) {
@@ -216,4 +225,5 @@ export default {
     EditorPage,
     PostPage,
     Comments,
+    AccessError,
 }

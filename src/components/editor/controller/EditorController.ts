@@ -137,45 +137,49 @@ export class EditorController {
             try {
                 const docRef = await getDoc(doc(this.db, `articles/${id}`))
                 const article = (await docRef.data()) as NewArticleData
-                const index = 0
-                const getImageBase64FromBlob = async (image: Blob) => {
-                    return await new Promise((resolve, reject) => {
-                        const reader = new FileReader()
-                        reader.onerror = (e) => {
-                            console.log('error in read file')
-                            reject()
-                        }
-                        reader.onload = () => {
-                            resolve(reader.result)
-                        }
-                        reader.readAsDataURL(image)
-                    })
-                }
-                for (const el of article.blocks) {
-                    if (el.type === 'image') {
-                        if (el.imageSrc) {
-                            const imageBlob = await getBlob(ref(this.storage, el.imageSrc))
-                            if (imageBlob) {
-                                const promise = await getImageBase64FromBlob(imageBlob)
-                                console.log(promise)
-                                if (promise && typeof promise === 'string') {
-                                    el.imageSrc = promise
+                if (article.userId === this.pageModel.user.uid) {
+                    const index = 0
+                    const getImageBase64FromBlob = async (image: Blob) => {
+                        return await new Promise((resolve, reject) => {
+                            const reader = new FileReader()
+                            reader.onerror = (e) => {
+                                console.log('error in read file')
+                                reject()
+                            }
+                            reader.onload = () => {
+                                resolve(reader.result)
+                            }
+                            reader.readAsDataURL(image)
+                        })
+                    }
+                    for (const el of article.blocks) {
+                        if (el.type === 'image') {
+                            if (el.imageSrc) {
+                                const imageBlob = await getBlob(ref(this.storage, el.imageSrc))
+                                if (imageBlob) {
+                                    const promise = await getImageBase64FromBlob(imageBlob)
+                                    console.log(promise)
+                                    if (promise && typeof promise === 'string') {
+                                        el.imageSrc = promise
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                if (article.preview.image) {
-                    const imageBlob = await getBlob(ref(this.storage, article.preview.image))
-                    if (imageBlob) {
-                        const promise = await getImageBase64FromBlob(imageBlob)
-                        console.log(promise)
-                        if (promise && typeof promise === 'string') {
-                            article.preview.image = promise
+                    if (article.preview.image) {
+                        const imageBlob = await getBlob(ref(this.storage, article.preview.image))
+                        if (imageBlob) {
+                            const promise = await getImageBase64FromBlob(imageBlob)
+                            console.log(promise)
+                            if (promise && typeof promise === 'string') {
+                                article.preview.image = promise
+                            }
                         }
                     }
+                    this.editorModel.getArticle(article)
+                } else {
+                    throw new Error('Auth error')
                 }
-                this.editorModel.getArticle(article)
             } catch (err) {
                 this.editorModel.getArticle()
                 console.log(err)
