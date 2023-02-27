@@ -63,6 +63,7 @@ export class EditorView extends EventEmitter {
                 (this.pageModel.path[0] === Paths.Sandbox && this.pageModel.path[1] === Sandbox.New) ||
                 (this.pageModel.path[0] === Paths.Edit && this.pageModel.path[1])
             ) {
+                this.isGlobalListener = false
                 if (this.pageModel.path[0] === Paths.Sandbox) {
                     this.isEdit = false
                     if (this.pageModel.user) {
