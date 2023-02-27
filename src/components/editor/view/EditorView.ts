@@ -142,7 +142,7 @@ export class EditorView extends EventEmitter {
             const savedArticle = await this.editorModel.getSavedArticle()
             let dateTime = ''
             let date = ''
-            if (savedArticle) {
+            if (savedArticle && !this.isEdit) {
                 const fullDate = new Date(Number(savedArticle.time))
                 this.savedBlocks = savedArticle.blocks
                 console.log(this.savedBlocks)
@@ -195,6 +195,8 @@ export class EditorView extends EventEmitter {
                 removeCover: this.dictionary.RemoveCover[this.lang],
                 changePosition: this.dictionary.ChangePosition[this.lang],
                 savePosition: this.dictionary.SavePosition[this.lang],
+                getSave: this.dictionary.GetSave[this.lang],
+                restore: this.dictionary.Restore[this.lang],
             })
         }
         const popupMenu = document.querySelector('.menu') as HTMLElement
@@ -341,6 +343,13 @@ export class EditorView extends EventEmitter {
             e.preventDefault()
             document.querySelector('.save-information-block')?.remove()
             this.restoreArticle(this.savedBlocks)
+            const settings = document.querySelector('.editorSettings')
+            if (settings instanceof HTMLElement && !settings.classList.contains('hidden')) {
+                const button = document.querySelector('.backToEditor')
+                if (button instanceof HTMLButtonElement) {
+                    button.click()
+                }
+            }
         })
         document.querySelector('.backToEditor')?.addEventListener('click', (e) => {
             e.preventDefault()

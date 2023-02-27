@@ -2,10 +2,10 @@
   <div class="w-full flex flex-col gap-4 max-w-[760px]">
     {{#if date}}
     <div class="save-information-block pr-[20px] mb-[20px] py-[20px] bg-[#d3f2bf] border border-transparent">
-      <p class="ml-[20px]">У вас есть сохранение от <span class="date">{{date}}</span> в <span
+      <p class="ml-[20px]">{{getSave}} <span class="date">{{date}}</span> <span
           class="time">{{dateTime}}</span> <a
           class="restore-save-article text-color-button underline decoration-dotted underline-offset-4"
-          href="#">Восстановить</a></p>
+          href="#">{{restore}}</a></p>
     </div>
     {{/if}}
     <div class="mainEditor min-h-[640px] bg-color-light flex flex-col pt-[20px] relative flex-grow">

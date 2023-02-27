@@ -144,6 +144,8 @@ const EditorPage: Record<string, language> = {
     RemoveCover: { ru: 'Удалить обложку', en: 'Remove cover' },
     ChangePosition: { ru: 'Изменить позицию', en: 'Edit position' },
     SavePosition: { ru: 'Сохранить позицию', en: 'Save position' },
+    GetSave: { ru: 'У вас есть сохранение от', en: 'You have an autosaved draft on' },
+    Restore: { ru: 'Восстановить', en: 'Restore' },
 }
 
 const Aside: Record<string, language> = {
