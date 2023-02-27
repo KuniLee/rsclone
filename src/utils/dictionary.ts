@@ -218,7 +218,7 @@ const AuthPage: Record<string, language> = {
     Email: { ru: 'E-mail', en: 'E-mail' },
     Password: { ru: 'Пароль', en: 'Password' },
     ErrorLogin: { ru: 'Неверный логин или пароль', en: 'Wrong login or password' },
-    In: { ru: 'Еще нет аккаунта', en: 'Log in' },
+    In: { ru: 'Войти', en: 'Log in' },
     DontHaveAcc: { ru: 'Ещё нет аккаунта', en: 'Have no account yet' },
     SignUp: { ru: 'Зарегистрируйтесь', en: 'Sign up' },
     SignUpHeader: { ru: 'Регистрация', en: 'Sign up' },
