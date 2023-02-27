@@ -7,6 +7,7 @@ import Dictionary, { getWords } from '@/utils/dictionary'
 import emptyAvatar from '@/assets/icons/avatar.svg'
 import preloader from '@/templates/preloader.html'
 import editButton from '@/templates/editButtonTemplate.hbs'
+import editDeleteTemplate from '@/templates/editAndDeleteArticleButtonsTemplate.hbs'
 import { User } from 'firebase/auth'
 import { Preview } from '@/utils/previewBuilder'
 
@@ -110,8 +111,7 @@ export class ProfileView extends EventEmitter {
             const buttonsContainer = el.querySelector('.articles__buttons')
             if (buttonsContainer) {
                 const template = document.createElement('template')
-                template.innerHTML = editButton({
-                    edit: Dictionary.ProfilePage.edit[this.pageModel.lang],
+                template.innerHTML = editDeleteTemplate({
                     id: el.dataset.id,
                 })
                 buttonsContainer.classList.add('flex', 'justify-between')
