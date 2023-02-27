@@ -1186,7 +1186,7 @@ export class EditorView extends EventEmitter {
                     : previewError.classList.add('text-[#ff8d85]')
             }
             if (translateCheckbox.checked) {
-                checkTranslateAuthor = this.checkValue(translateAuthor.value, new RegExp('[A-z]{5,}'))
+                checkTranslateAuthor = this.checkValue(translateAuthor.value, new RegExp('[A-zА-я]{3,}'))
                 checkTranslateAuthor
                     ? translateAuthor.classList.remove('border-[#ff8d85]')
                     : translateAuthor.classList.add('border-[#ff8d85]')
