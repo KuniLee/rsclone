@@ -29,7 +29,7 @@ const thePlugins = () => {
     return [
         new HTMLWebpackPlugin({
             inject: true,
-            // TODO: favicon: `./src/assets/images/favicon.ico`,
+            favicon: `./assets/icons/favicon-32.png`,
             template: 'index.html',
             filename: `index.html`,
             minify: !devMode,
@@ -37,7 +37,7 @@ const thePlugins = () => {
         }),
         new HTMLWebpackPlugin({
             inject: true,
-            // TODO: favicon: `./src/assets/images/favicon.ico`,
+            favicon: `./assets/icons/favicon-32x32.png`,
             template: 'auth.html',
             filename: `auth.html`,
             minify: !devMode,
