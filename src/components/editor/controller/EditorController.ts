@@ -87,7 +87,7 @@ export class EditorController {
                 }
                 await updateDoc(userRef, userData)
                 await this.editorModel.deleteArticle()
-                alert('Удачно!')
+                this.view.emit('GOTO', location.origin)
             } catch (e) {
                 console.log(e)
             }
@@ -120,7 +120,7 @@ export class EditorController {
                 }
                 const newArticle = await updateDoc(docRef, articleData)
                 await this.editorModel.deleteArticle()
-                alert('Удачно!')
+                this.view.emit('GOTO', location.origin)
             } catch (e) {
                 console.log(e)
             }
