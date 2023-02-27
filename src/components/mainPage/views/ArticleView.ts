@@ -119,12 +119,12 @@ export class ArticleView extends EventEmitter {
     private addListeners(feedWrapper: HTMLElement) {
         const paragraphEditableElements = feedWrapper.querySelectorAll('.editable')
         const sendBtnEl = feedWrapper.querySelector('.comment-form__button_send')
-        //this.addLinksListeners(feedWrapper)
         paragraphEditableElements.forEach((paragraphEditableEl) => {
             if (paragraphEditableEl instanceof HTMLElement) this.addInputListeners(paragraphEditableEl, feedWrapper)
         })
         if (sendBtnEl instanceof HTMLElement) {
             sendBtnEl.addEventListener('click', () => {
+                const paragraphEditableElements = feedWrapper.querySelectorAll('.editable')
                 const comment = this.parseComment(feedWrapper)
                 this.emit('PARSED_COMMENT', comment)
                 this.resetCommentEditor(paragraphEditableElements, sendBtnEl)
@@ -133,12 +133,16 @@ export class ArticleView extends EventEmitter {
     }
 
     private resetCommentEditor(paragraphsEditable: NodeListOf<Element>, sendBtn: HTMLElement) {
-        paragraphsEditable.forEach((paragraphEditable) => {
-            if (paragraphEditable instanceof HTMLElement && sendBtn instanceof HTMLButtonElement) {
-                paragraphEditable.textContent = ''
+        paragraphsEditable.forEach((paragraphEditable, i) => {
+            const paragraph = paragraphEditable.parentElement
+            if (paragraphEditable instanceof HTMLElement && sendBtn instanceof HTMLButtonElement && paragraph) {
                 sendBtn.disabled = true
-                const paragraph = paragraphEditable.parentElement
-                if (paragraph) paragraph.classList.remove('before:hidden')
+                if (i !== 0) {
+                    paragraph.remove()
+                } else {
+                    paragraphEditable.textContent = ''
+                    paragraph.classList.remove('before:hidden')
+                }
             }
         })
     }
