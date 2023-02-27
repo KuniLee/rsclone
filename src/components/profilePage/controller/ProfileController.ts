@@ -38,7 +38,6 @@ export class ProfileController {
             }
         })
         this.view.on<URLParams>('GO_TO', (path) => {
-            console.log(path)
             this.pageModel.changePage(path)
         })
     }

@@ -84,7 +84,7 @@ export class EditorController {
                 }
                 await updateDoc(userRef, userData)
                 await this.editorModel.deleteArticle()
-                this.view.emit('GOTO', location.origin)
+                this.view.emit('GOTO', encodeURI(location.origin + '/post/' + docId))
             } catch (e) {
                 console.log(e)
             }
@@ -117,7 +117,7 @@ export class EditorController {
                 }
                 await updateDoc(docRef, articleData)
                 await this.editorModel.deleteArticle()
-                this.view.emit('GOTO', location.origin)
+                this.view.emit('GOTO', encodeURI(location.origin + '/post/' + arg))
             } catch (e) {
                 console.log(e)
             }

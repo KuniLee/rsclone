@@ -114,7 +114,6 @@ export class FireBaseAPI extends EventEmitter {
     async signIn(email: string, password: string) {
         return signInWithEmailAndPassword(this.auth, email, password)
             .then((userCredential) => {
-                console.log(userCredential)
                 return userCredential.user
             })
             .catch((error) => {

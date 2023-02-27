@@ -319,10 +319,6 @@ export class AuthView extends EventEmitter {
         document.body.append(this.headerEl, this.mainPageContainer, this.footerEl)
     }
 
-    private openRegistrationForm() {
-        console.log('test')
-    }
-
     emit<T>(event: ItemViewEventsName, arg?: T, data?: AuthViewTypes) {
         return super.emit(event, arg, data)
     }
