@@ -1,62 +1,61 @@
 <div class="container mx-auto">
   <div class="mt-14 mb-20 max-w-md mx-auto">
     <div class="w-full bg-color-light shadow-lg shadow-black/10 p-10">
-      <h2 class="text-color-text-dark text-xl leading-7 font-bold">Регистрация</h2>
+      <h2 class="text-color-text-dark text-xl leading-7 font-bold">{{words.SignUpHeader}}</h2>
       <form>
         <fieldset>
           <div class="flex flex-col pt-14">
-            <label class="w-full text-color-text-dark text-sm leading-7 font-bold mb-3" for="email">E-mail</label>
+            <label class="w-full text-color-text-dark text-sm leading-7 font-bold mb-3" for="email">{{words.Email}}</label>
             <input
               class="email-input w-full h-10 bg-color-light border border-color-border-light text-sm py-0 px-3.5 box-border outline-0"
               type="email" id="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required>
             <ul class="email-error mt-2.5" hidden>
-              <li class="text-red-600 text-center">Некорректный email</li>
-              <li class="email-error__exist text-red-600 text-center" hidden>Email уже существует</li>
+              <li class="text-red-600 text-center">{{words.EmailError}}</li>
+              <li class="email-error__exist text-red-600 text-center" hidden>{{words.EmailExist}}</li>
             </ul>
           </div>
           <div class="flex flex-col mt-3.5">
-            <label class="w-full text-color-text-dark text-sm leading-7 font-bold mb-3" for="text">Никнейм</label>
+            <label class="w-full text-color-text-dark text-sm leading-7 font-bold mb-3" for="text">{{words.Nickname}}</label>
             <input
               class="nickname-input w-full h-10 bg-color-light border border-color-border-light text-sm py-0 px-3.5 box-border outline-0"
               type="text" required>
             <ul class="nick-error mt-2.5" hidden>
-              <li class="text-red-600 text-center">Длина должна быть >4</li>
+              <li class="text-red-600 text-center">{{words.LengthError}} >4</li>
             </ul>
           </div>
           <div class="flex flex-col mt-6">
-            <label class="w-full text-color-text-dark text-sm leading-7 font-bold mb-3" for="password">Пароль</label>
+            <label class="w-full text-color-text-dark text-sm leading-7 font-bold mb-3" for="password">{{words.Password}}</label>
             <input
               class="password-input w-full h-10 bg-color-light border border-color-border-light text-sm py-0 px-3.5 box-border outline-0"
               type="password" id="password">
             <ul class="password-error mt-2.5" hidden>
-              <li class="password-error__lower text-red-600 text-center">Как минимум 1 строчная буква</li>
-              <li class="password-error__upper text-red-600 text-center">Как минимум 1 заглавная буква</li>
-              <li class="password-error__digit text-red-600 text-center">Как минимум 1 цифра</li>
-              <li class="password-error__spec text-red-600 text-center">Как минимум 1 специальный символ</li>
-              <li class="password-error__length text-red-600 text-center">Длина от 8 до 16 символов</li>
+              <li class="password-error__lower text-red-600 text-center">{{words.PasswordErrorLowerCase}}</li>
+              <li class="password-error__upper text-red-600 text-center">{{words.PasswordErrorUpperCase}}</li>
+              <li class="password-error__digit text-red-600 text-center">{{words.PasswordDigitError}}</li>
+              <li class="password-error__spec text-red-600 text-center">{{words.PasswordSpecialChar}}</li>
+              <li class="password-error__length text-red-600 text-center">{{words.PasswordLengthError}}</li>
             </ul>
           </div>
           <div class="flex flex-col mt-6">
-            <label class="w-full text-color-text-dark text-sm leading-7 font-bold mb-3" for="password">Пароль
-              еще
-              раз</label>
+            <label class="w-full text-color-text-dark text-sm leading-7 font-bold mb-3" for="password">{{words.PasswordRepeat}}</label>
             <input
               class="password-repeat-input w-full h-10 bg-color-light border border-color-border-light text-sm py-0 px-3.5 box-border outline-0"
               type="password" id="password-repeat">
           </div>
           <div class="g-recaptcha mt-6" id="captcha1"></div>
           <ul class="captcha-error mt-2.5" hidden>
-            <li class="text-red-600 text-center">Пройдите проверку</li>
+            <li class="text-red-600 text-center">{{words.CaptchaCheck}}</li>
           </ul>
           <div class="mt-5">
             <button type="submit"
-              class="registrationCompleteBtn bg-color-additional w-full text-color-light h-12 hover:bg-color-btn-hover">Зарегистрироваться</button>
+              class="registrationCompleteBtn bg-color-additional w-full text-color-light h-12 hover:bg-color-btn-hover">
+              {{words.SignUpComplete}}</button>
           </div>
         </fieldset>
       </form>
     </div>
     <div class="w-full bg-color-light shadow-lg shadow-black/10 py-3.5 mt-4 text-center">
-      <span>Уже зарегистрированы? <a href="/login" class="signIn text-color-additional">Войдите</a></span>
+      <span>{{words.AlreadySignUp}}? <a href="/login" class="signIn text-color-additional">{{words.SignIn}}</a></span>
     </div>
   </div>
 </div>

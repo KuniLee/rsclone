@@ -213,6 +213,31 @@ const AccessError: Record<string, language> = {
     Button: { ru: 'Вернуться на главную', en: 'Back to the main page' },
 }
 
+const AuthPage: Record<string, language> = {
+    LogIn: { ru: 'Вход', en: 'Log in' },
+    Email: { ru: 'E-mail', en: 'E-mail' },
+    Password: { ru: 'Пароль', en: 'Password' },
+    ErrorLogin: { ru: 'Неверный логин или пароль', en: 'Wrong login or password' },
+    In: { ru: 'Еще нет аккаунта', en: 'Log in' },
+    DontHaveAcc: { ru: 'Ещё нет аккаунта', en: 'Have no account yet' },
+    SignUp: { ru: 'Зарегистрируйтесь', en: 'Sign up' },
+    SignUpHeader: { ru: 'Регистрация', en: 'Sign up' },
+    EmailError: { ru: 'Некорректный email', en: 'Incorrect email' },
+    EmailExists: { ru: 'Email уже существует', en: 'Email already exist' },
+    Nickname: { ru: 'Никнейм', en: 'Nickname' },
+    LengthError: { ru: 'Длина должна быть', en: 'Length should be' },
+    PasswordErrorLowerCase: { ru: 'Как минимум 1 строчная буква', en: 'At least 1 lowercase letter' },
+    PasswordErrorUpperCase: { ru: 'Как минимум 1 заглавная буква', en: 'At least 1 capital letter' },
+    PasswordDigitError: { ru: 'Как минимум 1 цифра', en: 'At least 1 digit' },
+    PasswordSpecialChar: { ru: 'Как минимум 1 специальный символ', en: 'At least 1 special character' },
+    PasswordLengthError: { ru: 'Длина от 8 до 16 символов', en: 'Length 8 to 16 characters' },
+    PasswordRepeat: { ru: 'Пароль еще раз', en: 'Repeat password' },
+    CaptchaCheck: { ru: 'Пройдите проверку', en: 'Pass check' },
+    SignUpComplete: { ru: 'Зарегистрироваться', en: 'Sign Up' },
+    AlreadySignUp: { ru: 'Уже зарегистрированы', en: 'Already registered' },
+    SignIn: { ru: 'Войдите', en: 'Log in' },
+}
+
 export function getWords(wordObj: Record<string, language>, lang: keyof language) {
     const result: Record<string, string> = {}
     for (const wordObjKey in wordObj) {
@@ -235,4 +260,5 @@ export default {
     PostPage,
     Comments,
     AccessError,
+    AuthPage,
 }
