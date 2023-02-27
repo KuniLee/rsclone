@@ -103,7 +103,8 @@ export class EditorView extends EventEmitter {
         const editor = document.querySelector('.textEditor') as HTMLElement
         setInterval(() => {
             if (editor) {
-                if (!this.onSettingsPage) {
+                const mainEditor = document.querySelector('.mainEditor')
+                if (mainEditor instanceof HTMLElement && !mainEditor.classList.contains('hidden')) {
                     const obj = this.parseArticle(editor)
                     obj.time = Date.now()
                     this.emit('SAVE_ARTICLE_TO_LOCALSTORAGE', undefined, undefined, obj)
