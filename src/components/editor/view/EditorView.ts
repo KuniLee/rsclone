@@ -336,6 +336,7 @@ export class EditorView extends EventEmitter {
             })
             this.onSettingsPage = true
             this.toggleEditorView()
+            window.scrollTo(0, 0)
         })
         document.querySelector('.restore-save-article')?.addEventListener('click', (e) => {
             e.preventDefault()
