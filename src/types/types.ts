@@ -31,6 +31,7 @@ export type UserData = {
     email: string
     displayName: string
     properties: Partial<UserProps>
+    comments?: Array<string>
 }
 
 export type UserProps = {

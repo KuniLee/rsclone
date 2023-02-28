@@ -63,6 +63,7 @@ export class EditorView extends EventEmitter {
                 (this.pageModel.path[0] === Paths.Sandbox && this.pageModel.path[1] === Sandbox.New) ||
                 (this.pageModel.path[0] === Paths.Edit && this.pageModel.path[1])
             ) {
+                this.isGlobalListener = false
                 if (this.pageModel.path[0] === Paths.Sandbox) {
                     this.isEdit = false
                     if (this.pageModel.user) {
@@ -1157,12 +1158,14 @@ export class EditorView extends EventEmitter {
                     ? flowsError.classList.remove('text-[#ff8d85]')
                     : flowsError.classList.add('text-[#ff8d85]')
             }
-            let checkKeywordsResult = this.checkValue(keywordsInput.value, new RegExp('[A-zА-я]{3,}'))
-            checkKeywordsResult =
-                keywordsInput.value.split(',').length > 0 && keywordsInput.value.split(',').length < 11
-            checkKeywordsResult
-                ? keywordsInput.classList.remove('border-[#ff8d85]')
-                : keywordsInput.classList.add('border-[#ff8d85]')
+            const checkKeywordsResult =
+                this.checkValue(keywordsInput.value, new RegExp('[A-zА-я]{3,}')) &&
+                keywordsInput.value.split(',').length < 11
+            if (checkKeywordsResult) {
+                keywordsInput.classList.remove('border-[#ff8d85]')
+            } else {
+                keywordsInput.classList.add('border-[#ff8d85]')
+            }
             const keywordsError = document.querySelector('.keywords-error')
             if (keywordsError) {
                 checkKeywordsResult
