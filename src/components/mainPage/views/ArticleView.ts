@@ -1,3 +1,4 @@
+import { UserData } from './../../../types/types'
 import EventEmitter from 'events'
 import { Paths } from 'types/enums'
 import { PageModelInstance } from '../model/PageModel'
@@ -8,10 +9,12 @@ import dictionary, { getWords } from '@/utils/dictionary'
 import aside from '@/templates/aside.hbs'
 import commentEditorTemplate from '@/templates/comments/commentEditor.hbs'
 import commentsTemplate from '@/templates/comments/comments.hbs'
+import commentTemplate from '@/templates/comments/comment.hbs'
+import commentButtonsTemplate from '@/templates/comments/buttons.hbs'
 import commentEditorNewParagraphTemplate from '@/templates/comments/commentEditorNewParagraph.hbs'
 import { ParsedData } from 'types/types'
 
-type ArticleEventsName = 'LOAD_POST' | 'GO_TO' | 'PARSED_COMMENT'
+type ArticleEventsName = 'LOAD_POST' | 'GO_TO' | 'PARSED_COMMENT' | 'REMOVE_COMMENT'
 
 export type ArticleViewInstance = InstanceType<typeof ArticleView>
 
@@ -89,12 +92,60 @@ export class ArticleView extends EventEmitter {
 
     private createComments() {
         const template = document.createElement('template')
+        const comments = this.feedModel.getComments()
         template.innerHTML = commentsTemplate({
-            user: this.pageModel.user,
             words: getWords(dictionary.Comments, this.pageModel.lang),
-            comments: this.feedModel.getComments(),
+            comments,
+        })
+        const commentsWrapper = template.content.querySelector('.comments-wrapper')
+        const currentUserName = this.pageModel.user.displayName
+        comments.forEach((comment, i) => {
+            const insideTemplate = document.createElement('template')
+            const commentAuthor = comment.user as UserData
+            insideTemplate.innerHTML = commentTemplate({ comment, id: i })
+            const commentBody = insideTemplate.content.querySelector('.comment__body')
+            if (commentsWrapper) commentsWrapper.append(insideTemplate.content)
+            if (currentUserName === commentAuthor.displayName) {
+                const buttonsTemplate = document.createElement('template')
+                buttonsTemplate.innerHTML = commentButtonsTemplate({})
+                const removeButtonFragment = buttonsTemplate.content
+                if (commentBody) {
+                    commentBody.append(removeButtonFragment)
+                    this.addControlButtonsCommentListeneres(commentBody)
+                }
+            }
         })
         return template.content
+    }
+
+    private addControlButtonsCommentListeneres(commentBody: Element) {
+        const removeBtnEl = commentBody.querySelector('.ico_close')
+        const editBtnEl = commentBody.querySelector('.ico_edit')
+        if (removeBtnEl instanceof HTMLElement) {
+            this.addRemoveCommentListener(removeBtnEl)
+        }
+
+        if (editBtnEl instanceof HTMLElement) {
+            this.addEditCommentListener(editBtnEl)
+        }
+    }
+
+    private addRemoveCommentListener(removeBtn: HTMLElement) {
+        removeBtn.addEventListener('click', () => {
+            this.removeComment(removeBtn)
+        })
+    }
+
+    private removeComment(btn: HTMLElement) {
+        const comment = btn.closest('.comment')
+        if (comment instanceof HTMLElement) {
+            const commentId = comment.dataset.id
+            this.emit('REMOVE_COMMENT', commentId)
+        }
+    }
+
+    private addEditCommentListener(editBtn: HTMLElement) {
+        editBtn.addEventListener('click', () => console.log('edit'))
     }
 
     private createCommentEditor() {

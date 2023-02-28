@@ -68,6 +68,13 @@
   height: 25px;
 }
 
+.ico_edit {
+  background: url(../assets/icons/ico-edit.svg) center no-repeat;
+  background-size: contain;
+  width: 25px;
+  height: 25px;
+}
+
 .ico_rs {
   background: url(../assets/icons/ico-rs.svg) center no-repeat;
   background-size: contain;

@@ -4,7 +4,7 @@ import type { QueryDocumentSnapshot } from 'firebase/firestore'
 import { Flows } from 'types/enums'
 import { Article } from 'types/interfaces'
 
-type FeedModelEventsName = 'LOADED' | 'POST_LOADED' | 'COMMENTS_LOADED'
+type FeedModelEventsName = 'LOADED' | 'POST_LOADED' | 'COMMENTS_LOADED' | 'UPDATE_COMMENTS'
 export type FeedModelInstance = InstanceType<typeof FeedModel>
 
 export class FeedModel extends EventEmitter {

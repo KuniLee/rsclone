@@ -18,13 +18,15 @@ import {
     where,
     Firestore,
     startAfter,
+    deleteField,
+    deleteDoc,
 } from 'firebase/firestore'
 import { FirebaseStorage, getDownloadURL, ref } from 'firebase/storage'
 import { Flows, Paths } from 'types/enums'
 import { Article, URLParams } from 'types/interfaces'
 import { ArticleViewInstance } from '@/components/mainPage/views/ArticleView'
 import { RouterInstance } from '@/utils/Rooter'
-import { CommentInfo, ParsedData } from 'types/types'
+import { CommentInfo, ParsedData, UserData } from 'types/types'
 import { Auth } from 'firebase/auth'
 import { FireBaseAPIInstance } from '@/utils/FireBaseAPI'
 
@@ -79,6 +81,38 @@ export class FeedController {
                 if (comments) this.feedModel.setComments(comments)
             }
         })
+        this.articleView.on<string>('REMOVE_COMMENT', async (commentId) => {
+            await this.removeComment(commentId)
+            const article = this.feedModel.article
+            if (article) {
+                const comments = await this.loadComments(article.id)
+                if (comments) this.feedModel.setComments(comments)
+            }
+        })
+    }
+
+    private async removeComment(commentId: string) {
+        try {
+            const userRef = doc(this.db, `users/${this.pageModel.user.uid}`)
+            const userSnapshot = await getDoc(userRef)
+            const userData = userSnapshot.data() as UserData
+            const userComments = userData.comments
+            if (userComments) {
+                for (let i = 0; i < userComments.length; i++) {
+                    if (i === Number(commentId)) {
+                        const articleCommentPath = doc(this.db, userComments[i].path)
+                        await deleteDoc(articleCommentPath)
+                        userComments.splice(i, 1)
+                    }
+                }
+                await updateDoc(userRef, userData)
+                if (!userComments.length) {
+                    await updateDoc(userRef, { comments: deleteField() })
+                }
+            }
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     private async loadArticle(id: string): Promise<Article | undefined> {

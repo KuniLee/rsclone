@@ -1,0 +1,19 @@
+<article class="px-4 pb-3 mb-5 comment" data-id={{id}}>
+  <div class="flex gap-3 items-center comment__body">
+    <div class="w-8 h-8 rounded-sm overflow-hidden">
+      <a href="/users/{{comment.user.displayName}}">
+        {{#if comment.user.properties.avatar}}
+        <img class="object-cover w-full h-full" src="{{comment.user.properties.avatar}}" alt="user-avatar" />
+        {{else}}
+        <img class="object-cover w-full h-full rounded border-2" src="{{emptyAvatar}}" alt="user-avatar" />
+        {{/if}}
+      </a>
+    </div>
+    <a href="/users/{{comment.user.displayName}}"
+      class="cursor-pointer text-sm font-medium hover:text-color-link-hover transition">{{comment.user.displayName}}</a>
+    {{{[../../utils/toLocateDate] comment.createdAt}}}
+  </div>
+  <div class="mt-2.5 break-all">
+    {{#each comment.blocks}}<p>{{value}}</p>{{/each}}
+  </div>
+</article>
