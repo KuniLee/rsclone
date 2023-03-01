@@ -13,8 +13,10 @@ import commentTemplate from '@/templates/comments/comment.hbs'
 import editCommentsFormTemplate from '@/templates/comments/editCommentForm.hbs'
 import editCommentParagraphTemplate from '@/templates/comments/editCommentNewParagraph.hbs'
 import commentButtonsTemplate from '@/templates/comments/buttons.hbs'
+import noCommentsBlockTemplate from '@/templates/comments/noCommentsBlock.hbs'
 import commentEditorNewParagraphTemplate from '@/templates/comments/commentEditorNewParagraph.hbs'
 import { ParsedData } from 'types/types'
+import { EditCommentElements } from '@/types/interfaces'
 
 type ArticleEventsName = 'LOAD_POST' | 'GO_TO' | 'PARSED_COMMENT' | 'REMOVE_COMMENT' | 'EDIT_COMMENT'
 
@@ -95,26 +97,33 @@ export class ArticleView extends EventEmitter {
     private createComments() {
         const template = document.createElement('template')
         const comments = this.feedModel.getComments()
+        console.log(comments)
         template.innerHTML = commentsTemplate({
             words: getWords(dictionary.Comments, this.pageModel.lang),
             comments,
         })
-        const commentsWrapper = template.content.querySelector('.comments-wrapper')
-        const currentUserName = this.pageModel.user.displayName
-        comments.forEach((comment, i) => {
+        const commentsEl = template.content.querySelector('.comments')
+        const commentsWrapperEl = template.content.querySelector('.comments-wrapper')
+        const currentUserName = this.pageModel.user as UserData
+        let id = 0
+        comments.forEach((comment) => {
             const insideTemplate = document.createElement('template')
             const commentAuthor = comment.user as UserData
-            insideTemplate.innerHTML = commentTemplate({ comment, id: i })
+            insideTemplate.innerHTML = commentTemplate({ comment })
             const commentBody = insideTemplate.content.querySelector('.comment__body')
             const commentEl = insideTemplate.content.querySelector('.comment')
-            if (commentsWrapper) commentsWrapper.append(insideTemplate.content)
-            if (currentUserName === commentAuthor.displayName) {
-                const buttonsTemplate = document.createElement('template')
-                buttonsTemplate.innerHTML = commentButtonsTemplate({})
-                const removeButtonFragment = buttonsTemplate.content
-                if (commentBody && commentEl) {
-                    commentBody.append(removeButtonFragment)
-                    this.addControlButtonsCommentListeneres(commentBody, commentEl)
+            if (commentsWrapperEl) commentsWrapperEl.append(insideTemplate.content)
+            if (currentUserName && commentAuthor && commentEl) {
+                if (currentUserName.displayName === commentAuthor.displayName) {
+                    commentEl.setAttribute('data-id', String(id))
+                    const buttonsTemplate = document.createElement('template')
+                    buttonsTemplate.innerHTML = commentButtonsTemplate({})
+                    const removeButtonFragment = buttonsTemplate.content
+                    if (commentBody && commentEl && commentsEl) {
+                        commentBody.append(removeButtonFragment)
+                        this.addControlButtonsCommentListeneres(commentBody, commentEl, commentsEl)
+                    }
+                    id++
                 }
             }
         })
@@ -127,11 +136,11 @@ export class ArticleView extends EventEmitter {
         return template.content
     }
 
-    private addControlButtonsCommentListeneres(commentBody: Element, commentEl: Element) {
+    private addControlButtonsCommentListeneres(commentBody: Element, commentEl: Element, commentsEl: Element) {
         const removeBtnEl = commentBody.querySelector('.ico_close')
         const editBtnEl = commentBody.querySelector('.ico_edit')
-        if (removeBtnEl instanceof HTMLElement) {
-            this.addRemoveCommentListener(removeBtnEl)
+        if (removeBtnEl instanceof HTMLElement && commentsEl instanceof HTMLElement) {
+            this.addRemoveCommentListener(removeBtnEl, commentsEl)
         }
 
         if (editBtnEl instanceof HTMLElement && commentEl instanceof HTMLElement) {
@@ -139,18 +148,49 @@ export class ArticleView extends EventEmitter {
         }
     }
 
-    private addRemoveCommentListener(removeBtn: HTMLElement) {
+    private addRemoveCommentListener(removeBtn: HTMLElement, commentsEl: Element) {
         removeBtn.addEventListener('click', () => {
-            this.removeComment(removeBtn)
+            this.removeComment(removeBtn, commentsEl)
         })
     }
 
-    private removeComment(btn: HTMLElement) {
-        const comment = btn.closest('.comment')
-        if (comment instanceof HTMLElement) {
-            const commentId = comment.dataset.id
+    private removeComment(removeBtn: HTMLElement, commentsEl: Element) {
+        const commentEl = removeBtn.closest('.comment')
+        const commentsCountEl = commentsEl.querySelector('.comments__count')
+        const commentsWrapperEl = commentsEl.querySelector('.comments-wrapper')
+        if (commentEl instanceof HTMLElement && commentsCountEl instanceof HTMLElement && commentsWrapperEl) {
+            const commentId = commentEl.dataset.id
             this.emit('REMOVE_COMMENT', commentId)
+            commentEl.remove()
+            const commentsElements = commentsWrapperEl.children
+            let id = 0
+            Array.from(commentsElements).forEach((element) => {
+                if (element instanceof HTMLElement && element.hasAttribute('data-id')) {
+                    element.dataset.id = `${id}`
+                    id++
+                }
+            })
+            const comments = this.feedModel.getComments()
+            const commentsLength = comments.length
+            if (commentsLength) {
+                commentsCountEl.textContent = `${commentsLength}`
+            } else {
+                commentsCountEl.remove()
+                const noCommentsBock = this.createNoCommentsBlock()
+                if (commentsWrapperEl) {
+                    commentsWrapperEl.innerHTML = ''
+                    commentsWrapperEl.append(noCommentsBock)
+                }
+            }
         }
+    }
+
+    private createNoCommentsBlock() {
+        const template = document.createElement('template')
+        template.innerHTML = noCommentsBlockTemplate({
+            words: getWords(dictionary.Comments, this.pageModel.lang),
+        })
+        return template.content
     }
 
     private createEditParagraphs(paragraphContent: Array<string>) {
@@ -168,18 +208,20 @@ export class ArticleView extends EventEmitter {
             const cancelBtn = commentEl.querySelector('.edit-comment-form__button_cancel')
             const saveBtn = commentEl.querySelector('.edit-comment-form__button_save')
             const editCommentEditor = commentEl.querySelector('.edit-comment-content')
-            if (commentContent instanceof HTMLElement && editCommentEditor instanceof HTMLElement) {
-                this.setEditCommentContent(commentContent, editCommentEditor, commentEl)
-            }
-            if (cancelBtn instanceof HTMLElement && commentContent instanceof HTMLElement) {
-                this.addCancelBtnEditCommentListener(cancelBtn, commentContent, commentEl, editBtn)
-            }
-            if (
-                saveBtn instanceof HTMLElement &&
-                editCommentEditor instanceof HTMLElement &&
-                commentContent instanceof HTMLElement
-            ) {
-                this.addSaveBtnEditCommentListener(saveBtn, editCommentEditor, commentContent, commentEl, editBtn)
+            if (commentContent instanceof HTMLElement) {
+                if (editCommentEditor instanceof HTMLElement) {
+                    this.setEditCommentContent(commentContent, editCommentEditor, commentEl)
+                }
+                if (cancelBtn instanceof HTMLElement) {
+                    this.addCancelBtnEditCommentListener(cancelBtn, { commentContent, commentEl, editBtn })
+                }
+                if (saveBtn instanceof HTMLElement && editCommentEditor instanceof HTMLElement) {
+                    this.addSaveBtnEditCommentListener(saveBtn, editCommentEditor, {
+                        commentContent,
+                        commentEl,
+                        editBtn,
+                    })
+                }
             }
         })
     }
@@ -203,19 +245,38 @@ export class ArticleView extends EventEmitter {
     private addSaveBtnEditCommentListener(
         saveBtn: HTMLElement,
         editCommentEditor: HTMLElement,
-        content: HTMLElement,
-        comment: HTMLElement,
-        editBtn: HTMLElement
+        { commentContent, commentEl, editBtn }: EditCommentElements
     ) {
         saveBtn.addEventListener('click', () => {
             const paragraphEditableElements = editCommentEditor.querySelectorAll('.editable')
-            const commentContent = this.parseComment(paragraphEditableElements)
-            const commentEl = editCommentEditor.closest('.comment')
-            if (commentEl instanceof HTMLElement && paragraphEditableElements[0].textContent) {
-                const commentId = commentEl.dataset.id
-                this.emit('EDIT_COMMENT', { commentContent, commentId })
-                this.removeEditCommentEditor(content, comment, editBtn)
+            const parsedCommentContent = this.parseComment(paragraphEditableElements)
+            const comment = editCommentEditor.closest('.comment')
+            if (comment instanceof HTMLElement && paragraphEditableElements[0].textContent) {
+                const commentId = comment.dataset.id
+                this.emit('EDIT_COMMENT', { parsedCommentContent, commentId })
+                this.removeEditCommentEditor(commentContent, commentEl, editBtn)
+                this.setNewEditedParagraphs(paragraphEditableElements, comment, commentContent)
             }
+        })
+    }
+
+    private setNewEditedParagraphs(
+        paragraphEditableElements: NodeListOf<Element>,
+        commentEl: HTMLElement,
+        content: HTMLElement
+    ) {
+        const newParagraphs: Array<HTMLElement> = []
+        paragraphEditableElements.forEach((element) => {
+            const paragraphContent = element.textContent
+            if (paragraphContent && commentEl) {
+                const newParagraph = document.createElement('p')
+                newParagraph.append(paragraphContent)
+                newParagraphs.push(newParagraph)
+            }
+        })
+        content.innerHTML = ''
+        newParagraphs.forEach((paragraph) => {
+            content.append(paragraph)
         })
     }
 
@@ -228,12 +289,10 @@ export class ArticleView extends EventEmitter {
 
     private addCancelBtnEditCommentListener(
         cancelBtn: HTMLElement,
-        content: HTMLElement,
-        comment: HTMLElement,
-        editBtn: HTMLElement
+        { commentContent, commentEl, editBtn }: EditCommentElements
     ) {
         cancelBtn.addEventListener('click', () => {
-            this.removeEditCommentEditor(content, comment, editBtn)
+            this.removeEditCommentEditor(commentContent, commentEl, editBtn)
         })
     }
 

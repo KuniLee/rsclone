@@ -65,7 +65,7 @@ export class FeedController {
             const comments = await this.loadComments(id)
             if (article) {
                 this.feedModel.setArticle(article)
-                if (comments) this.feedModel.setComments(comments)
+                if (comments) this.feedModel.loadComments(comments)
             } else {
                 this.pageModel.goTo404()
             }
@@ -79,24 +79,21 @@ export class FeedController {
             if (article) {
                 await this.addComment(comment, article.id)
                 const comments = await this.loadComments(article.id)
-                if (comments) this.feedModel.setComments(comments)
+                if (comments) this.feedModel.loadComments(comments)
             }
         })
         this.articleView.on<string>('REMOVE_COMMENT', async (commentId) => {
+            const comments = this.feedModel.getComments()
+            if (comments.length === 1) {
+                comments.length = 0
+            } else {
+                comments.splice(Number(commentId), 1)
+            }
+            this.feedModel.setComments(comments)
             await this.removeComment(commentId)
-            const article = this.feedModel.article
-            if (article) {
-                const comments = await this.loadComments(article.id)
-                if (comments) this.feedModel.setComments(comments)
-            }
         })
-        this.articleView.on<CommentEditInfo>('EDIT_COMMENT', async ({ commentContent, commentId }) => {
-            await this.updateComment(commentContent, commentId)
-            const article = this.feedModel.article
-            if (article) {
-                const comments = await this.loadComments(article.id)
-                if (comments) this.feedModel.setComments(comments)
-            }
+        this.articleView.on<CommentEditInfo>('EDIT_COMMENT', async ({ parsedCommentContent, commentId }) => {
+            await this.updateComment(parsedCommentContent, commentId)
         })
     }
 

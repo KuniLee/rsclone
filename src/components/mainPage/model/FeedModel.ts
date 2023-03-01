@@ -58,11 +58,13 @@ export class FeedModel extends EventEmitter {
         this.emit('POST_LOADED')
     }
 
-    setComments(comments?: Array<CommentInfo>, comment?: CommentInfo) {
-        if (comments) {
-            this._comments = comments
-            this.emit('COMMENTS_LOADED')
-        }
+    loadComments(comments: Array<CommentInfo>) {
+        this._comments = comments
+        this.emit('COMMENTS_LOADED')
+    }
+
+    setComments(comments: Array<CommentInfo>) {
+        this._comments = comments
     }
 
     getComments() {

@@ -88,6 +88,6 @@ export type CommentInfo = {
 }
 
 export type CommentEditInfo = {
-    commentContent: ParsedData
+    parsedCommentContent: ParsedData
     commentId: string
 }
