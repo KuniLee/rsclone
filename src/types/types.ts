@@ -86,3 +86,8 @@ export type CommentInfo = {
     createdAt: Timestamp
     user: DocumentReference | UserData
 }
+
+export type CommentEditInfo = {
+    commentContent: ParsedData
+    commentId: string
+}

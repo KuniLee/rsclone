@@ -13,7 +13,7 @@
       class="cursor-pointer text-sm font-medium hover:text-color-link-hover transition">{{comment.user.displayName}}</a>
     {{{[../../utils/toLocateDate] comment.createdAt}}}
   </div>
-  <div class="mt-2.5 break-all">
+  <div class="mt-2.5 break-all comment__content">
     {{#each comment.blocks}}<p>{{value}}</p>{{/each}}
   </div>
 </article>

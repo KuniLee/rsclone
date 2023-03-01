@@ -1,3 +1,4 @@
+import { CommentEditInfo } from './../../../types/types'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { FeedViewInstance } from '@/components/mainPage/views/FeedView'
 import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
@@ -89,6 +90,33 @@ export class FeedController {
                 if (comments) this.feedModel.setComments(comments)
             }
         })
+        this.articleView.on<CommentEditInfo>('EDIT_COMMENT', async ({ commentContent, commentId }) => {
+            await this.updateComment(commentContent, commentId)
+            const article = this.feedModel.article
+            if (article) {
+                const comments = await this.loadComments(article.id)
+                if (comments) this.feedModel.setComments(comments)
+            }
+        })
+    }
+
+    private async updateComment(commentContent: ParsedData, commentId: string) {
+        try {
+            const userRef = doc(this.db, `users/${this.pageModel.user.uid}`)
+            const userSnapshot = await getDoc(userRef)
+            const userData = userSnapshot.data() as UserData
+            const userComments = userData.comments
+            if (userComments) {
+                for (let i = 0; i < userComments.length; i++) {
+                    if (i === Number(commentId)) {
+                        const articleCommentPath = doc(this.db, userComments[i].path)
+                        await updateDoc(articleCommentPath, commentContent)
+                    }
+                }
+            }
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     private async removeComment(commentId: string) {
