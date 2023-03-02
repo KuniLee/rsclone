@@ -1,4 +1,4 @@
-import { UserData } from './../../../types/types'
+import { UserData } from 'types/types'
 import EventEmitter from 'events'
 import { Paths } from 'types/enums'
 import { PageModelInstance } from '../model/PageModel'

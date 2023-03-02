@@ -1,4 +1,4 @@
-import { CommentEditInfo } from './../../../types/types'
+import { CommentEditInfo } from 'types/types'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { FeedViewInstance } from '@/components/mainPage/views/FeedView'
 import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
