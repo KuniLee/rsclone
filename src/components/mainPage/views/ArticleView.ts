@@ -97,7 +97,6 @@ export class ArticleView extends EventEmitter {
     private createComments() {
         const template = document.createElement('template')
         const comments = this.feedModel.getComments()
-        console.log(comments)
         template.innerHTML = commentsTemplate({
             words: getWords(dictionary.Comments, this.pageModel.lang),
             comments,
