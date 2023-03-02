@@ -11,6 +11,7 @@ import commentEditorTemplate from '@/templates/comments/commentEditor.hbs'
 import commentsTemplate from '@/templates/comments/comments.hbs'
 import commentTemplate from '@/templates/comments/comment.hbs'
 import editCommentsFormTemplate from '@/templates/comments/editCommentForm.hbs'
+import editCommentParagraphsTemplate from '@/templates/comments/editCommentParagraphs.hbs'
 import editCommentParagraphTemplate from '@/templates/comments/editCommentNewParagraph.hbs'
 import commentButtonsTemplate from '@/templates/comments/buttons.hbs'
 import noCommentsBlockTemplate from '@/templates/comments/noCommentsBlock.hbs'
@@ -194,7 +195,7 @@ export class ArticleView extends EventEmitter {
 
     private createEditParagraphs(paragraphContent: Array<string>) {
         const template = document.createElement('template')
-        template.innerHTML = editCommentParagraphTemplate({ content: paragraphContent })
+        template.innerHTML = editCommentParagraphsTemplate({ content: paragraphContent })
         return template.content
     }
 
@@ -346,7 +347,7 @@ export class ArticleView extends EventEmitter {
                     paragraph.remove()
                 } else {
                     paragraphEditable.textContent = ''
-                    paragraph.classList.remove('before:hidden')
+                    if (paragraph.classList.contains('before:hidden')) paragraph.classList.remove('before:hidden')
                 }
             }
         })
@@ -362,7 +363,11 @@ export class ArticleView extends EventEmitter {
             if (sendBtn instanceof HTMLButtonElement) {
                 sendBtn.disabled = this.checkCommentLength(commentEditor)
             }
-            if (paragraphEditable.textContent && paragraph) {
+            if (
+                paragraphEditable.textContent &&
+                paragraph &&
+                !commentEditor.classList.contains('edit-comment-content')
+            ) {
                 paragraph.classList.add('before:hidden')
             }
         })
@@ -394,7 +399,8 @@ export class ArticleView extends EventEmitter {
                         if (
                             paragraphEditable.textContent &&
                             paragraphEditable.textContent.length === 1 &&
-                            paragraphsEl.length === 1
+                            paragraphsEl.length === 1 &&
+                            paragraph.classList.contains('before:hidden')
                         ) {
                             paragraph.classList.remove('before:hidden')
                         }
@@ -428,9 +434,15 @@ export class ArticleView extends EventEmitter {
 
     private addParagraph(commentEditor: HTMLElement, paragraph: HTMLElement) {
         const template = document.createElement('template')
-        template.innerHTML = commentEditorNewParagraphTemplate({
-            words: getWords(dictionary.Comments, this.pageModel.lang),
-        })
+        if (commentEditor.classList.contains('edit-comment-content')) {
+            template.innerHTML = editCommentParagraphTemplate({
+                words: getWords(dictionary.Comments, this.pageModel.lang),
+            })
+        } else {
+            template.innerHTML = commentEditorNewParagraphTemplate({
+                words: getWords(dictionary.Comments, this.pageModel.lang),
+            })
+        }
         const content = template.content
         paragraph.after(content)
         const paragraphEl = commentEditor.querySelector('.new')
@@ -450,7 +462,7 @@ export class ArticleView extends EventEmitter {
         paragraphEditable.remove()
         if (paragraphEl instanceof HTMLElement) {
             paragraphEl.focus()
-            if (paragraphEl.textContent === '') {
+            if (paragraphEl.textContent === '' && paragraph.classList.contains('before:hidden')) {
                 paragraph.classList.remove('before:hidden')
             }
         }
@@ -460,7 +472,11 @@ export class ArticleView extends EventEmitter {
         const paragraphs = [...commentEditor.children]
         const lastParagraph = paragraphs[paragraphs.length - 1]
         paragraphs.forEach((paragraph, i) => {
-            if (i !== paragraphs.indexOf(lastParagraph) && paragraph instanceof HTMLElement) {
+            if (
+                i !== paragraphs.indexOf(lastParagraph) &&
+                paragraph instanceof HTMLElement &&
+                !commentEditor.classList.contains('edit-comment-content')
+            ) {
                 paragraph.classList.add('before:hidden')
             }
         })
