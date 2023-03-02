@@ -72,6 +72,7 @@ export class SettingsView extends EventEmitter {
                 if (this.checkTheImage(file.files[0])) {
                     this.showPreview(file.files[0])
                     btnImage.textContent = Dictionary.buttons.Remove[this.model.lang]
+                    file.value = ''
                 } else this.showErrorMsg()
             }
         })
