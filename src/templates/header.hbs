@@ -1,0 +1,88 @@
+<div class="bg-color-logo">
+  <div class="container mx-auto flex justify-start items-center h-12">
+    <div class="flex gap-4 items-center px-3 md:px-0">
+      {{#if flows}}
+      <span class="header__burger burger md:hidden">
+        <span class="burger__line"></span>
+      </span>
+      {{/if}}
+      <a href="/">
+        <h1 class="font-bold text-color-light m-0">{{logo}}</h1>
+      </a>
+    </div>
+    {{#if flows}}
+    <div class="gap-5 flex header__user-menu user-menu md:hidden ml-auto items-center px-3 md:px-0">
+      {{#if user}}
+      <a href="/sandbox/new" class="flex items-center header__link">
+        <span class="ico ico_pen ico_pen-light"></span>
+      </a>
+      <div class="w-8 h-8 rounded-sm overflow-hidden user-menu__item flex items-center">
+        <div class="sidebar h-8">
+          <div class="sidebar__header w-9 h-9 rounded-sm overflow-hidden flex items-center cursor-pointer">
+            {{#if user.properties.avatar}}
+            <img class="object-cover w-full h-full user-img" src="{{user.properties.avatar}}" alt="user-avatar" />
+            {{else}}
+            <img class="object-cover w-full h-full rounded border-2 bg-color-light user-img" src="{{emptyAvatar}}"
+              alt="user-avatar" />
+            {{/if}}
+          </div>
+        </div>
+      </div>
+      {{else}}
+      <div class="user-menu__item">
+        <div class="sidebar h-8">
+          <div class="sidebar__header h-full flex items-center">
+            <span class="ico ico_user-light user-img"></span>
+          </div>
+        </div>
+      </div>
+      {{/if}}
+    </div>
+    {{/if}}
+  </div>
+</div>
+<div class="m-auto bg-color-light md:container md:block hidden header__flows">
+  {{#if flows}}
+  <div class="flex place-content-between gap-y-8 py-3 items-center">
+    <nav class="flex gap-4 flex-col nav md:flex-row">
+      {{#each flows}}
+      {{#if (eq this.link ../currentPath)}}
+      <a href="{{this.link}}"
+        class="hover:text-color-link-hover transition text-color-text-dark nav__link header__link">{{this.name}}</a>
+      {{else}}
+      <a href="{{this.link}}"
+        class="hover:text-color-link-hover transition text-color-text-light nav__link header__link">{{this.name}}</a>
+      {{/if}}
+      {{/each}}
+    </nav>
+    <div class="md:flex gap-5 header__user-menu user-menu hidden items-center">
+      {{#if user}}
+      <a href="/sandbox/new" class="flex items-center header__link">
+        <span class="ico ico_pen"></span>
+      </a>
+      <div class="user-menu__item user-menu__user">
+        <div class="drop-down-menu relative">
+          <div class="drop-down-menu__header w-8 h-8 rounded-sm overflow-hidden cursor-pointer">
+            {{#if user.properties.avatar}}
+            <img class="object-cover w-full h-full user-img-desktop" src="{{user.properties.avatar}}"
+              alt="user-avatar" />
+            {{else}}
+            <img class="object-cover w-full h-full rounded border-2 user-img-desktop" src="{{emptyAvatar}}"
+              alt="user-avatar" />
+            {{/if}}
+          </div>
+        </div>
+      </div>
+      {{else}}
+      <div class="user-menu__item user-menu__user">
+        <div class="drop-down-menu relative">
+          <div class="drop-down-menu__header">
+            <span class="ico ico_user user-img-desktop"></span>
+          </div>
+        </div>
+      </div>
+      {{/if}}
+    </div>
+    {{/if}}
+  </div>
+</div>

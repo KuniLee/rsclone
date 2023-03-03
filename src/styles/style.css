@@ -1,0 +1,15 @@
+@import './style.base.css';
+@import './components.css';
+
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: 'HelveticaNeueCyr';
+    src: url('../assets/fonts/helveticaneuecyr_roman.otf');
+}
+
+@font-face {
+    font-family: 'Arial';
+    src: url('../assets/fonts/ArialMdm.ttf');
+}

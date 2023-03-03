@@ -1,0 +1,185 @@
+.ico_user {
+  background: url(../assets/icons/ico-user.svg) center no-repeat;
+  background-size: contain;
+  width: 24px;
+  height: 24px;
+}
+
+.ico_user:hover {
+  filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
+}
+
+.ico_user-light {
+  background: url(../assets/icons/ico-user1.svg) center no-repeat;
+  background-size: contain;
+  width: 24px;
+  height: 24px;
+}
+
+.ico_user-light:hover {
+  filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
+}
+
+.ico_pen {
+  background: url(../assets/icons/ico-pen.svg) center no-repeat;
+  background-size: contain;
+  width: 24px;
+  height: 24px;
+}
+
+.ico_pen-light {
+  background: url(../assets/icons/ico-pen1.svg) center no-repeat;
+  background-size: contain;
+}
+
+.ico_pen-light:hover {
+  filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
+}
+
+.ico_pen:hover {
+  filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
+}
+
+.ico_settings {
+  background: url(../assets/icons/ico-settings.svg) center no-repeat;
+  background-size: contain;
+  width: 20px;
+  height: 20px;
+}
+
+.ico_exit {
+  background: url(../assets/icons/ico-exit.svg) center no-repeat;
+  background-size: contain;
+  width: 20px;
+  height: 20px;
+}
+
+.ico_visual-settings {
+  background: url(../assets/icons/ico-visual-settings.svg) center no-repeat;
+  background-size: contain;
+  width: 20px;
+  height: 20px;
+}
+
+.ico_close {
+  background: url(../assets/icons/ico-cross.svg) center no-repeat;
+  background-size: contain;
+  width: 25px;
+  height: 25px;
+}
+
+.ico_edit {
+  background: url(../assets/icons/ico-edit.svg) center no-repeat;
+  background-size: contain;
+  width: 25px;
+  height: 25px;
+}
+
+.ico_rs {
+  background: url(../assets/icons/ico-rs.svg) center no-repeat;
+  background-size: contain;
+  width: 50px;
+  height: 20px;
+}
+
+.rs-sloth {
+  margin: auto;
+  background: url(../assets/icons/rs-sloth.svg) center no-repeat;
+  background-size: contain;
+  width: 10rem;
+  height: 10rem;
+}
+
+.drop-down-menu__body {
+  position: absolute;
+  right: 0;
+  margin-top: 12px;
+  color: #303b44;
+  background-color: #ffffff;
+  box-shadow: 0 0 12px rgb(0 0 0 / 16%);
+  min-width: 300px;
+  border-radius: 4px;
+}
+
+@media (max-width:768px) {
+  .drop-down-menu__body {
+    height: 100vh;
+    top: 0;
+    margin-top: 0;
+    border-radius: initial
+  }
+}
+
+.popup {
+  z-index: 20;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.input-radio:checked+.input-radio-fake {
+  border: 5px solid #548eaa;
+}
+
+.header__flows_active {
+  z-index: 20;
+  position: absolute;
+  display: block;
+  height: 100vh;
+  top: 0;
+  width: 72%;
+  max-width: 300px;
+  padding: 0 16px;
+}
+
+.drop-down-menu__btn:hover>span {
+  transition: all 0.3s ease-in-out;
+  filter: invert(58%) sepia(41%) saturate(523%) hue-rotate(151deg) brightness(86%) contrast(83%);
+}
+
+.drop-down-menu__header {
+  display: flex;
+  align-items: center;
+}
+
+.tabs__tab-item::after {
+  content: '';
+  background-color: #77a8d0;
+  bottom: -1px;
+  display: block;
+  height: 2px;
+  position: absolute;
+  width: 100%;
+}
+
+.article_tag:not(:last-child)::after {
+  content: ',';
+}
+
+.comment-form {
+  background-color: #f7f7f7;
+  padding: 18px 16px 16px;
+  position: relative;
+  border-top: 1px solid rgba(146, 156, 165, .4)
+}
+
+.edit-comment-form {
+  background-color: #f7f7f7;
+  padding: 18px 16px 16px;
+  margin-top: 10px;
+}
+
+.comment-editor,
+.edit-comment-content {
+  border: 1px solid #d5dddf;
+  max-width: 100%;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.comment-editor__content {
+  word-wrap: break-word;
+  word-break: break-word;
+}

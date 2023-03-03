@@ -1,0 +1,22 @@
+<div class="quoteElement list group editorElement text-xl flex items-center w-full px-[25px] new" data-is-empty="{{quote}}" data-type="quote">
+  <div class="drag absolute left-0 cursor-grab group-hover:opacity-100 opacity-0">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+    </svg>
+  </div>
+  <div class="quote-elements-container flex-grow max-w-[96.6%] border-l-4 pl-2 border-color-additional">
+    <p contenteditable="true" class="editable outline-0 whitespace-pre-wrap"></p>
+  </div>
+  <div class="options cursor-pointer group-hover:opacity-100 opacity-0">
+    <button class="options__open-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+      </svg>
+    </button>
+    <div class="options__drop-menu absolute w-[220px] shadow right-0 bg-color-light z-10" hidden>
+      <div class="py-[5px]">
+        <button class="delete-btn py-[10px] w-full text-[13px] hover:bg-color-gray-light transition">{{delete}}</button>
+      </div>
+    </div>
+  </div>
+</div>

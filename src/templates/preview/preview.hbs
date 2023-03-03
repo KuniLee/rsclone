@@ -1,0 +1,20 @@
+<article class="p-4 bg-color-light" data-id="{{id}}">
+  <div class="mb-1 flex items-center gap-1">
+    <div class="article__user cursor-pointer h-8 w-8 rounded overflow-hidden"><img class="h-full w-full object-cover" src="{{#if article.user.properties.avatar}}{{article.user.properties.avatar}}{{else}}{{emptyAvatar}}{{/if}}" alt=""></div>
+    <span class="article__user cursor-pointer text-sm font-medium">{{article.user.displayName}}</span>
+    <span class="text-sm text-color-text-light">{{time}}</span>
+  </div>
+    <h1 class="article__link text-xxl cursor-pointer font-medium">{{article.title}}</h1>
+  {{{[../post/difficult] article.difficult}}}
+  {{#if article.isTranslate}}<div class="my-2"><span class="inline-block border-[#b0b0e2] text-[#6667a3] text-sm border rounded p-1">{{words.isTranslate}}</span></div>{{/if}}
+  {{#if article.preview.image}}
+    <div class="w-full mb-4 pb-[56.4103%] relative z-1"> <img class="w-full h-full absolute select-none object-cover" style="object-position: {{join article.preview.imagePosition}}"
+          src="{{article.preview.image}}" alt="preview_image"></div>
+  {{/if}}
+  {{#each article.preview.previewBlocks}}
+    <p>{{{this.value}}}</p>
+  {{/each}}
+  <div class="articles__buttons">
+    <button class="article__link py-2 px-5 mt-6 text-sm text-sky-900 focus:outline-none bg-white rounded-lg border border-sky-700 hover:border-sky-400 hover:bg-sky-200 hover:border-sky-100 focus:z-10 focus:ring-4 focus:ring-sky-200">{{article.preview.nextBtnText}}</button>
+  </div>
+</article>

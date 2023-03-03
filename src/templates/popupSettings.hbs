@@ -1,0 +1,41 @@
+<div class="flex h-screen z-2 relative">
+  <div class="m-auto flex-[0_100%] relative md:flex-[0_20rem]">
+    <div class="bg-color-light min-h-screen md:min-h-[3.5rem] pb-6 popup__inner">
+      <form>
+        <div class="flex place-content-between items-center px-6">
+          <div class="leading-[3.5rem] text-color-text-dark">{{textData.Title}}</div>
+          <span class="ico ico_close"></span>
+        </div>
+        <div class="mb-7">
+          <div class="bg-color-bg-light px-6 leading-10 text-color-popup-text">{{textData.Interface}}</div>
+          <div class="mt-3.5">
+            <div class="px-6 mb-2.5">
+              <label class="text-color-text-dark flex items-center">
+                <div class="relative mr-2">
+                  <input type="radio" id="ru" name="lang" class="opacity-0 block w-4 h-4 cursor-pointer input-radio" />
+                  <span
+                    class="bg-color-light rounded-[50%] block absolute w-4 h-4 left-0 top-0 border-solid border border-color-border-dark input-radio-fake"></span>
+                </div>
+                Русский
+              </label>
+            </div>
+            <div class="px-6 mb-2.5">
+              <label class="text-color-text-dark flex items-center">
+                <div class="relative mr-2">
+                  <input type="radio" id="en" name="lang" class="opacity-0 block w-4 h-4 cursor-pointer input-radio" />
+                  <span
+                    class="bg-color-light rounded-[50%] block absolute w-4 h-4 left-0 top-0 border-solid border border-color-border-dark input-radio-fake"></span>
+                </div>
+                English
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="px-6">
+          <button
+            class="px-4 py-3 bg-color-button text-color-light w-full rounded hover:bg-color-popup-btn-hover transition btn-save">{{textData.Save}}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
