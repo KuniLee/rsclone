@@ -40,6 +40,12 @@ export interface SidebarUserMenuElements {
     navLinksEl: NodeListOf<Element>
 }
 
+export interface EditCommentElements {
+    commentContent: HTMLElement
+    commentEl: HTMLElement
+    editBtn: HTMLElement
+}
+
 export interface Article extends NewArticleData {
     createdAt: Timestamp
     id: string

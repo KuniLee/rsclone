@@ -33,20 +33,10 @@ export class MainView extends EventEmitter {
         this.model.on('AUTH_LOADED', () => {
             this.buildPage()
             this.emit('PAGE_BUILD')
+            this.setDefaultActiveLink()
         })
         this.model.on('CHANGE_PAGE', () => {
-            const path = this.model.path
-            const pathWithoutSlash = this.model.path.join('').slice(1)
-            const flowsLinksEl = document.querySelectorAll('.nav__link')
-            this.removeActiveLink(path, flowsLinksEl)
-            flowsLinksEl.forEach((flowLinkEl) => {
-                if (flowLinkEl instanceof HTMLAnchorElement) {
-                    let flowLinkHref = flowLinkEl.href.split('/').slice(-2).join('/')
-                    const allFlowLinkHref = Paths.Flows.slice(1) + Flows.All
-                    if (flowLinkHref === allFlowLinkHref) flowLinkHref = flowLinkHref.split('/').slice(1).join('')
-                    if (flowLinkHref === pathWithoutSlash) this.setActiveLink(flowsLinksEl, flowLinkEl)
-                }
-            })
+            this.setDefaultActiveLink()
         })
     }
 
@@ -72,6 +62,21 @@ export class MainView extends EventEmitter {
             dropdownMenu: dropdownMenuEl,
             popupSettings: popupSettingsEl,
             sidebarUserMenu: sidebarUserMenuEl,
+        })
+    }
+
+    private setDefaultActiveLink() {
+        const path = this.model.path
+        const pathWithoutSlash = this.model.path.join('').slice(1)
+        const flowsLinksEl = document.querySelectorAll('.nav__link')
+        this.removeActiveLink(path, flowsLinksEl)
+        flowsLinksEl.forEach((flowLinkEl) => {
+            if (flowLinkEl instanceof HTMLAnchorElement) {
+                let flowLinkHref = flowLinkEl.href.split('/').slice(-2).join('/')
+                const allFlowLinkHref = Paths.Flows.slice(1) + Flows.All
+                if (flowLinkHref === allFlowLinkHref) flowLinkHref = flowLinkHref.split('/').slice(1).join('')
+                if (flowLinkHref === pathWithoutSlash) this.setActiveLink(flowsLinksEl, flowLinkEl)
+            }
         })
     }
 

@@ -2,8 +2,7 @@
   <div class="w-full flex flex-col gap-4 lg:max-w-[760px]">
     {{#if date}}
     <div class="save-information-block pr-[20px] mb-[20px] py-[20px] bg-[#d3f2bf] border border-transparent">
-      <p class="ml-[20px]">{{getSave}} <span class="date">{{date}}</span> <span
-          class="time">{{dateTime}}</span> <a
+      <p class="ml-[20px]">{{getSave}} <span class="date">{{date}}</span> <span class="time">{{dateTime}}</span> <a
           class="restore-save-article text-color-button underline decoration-dotted underline-offset-4"
           href="#">{{restore}}</a></p>
     </div>
@@ -17,7 +16,8 @@
         <p class="mr-[10px] time-published">{{neverPublish}}</p>
       </div>
       <div class="relative textEditor flex-grow">
-        <div class="menu absolute w-[220px] bg-white shadow left-[20px] z-10 py-[10px] max-h-[250px] overflow-y-scroll" hidden>
+        <div class="menu absolute w-[220px] bg-white shadow left-[20px] z-10 py-[10px] max-h-[250px] overflow-y-scroll"
+          hidden>
           <div class="menu__wrapper"></div>
         </div>
         <div
@@ -77,11 +77,13 @@
             <h3 class="text-m mb-4 font-semibold"><span class="text-red-600">*</span>{{language}}</h3>
             <div class="flex">
               <div class="border-[1px] rounded-[3px] border-[#d5dddf] flex transition-colors ease-out duration-300">
-                <input type="radio" name="lang" value="ru" id="lang-ru" class="lang-check__ru hidden editor__type-radio" checked>
+                <input type="radio" name="lang" value="ru" id="lang-ru" class="lang-check__ru hidden editor__type-radio"
+                  checked>
                 <label for="lang-ru" class="editor__radio-label editor__type-label">
                   <span>{{languageButtonRu}}</span>
                 </label>
-                <input type="radio" name="lang" value="en" id="lang-en" class="lang-check__en hidden editor__type-radio">
+                <input type="radio" name="lang" value="en" id="lang-en"
+                  class="lang-check__en hidden editor__type-radio">
                 <label for="lang-en" class="editor__radio-label editor__type-label">
                   <span>{{languageButtonEn}}</span>
                 </label>
@@ -97,9 +99,7 @@
             <div>
               <select-pure default-label="{{flowsHint}}"
                 class="flows-input w-full rounded-[3px] m-0 text-[14px] outline-0" name="flow-select" id="flow-select"
-                           name = 'flows'
-                           id="flows"
-                multiple>
+                name='flows' id="flows" multiple>
                 {{#each flows}}
                 <option-pure value="{{this}}">{{this}}</option-pure>
                 {{/each}}
@@ -250,7 +250,7 @@
       </form>
     </div>
   </div>
-  <aside class="hidden lg:block basis-80 bg-color-light shrink-0 h-fit hidden lg:block">
+  <aside class="hidden lg:block basis-80 bg-color-light shrink-0 h-fit">
     <div class="px-5 py-4">
       <h3
         class=" text-color-text-dark uppercase font-medium tracking-wide border-solid border-b border-color-border-light pb-3">

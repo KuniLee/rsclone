@@ -1,3 +1,4 @@
+import { CommentEditInfo } from 'types/types'
 import { PageModelInstance } from '@/components/mainPage/model/PageModel'
 import { FeedViewInstance } from '@/components/mainPage/views/FeedView'
 import { FeedModelInstance } from '@/components/mainPage/model/FeedModel'
@@ -18,13 +19,15 @@ import {
     where,
     Firestore,
     startAfter,
+    deleteField,
+    deleteDoc,
 } from 'firebase/firestore'
 import { FirebaseStorage, getDownloadURL, ref } from 'firebase/storage'
 import { Flows, Paths } from 'types/enums'
 import { Article, URLParams } from 'types/interfaces'
 import { ArticleViewInstance } from '@/components/mainPage/views/ArticleView'
 import { RouterInstance } from '@/utils/Rooter'
-import { CommentInfo, ParsedData } from 'types/types'
+import { CommentInfo, ParsedData, UserData } from 'types/types'
 import { Auth } from 'firebase/auth'
 import { FireBaseAPIInstance } from '@/utils/FireBaseAPI'
 
@@ -62,7 +65,7 @@ export class FeedController {
             const comments = await this.loadComments(id)
             if (article) {
                 this.feedModel.setArticle(article)
-                if (comments) this.feedModel.setComments(comments)
+                if (comments) this.feedModel.loadComments(comments)
             } else {
                 this.pageModel.goTo404()
             }
@@ -76,9 +79,65 @@ export class FeedController {
             if (article) {
                 await this.addComment(comment, article.id)
                 const comments = await this.loadComments(article.id)
-                if (comments) this.feedModel.setComments(comments)
+                if (comments) this.feedModel.loadComments(comments)
             }
         })
+        this.articleView.on<string>('REMOVE_COMMENT', async (commentId) => {
+            const comments = this.feedModel.getComments()
+            if (comments.length === 1) {
+                comments.length = 0
+            } else {
+                comments.splice(Number(commentId), 1)
+            }
+            this.feedModel.setComments(comments)
+            await this.removeComment(commentId)
+        })
+        this.articleView.on<CommentEditInfo>('EDIT_COMMENT', async ({ parsedCommentContent, commentId }) => {
+            await this.updateComment(parsedCommentContent, commentId)
+        })
+    }
+
+    private async updateComment(commentContent: ParsedData, commentId: string) {
+        try {
+            const userRef = doc(this.db, `users/${this.pageModel.user.uid}`)
+            const userSnapshot = await getDoc(userRef)
+            const userData = userSnapshot.data() as UserData
+            const userComments = userData.comments
+            if (userComments) {
+                for (let i = 0; i < userComments.length; i++) {
+                    if (i === Number(commentId)) {
+                        const articleCommentPath = doc(this.db, userComments[i].path)
+                        await updateDoc(articleCommentPath, commentContent)
+                    }
+                }
+            }
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    private async removeComment(commentId: string) {
+        try {
+            const userRef = doc(this.db, `users/${this.pageModel.user.uid}`)
+            const userSnapshot = await getDoc(userRef)
+            const userData = userSnapshot.data() as UserData
+            const userComments = userData.comments
+            if (userComments) {
+                for (let i = 0; i < userComments.length; i++) {
+                    if (i === Number(commentId)) {
+                        const articleCommentPath = doc(this.db, userComments[i].path)
+                        await deleteDoc(articleCommentPath)
+                        userComments.splice(i, 1)
+                    }
+                }
+                await updateDoc(userRef, userData)
+                if (!userComments.length) {
+                    await updateDoc(userRef, { comments: deleteField() })
+                }
+            }
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     private async loadArticle(id: string): Promise<Article | undefined> {

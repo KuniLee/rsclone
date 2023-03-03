@@ -202,6 +202,8 @@ const Comments: Record<string, language> = {
     SendButton: { ru: 'Отправить', en: 'Send' },
     CommentField: { ru: 'Ваш комментарий', en: 'Your comment' },
     TypeSomething: { ru: 'Введите текст', en: 'Type something' },
+    SaveButton: { ru: 'Сохранить', en: 'Save' },
+    CancelButton: { ru: 'Отмена', en: 'Cancel' },
 }
 
 const AccessError: Record<string, language> = {

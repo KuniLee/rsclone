@@ -68,6 +68,13 @@
   height: 25px;
 }
 
+.ico_edit {
+  background: url(../assets/icons/ico-edit.svg) center no-repeat;
+  background-size: contain;
+  width: 25px;
+  height: 25px;
+}
+
 .ico_rs {
   background: url(../assets/icons/ico-rs.svg) center no-repeat;
   background-size: contain;
@@ -158,7 +165,14 @@
   border-top: 1px solid rgba(146, 156, 165, .4)
 }
 
-.comment-editor {
+.edit-comment-form {
+  background-color: #f7f7f7;
+  padding: 18px 16px 16px;
+  margin-top: 10px;
+}
+
+.comment-editor,
+.edit-comment-content {
   border: 1px solid #d5dddf;
   max-width: 100%;
   padding-top: 6px;

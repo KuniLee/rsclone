@@ -31,7 +31,7 @@ export type UserData = {
     email: string
     displayName: string
     properties: Partial<UserProps>
-    comments?: Array<string>
+    comments?: Array<DocumentReference>
 }
 
 export type UserProps = {
@@ -85,4 +85,9 @@ export type CommentInfo = {
     blocks: Array<BlocksType>
     createdAt: Timestamp
     user: DocumentReference | UserData
+}
+
+export type CommentEditInfo = {
+    parsedCommentContent: ParsedData
+    commentId: string
 }
